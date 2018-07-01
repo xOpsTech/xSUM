@@ -1,3 +1,5 @@
+assets/bundle.js
+backend/node_modules/*
 # Logs
 logs
 *.log
