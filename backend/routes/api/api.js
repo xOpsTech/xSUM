@@ -1,7 +1,12 @@
 var MongoDB = require('../../db/mongodb');
 var AppConstants = require('../../constants/AppConstants');
+var path = require('path');
 
 function Api(){};
+
+Api.prototype.handleHTML = function(req, res) {
+    res.sendfile(path.join(__dirname, '../../../', 'index.html'));
+}
 
 Api.prototype.handleUrlData = function(req, res) {
     var action = req.query.action;

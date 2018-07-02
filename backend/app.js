@@ -6,6 +6,8 @@ var express = require('express'),
 var port = config.port;
 var app = express();
 
+app.use('/assets', express.static('../assets'));
+app.use('/lib', express.static('../lib'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use('/', apiRouter);
