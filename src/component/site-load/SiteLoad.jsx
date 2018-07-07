@@ -34,16 +34,26 @@ class SiteAdd extends React.Component {
     }
 
     componentWillMount() {
-        let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
 
-        if (storageID) {
-            this.setState({isModalVisible: true});
+        if (this.props.location.query.userObj) {
+            var loggedUserObject = JSON.parse(this.props.location.query.userObj);
+            this.setState({loggedUserObj: loggedUserObject});
+            let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
+
+            if (storageID) {
+                this.setState({isModalVisible: true});
+            }
+
+        } else {
+            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
+
     }
 
     // Returns initial props
     getInitialState() {
         var initialState = {
+            loggedUserObj: {},
             urlValue : '',
             error    : {},
             isLoading: false,
@@ -152,7 +162,7 @@ class SiteAdd extends React.Component {
     }
 
     render() {
-        const {error, isLoading, isModalVisible} = this.state;
+        const {error, isLoading, isModalVisible, loggedUserObj} = this.state;
 
         return (
             <Fragment>
@@ -162,7 +172,7 @@ class SiteAdd extends React.Component {
                     noClick={this.modalNoClick}
                     isModalVisible={isModalVisible}/>
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
-                <LoginContainer/>
+                <LoginContainer loggedUserObj={loggedUserObj}/>
                 <div className="root-container">
                     <div className="logo-div">
                         <img className="logo-img" src="./assets/img/logo.png"/>

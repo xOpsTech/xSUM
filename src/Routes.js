@@ -2,7 +2,7 @@ import React from 'react';
 import {Route, IndexRoute} from 'react-router';
 
 import Page from './component/Page';
-import Login from './component/Login';
+import Login from './component/login/Login';
 import SiteAdd from './component/site-add/SiteAdd';
 import SiteLoad from './component/site-load/SiteLoad';
 

@@ -1,18 +1,25 @@
 import React from 'react';
 
-import ErrorMessageComponent from './common/ErrorMessageComponent';
-import LoadingScreen from './common/LoadingScreen';
+import ErrorMessageComponent from '../common/ErrorMessageComponent';
+import LoadingScreen from '../common/LoadingScreen';
+import GoogleLogin from 'react-google-login';
 
-import * as MessageConstants from '../constants/MessageConstants';
-import * as AppConstants from '../constants/AppConstants';
-import * as UIHelper from '../common/UIHelper';
+import * as MessageConstants from '../../constants/MessageConstants';
+import * as AppConstants from '../../constants/AppConstants';
+import * as UIHelper from '../../common/UIHelper';
+
+/* eslint-disable no-unused-vars */
+import Styles from './LoginStyles.less';
+/* eslint-enable no-unused-vars */
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleChange  = this.handleChange.bind(this);
-        this.loginClick    = this.loginClick.bind(this);
+        this.handleChange          = this.handleChange.bind(this);
+        this.loginClick            = this.loginClick.bind(this);
+        this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
+        this.googleResponseFail    = this.googleResponseFail.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -73,13 +80,29 @@ class Login extends React.Component {
 
     }
 
+    googleResponseSuccess(response) {
+        var basicProfile = response.getBasicProfile();
+        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
+            {
+                userObj: JSON.stringify({
+                    name: basicProfile.getName(),
+                    email: basicProfile.getEmail()
+                })
+            });
+    }
+
+    googleResponseFail(response) {
+        console.log("EFG", response);
+    }
+
     render() {
         const {isLogin, error} = this.state;
+
+        // Google secret client id : pQMZvMj2I_sxM6t7HNLYLKr7
         return (
             <div className="root-container">
                 <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>
                 <h1>Login</h1>
-
                 <form
                     name="login-form"
                     method="post">
@@ -109,6 +132,14 @@ class Login extends React.Component {
                             Login
                         </button>
                     </div>
+                    <GoogleLogin
+                        clientId={'213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com'}
+                        className="google-login-btn form-control"
+                        onSuccess={this.googleResponseSuccess}
+                        onFailure={this.googleResponseFail}>
+                        <span className="fa fa-google google-icon"></span>
+                        <span>Sign in with Google</span>
+                    </GoogleLogin>
                 </form>
             </div>
         );

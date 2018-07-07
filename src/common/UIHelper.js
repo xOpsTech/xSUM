@@ -2,8 +2,11 @@ import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
 
 // Redirect to login page
-export function redirectTo(route) {
-    useRouterHistory(createHashHistory)().push(route);
+export function redirectTo(route, data) {
+    useRouterHistory(createHashHistory)().push({
+        pathname: route,
+        query: data
+    });
 }
 
 // Cookies
@@ -51,4 +54,20 @@ export function getLocalStorageValue(key) {
 
 export function removeLocalStorageValue(key) {
     localStorage.removeItem(key);
+}
+
+export function toTitleCase(str) {
+
+    if (str === undefined) {
+        return '';
+    } else {
+        return str.replace(
+            /\w\S*/g,
+            function(txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            }
+        );
+    }
+
+
 }

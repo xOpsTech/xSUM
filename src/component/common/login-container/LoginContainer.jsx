@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {OverlayTrigger, Popover} from 'react-bootstrap';
 
@@ -30,6 +31,7 @@ class LoginContainer extends React.Component {
     }
 
     render() {
+        const {loggedUserObj} = this.props;
         const DropDownPopOver = (props) => {
             return(
                 <Popover {...props} className="drop-down">
@@ -40,10 +42,10 @@ class LoginContainer extends React.Component {
         const LogOutPopOver = (
             <DropDownPopOver className="log-out-drop-down">
                 <div>
-                    FirstName LastName
+                    {UIHelper.toTitleCase(loggedUserObj.name)}
                 </div>
                 <div>
-                    {'emailAddress@email.com'}
+                    {loggedUserObj.email}
                 </div>
                 <div className="divider"></div>
                 <div className="logout-button-div">
@@ -59,7 +61,7 @@ class LoginContainer extends React.Component {
             <div className="login-container">
                 <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={LogOutPopOver}>
                     <button className="login-button">
-                        <span className="first-name">First Name</span>
+                        <span className="first-name">{UIHelper.toTitleCase(loggedUserObj.name)}</span>
                         <i className="fa fa-user" aria-hidden="true"></i>
                     </button>
                 </OverlayTrigger>
@@ -69,6 +71,7 @@ class LoginContainer extends React.Component {
 }
 
 LoginContainer.propTypes = {
+    loggedUserObj: PropTypes.object
 };
 
 export default LoginContainer;
