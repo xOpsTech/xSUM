@@ -1,6 +1,7 @@
 var MongoClient = require('mongodb').MongoClient;
 var dbName = 'xsum';
 var url = 'mongodb://xview.xops.it:27017/' + dbName;
+var cmd = require('node-cmd');
 
 function MongoDB(){};
 
@@ -41,20 +42,21 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
             console.log("1 url data has been inserted");
             response.send(objectToInsert);
 
-            // Send process request to docker
-
-            // TODO: need to remove this code block after docker implemented
-            setTimeout(() => {
-                dbo.collection(collectionName).updateOne({ID: objectToInsert.ID},
-                    {
-                        $set: {
-                            status: 'Done'
+            // Send process request to sitespeed
+            cmd.get(
+                './sitespeed/v7.2.0/bin/sitespeed.js ' + objectToInsert.url, //+ ' ' + 'http://www.yahoo.com',
+                function(err, data, stderr) {
+                    dbo.collection(collectionName).updateOne({ID: objectToInsert.ID},
+                        {
+                            $set: {
+                                status: 'Done',
+                                resultUrl: 'www.google.com'
+                            }
                         }
-                    }
-                );
-                db.close();
-            }, 30000);
-            // TODO: need to remove this code block after docker implemented
+                    );
+                    db.close();
+                }
+            );
 
         });
     }).catch((err) => {

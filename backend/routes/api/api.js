@@ -1,6 +1,7 @@
 var MongoDB = require('../../db/mongodb');
 var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
+var cmd = require('node-cmd');
 
 function Api(){};
 
@@ -36,7 +37,7 @@ Api.prototype.handleTestData = function(req, res) {
 Api.prototype.insertUrlData = function(req, res) {
     var urlObj = req.body;
     var currentDate = new Date();
-    var urlInsertObj = {ID: urlObj.hashID, url: urlObj.urlValue, dateTime: currentDate.toString(), status: 'New'};
+    var urlInsertObj = {ID: urlObj.hashID, url: urlObj.urlValue, dateTime: currentDate.toString(), status: 'New', resultUrl: ''};
 
     MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res);
 }
