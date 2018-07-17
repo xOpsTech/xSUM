@@ -1,6 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/* eslint-disable no-unused-vars */
+import Styles from './LoadingScreenStyles.less';
+/* eslint-enable no-unused-vars */
+
 class LoadingScreen extends React.Component {
     render() {
         const {isDisplay, message} = this.props;

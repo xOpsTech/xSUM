@@ -1,4 +1,4 @@
-export const NAME_ERROR = 'Name invalid.';
+export const URL_ERROR = 'Url is invalid.';
 export const EMAIL_ERROR = 'Email address invalid.';
 export const INVALID_PASSWORD_ERROR = 'Password invalid - password must be at least 6 characters.';
 export const PASSWORD_CONFIRM_MATCH_ERROR = 'Password and confirm password must match.';

@@ -1,6 +1,8 @@
 import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
 
+import * as AppConstants from '../constants/AppConstants';
+
 // Redirect to login page
 export function redirectTo(route, data) {
     useRouterHistory(createHashHistory)().push({
@@ -69,5 +71,8 @@ export function toTitleCase(str) {
         );
     }
 
+}
 
+export function isUrlHasError(value) {
+    return !RegExp(AppConstants.URL_PATTERN).test(value);
 }

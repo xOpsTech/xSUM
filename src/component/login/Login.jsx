@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ErrorMessageComponent from '../common/ErrorMessageComponent';
-import LoadingScreen from '../common/LoadingScreen';
+import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
+import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import GoogleLogin from 'react-google-login';
 
 import * as MessageConstants from '../../constants/MessageConstants';

@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
 
-import ErrorMessageComponent from '../common/ErrorMessageComponent';
+import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoginContainer from '../common/login-container/LoginContainer';
 
 /* eslint-disable no-unused-vars */

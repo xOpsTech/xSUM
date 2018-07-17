@@ -1,8 +1,8 @@
 import React, {Fragment} from 'react';
 import {randomBytes} from 'crypto';
 
-import ErrorMessageComponent from '../common/ErrorMessageComponent';
-import LoadingScreen from '../common/LoadingScreen';
+import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
+import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import LoginContainer from '../common/login-container/LoginContainer';
 import ModalContainer from '../common/modal-container/ModalContainer';
 import urlApi from '../../api/urlApi';
@@ -28,6 +28,7 @@ class SiteAdd extends React.Component {
         this.loopToCheckUrl  = this.loopToCheckUrl.bind(this);
         this.modalYesClick   = this.modalYesClick.bind(this);
         this.modalNoClick    = this.modalNoClick.bind(this);
+        this.viewResult      = this.viewResult.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -54,10 +55,10 @@ class SiteAdd extends React.Component {
     getInitialState() {
         var initialState = {
             loggedUserObj: {},
-            urlValue : '',
-            error    : {},
+            urlObject : {value:'', error: {}},
             isLoading: false,
-            isModalVisible: false
+            isModalVisible: false,
+            result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''}
         };
 
         return initialState;
@@ -79,6 +80,7 @@ class SiteAdd extends React.Component {
     searchClick() {
 
         if (!this.state.isLoading) {
+            this.setState({result: {isResultRecieved: false, url: '', searchedUrl: ''}});
             this.searchURL();
         }
 
@@ -86,16 +88,19 @@ class SiteAdd extends React.Component {
 
     searchURL() {
 
-        let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
+        if (this.state.urlObject.error.hasError !== undefined && !this.state.urlObject.error.hasError) {
+            let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
 
-        if (storageID) {
-            UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
-        } else {
-            let randomHash = randomBytes(10).toString('hex');
+            if (storageID) {
+                UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
+            } else {
+                let randomHash = randomBytes(10).toString('hex');
 
-            // Store in backend
-            this.insertToDB(randomHash);
+                // Store in backend
+                this.insertToDB(randomHash);
+            }
         }
+
 
     }
 
@@ -104,10 +109,10 @@ class SiteAdd extends React.Component {
     }
 
     insertToDB(randomHash) {
-        let {urlValue} = this.state;
+        let {urlObject} = this.state;
 
         var url = AppConstants.API_URL + AppConstants.URL_INSERT_API;
-        var urlObj = {hashID: randomHash, urlValue};
+        var urlObj = {hashID: randomHash, urlValue: 'http://' + urlObject.value};
 
         this.setState({isLoading: true});
 
@@ -142,12 +147,20 @@ class SiteAdd extends React.Component {
                         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
                         clearInterval(intervalUrl);
 
+                        console.log("data", data[0])
+                        this.setState({result: {isResultRecieved: true, resultUrl: data[0].resultUrl, searchedUrl: data[0].url}});
                         // TODO: display result set(need to update the state of result array)
                     }
                 });
             }
 
         }, 1000 * secondsToSendReq);
+    }
+
+    viewResult(e) {
+        e.preventDefault();
+        const {result} = this.state;
+        window.open(result.resultUrl, '_blank');
     }
 
     modalYesClick() {
@@ -162,7 +175,7 @@ class SiteAdd extends React.Component {
     }
 
     render() {
-        const {error, isLoading, isModalVisible, loggedUserObj} = this.state;
+        const {urlObject, isLoading, isModalVisible, loggedUserObj, result} = this.state;
 
         return (
             <Fragment>
@@ -178,22 +191,46 @@ class SiteAdd extends React.Component {
                         <img className="logo-img" src="./assets/img/logo.png"/>
                     </div>
                     <form name="site-add-form">
-                        <div className="input-group">
+                        <div className={
+                                'input-group has-feedback ' +
+                                ((urlObject.error.hasError !== undefined)
+                                    ? ((urlObject.error.hasError) ? 'has-error' : 'has-success') : '')
+                            }>
+                            <span className="input-group-addon">
+                                http://
+                            </span>
                             <input
-                                value={this.state.urlValue}
-                                onChange={(e) => this.handleChange(e, {urlValue: e.target.value})}
+                                value={urlObject.value}
+                                onChange={(e) => this.handleChange(e, {
+                                    urlObject: {
+                                        value: e.target.value,
+                                        error: {
+                                            hasError: UIHelper.isUrlHasError(e.target.value),
+                                            name: MessageConstants.URL_ERROR
+                                        }
+                                    }
+                                })}
                                 onKeyPress={this.searchKeyPress}
                                 type="text"
                                 disabled={(isLoading)? 'disabled' : ''}
                                 className="form-control"
-                                id="urlValueInput"
+                                id="urlObjectInput"
                                 placeholder="URL"/>
                             <span className="input-group-addon"
                                 onClick={this.searchClick}>
                                 <i className="glyphicon glyphicon-search"></i>
                             </span>
                         </div>
-                        <ErrorMessageComponent error={error}/>
+                        <ErrorMessageComponent error={urlObject.error}/>
+                        {
+                            result.isResultRecieved
+                                ? <div className="result-container">
+                                      <a className="btn btn-primary" href="#" onClick={this.viewResult}>
+                                          View Result for {result.searchedUrl}
+                                      </a>
+                                  </div>
+                                : null
+                        }
                     </form>
                 </div>
             </Fragment>
