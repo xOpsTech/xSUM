@@ -33,24 +33,26 @@ MongoDB.prototype.fetchData = function(collectionName, query, response) {
 }
 
 MongoDB.prototype.insertData = function(collectionName, objectToInsert, response) {
-
     connectMongoDB().then((db) => {
         var dbo = db.db(dbName);
+
         dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
             if (err) throw err;
 
             console.log("1 url data has been inserted");
             response.send(objectToInsert);
-
+            var siteName = objectToInsert.url.split('/')[2];
+            var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.ID;
             // Send process request to sitespeed
+            var commandStr = 'docker run --shm-size=1g --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:7.2.1 --outputFolder ' + pathToResult + ' ' + objectToInsert.url;
             cmd.get(
-                './sitespeed/v7.2.0/bin/sitespeed.js ' + objectToInsert.url, //+ ' ' + 'http://www.yahoo.com',
+                commandStr,
                 function(err, data, stderr) {
                     dbo.collection(collectionName).updateOne({ID: objectToInsert.ID},
                         {
                             $set: {
                                 status: 'Done',
-                                resultUrl: 'www.google.com'
+                                resultUrl: pathToResult
                             }
                         }
                     );
