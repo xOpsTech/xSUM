@@ -37,6 +37,10 @@ class Login extends React.Component {
         return initialState;
     }
 
+    componentDidMount() {
+        document.title = "Login - xSum";
+    }
+
     handleChange(stateObj) {
         this.setState(stateObj);
     }
