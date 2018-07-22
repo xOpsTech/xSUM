@@ -164,7 +164,7 @@ class SiteAdd extends React.Component {
     viewResult(e) {
         e.preventDefault();
         const {result} = this.state;
-        window.open(result.resultUrl, '_blank');
+        window.open(result.resultUrl, '_self');
     }
 
     modalYesClick() {
