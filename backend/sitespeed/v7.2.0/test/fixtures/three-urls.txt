@@ -1,3 +1,0 @@
-http://www.sitespeed.io
-http://www.browsertime.net
-http://www.github.com
