@@ -62,7 +62,7 @@ class LoginContainer extends React.Component {
                 <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={LogOutPopOver}>
                     <button className="login-button">
                         <span className="first-name">{UIHelper.toTitleCase(loggedUserObj.name)}</span>
-                        <i className="fa fa-user" aria-hidden="true"></i>
+                        <img className="profile-pic-img" src={loggedUserObj.profilePicPath}/>
                     </button>
                 </OverlayTrigger>
             </div>

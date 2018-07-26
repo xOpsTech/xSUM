@@ -90,7 +90,8 @@ class Login extends React.Component {
             {
                 userObj: JSON.stringify({
                     name: basicProfile.getName(),
-                    email: basicProfile.getEmail()
+                    email: basicProfile.getEmail(),
+                    profilePicPath: basicProfile.getImageUrl()
                 })
             });
     }
