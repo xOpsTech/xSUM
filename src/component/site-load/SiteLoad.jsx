@@ -3,7 +3,7 @@ import {randomBytes} from 'crypto';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
-import LoginContainer from '../common/login-container/LoginContainer';
+import NavContainer from '../common/nav-container/NavContainer';
 import ModalContainer from '../common/modal-container/ModalContainer';
 import urlApi from '../../api/urlApi';
 
@@ -45,8 +45,6 @@ class SiteAdd extends React.Component {
                 this.setState({isModalVisible: true});
             }
 
-        } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
     }
@@ -58,7 +56,7 @@ class SiteAdd extends React.Component {
     // Returns initial props
     getInitialState() {
         var initialState = {
-            loggedUserObj: {},
+            loggedUserObj: null,
             urlObject : {value:'', error: {}},
             isLoading: false,
             isModalVisible: false,
@@ -150,8 +148,6 @@ class SiteAdd extends React.Component {
                         this.setState({isLoading: false});
                         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
                         clearInterval(intervalUrl);
-
-                        console.log("data", data[0])
                         this.setState({result: {isResultRecieved: true, resultUrl: data[0].resultUrl, searchedUrl: data[0].url}});
                         // TODO: display result set(need to update the state of result array)
                     }
@@ -189,7 +185,17 @@ class SiteAdd extends React.Component {
                     noClick={this.modalNoClick}
                     isModalVisible={isModalVisible}/>
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
-                <LoginContainer loggedUserObj={loggedUserObj}/>
+                {
+                    (loggedUserObj)
+                        ? <NavContainer loggedUserObj={loggedUserObj}/>
+                        : <div className="sign-in-button">
+                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
+                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
+                                  Sign in
+                              </button>
+                          </div>
+                }
+
                 <div className="root-container">
                     <div className="logo-div">
                         <img className="logo-img" src="./assets/img/logo.png"/>

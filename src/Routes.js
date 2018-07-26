@@ -8,7 +8,7 @@ import SiteLoad from './component/site-load/SiteLoad';
 
 export default (
     <Route path={'/'} component={Page}>
-        <IndexRoute component={Login}/>
+        <IndexRoute component={SiteLoad}/>
         <Route path="login" component={Login}/>
         <Route path="siteadd" component={SiteAdd}/>
         <Route path="siteload" component={SiteLoad}/>
