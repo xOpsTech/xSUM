@@ -1,6 +1,7 @@
 var MongoDB = require('../../db/mongodb');
 var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
+var cmd = require('node-cmd');
 
 function Api(){};
 
@@ -50,7 +51,7 @@ Api.prototype.insertUrlData = function(req, res) {
         resultUrl: ''
     };
 
-    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res);
+    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res, executeResultGenerator);
 }
 
 Api.prototype.insertLoggedUserUrlData = function(req, res) {
@@ -65,7 +66,7 @@ Api.prototype.insertLoggedUserUrlData = function(req, res) {
         userEmail: urlObj.userEmail
     };
 
-    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res);
+    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res, executeResultGenerator);
 }
 
 Api.prototype.getUrlData = function(req, res) {
@@ -81,6 +82,23 @@ Api.prototype.getLoggedUserUrlData = function(req, res) {
         status: 'Done'
     };
     MongoDB.fetchData(AppConstants.DB_URL_LIST, queryObj, res);
+}
+
+function executeResultGenerator(collectionName, objectToInsert) {
+    var siteName = objectToInsert.url.split('/')[2];
+    var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.ID;
+    // Send process request to sitespeed
+    var commandStr = 'docker run --shm-size=1g --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:7.2.1 --outputFolder ' + pathToResult + ' ' + objectToInsert.url;
+    cmd.get(
+        commandStr,
+        function(err, data, stderr) {
+            var newValueObj = {
+                status: 'Done',
+                resultUrl: pathToResult
+            };
+            MongoDB.updateData(collectionName, objectToInsert.ID, newValueObj);
+        }
+    );
 }
 
 module.exports = new Api();
