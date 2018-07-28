@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
 import {randomBytes} from 'crypto';
+import {Panel} from 'react-bootstrap';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
@@ -19,16 +20,18 @@ class SiteAdd extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleChange    = this.handleChange.bind(this);
-        this.searchKeyPress  = this.searchKeyPress.bind(this);
-        this.searchClick     = this.searchClick.bind(this);
-        this.searchURL       = this.searchURL.bind(this);
-        this.setStorageValue = this.setStorageValue.bind(this);
-        this.insertToDB      = this.insertToDB.bind(this);
-        this.loopToCheckUrl  = this.loopToCheckUrl.bind(this);
-        this.modalYesClick   = this.modalYesClick.bind(this);
-        this.modalNoClick    = this.modalNoClick.bind(this);
-        this.viewResult      = this.viewResult.bind(this);
+        this.handleChange         = this.handleChange.bind(this);
+        this.searchKeyPress       = this.searchKeyPress.bind(this);
+        this.searchClick          = this.searchClick.bind(this);
+        this.searchURL            = this.searchURL.bind(this);
+        this.setStorageValue      = this.setStorageValue.bind(this);
+        this.insertToDB           = this.insertToDB.bind(this);
+        this.loopToCheckUrl       = this.loopToCheckUrl.bind(this);
+        this.modalYesClick        = this.modalYesClick.bind(this);
+        this.modalNoClick         = this.modalNoClick.bind(this);
+        this.viewResult           = this.viewResult.bind(this);
+        this.getLoggedUserUrlData = this.getLoggedUserUrlData.bind(this);
+        this.viewHistory          = this.viewHistory.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -45,6 +48,7 @@ class SiteAdd extends React.Component {
                 this.setState({isModalVisible: true});
             }
 
+            this.getLoggedUserUrlData(loggedUserObject);
         }
 
     }
@@ -60,7 +64,9 @@ class SiteAdd extends React.Component {
             urlObject : {value:'', error: {}},
             isLoading: false,
             isModalVisible: false,
-            result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''}
+            result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''},
+            oldUrlResults: [],
+            isViewHistoryVisible: false
         };
 
         return initialState;
@@ -111,10 +117,22 @@ class SiteAdd extends React.Component {
     }
 
     insertToDB(randomHash) {
-        let {urlObject} = this.state;
+        let {urlObject, loggedUserObj} = this.state;
 
-        var url = AppConstants.API_URL + AppConstants.URL_INSERT_API;
-        var urlObj = {hashID: randomHash, urlValue: 'http://' + urlObject.value};
+        var url, urlObj;
+
+        // Check user logged in or not
+        if (loggedUserObj) {
+            url = AppConstants.API_URL + AppConstants.URL_INSERT_LOGGED_USER_API;
+            urlObj = {
+                hashID: randomHash,
+                urlValue: 'http://' + urlObject.value,
+                userEmail: loggedUserObj.email
+            };
+        } else {
+            url = AppConstants.API_URL + AppConstants.URL_INSERT_API;
+            urlObj = {hashID: randomHash, urlValue: 'http://' + urlObject.value};
+        }
 
         this.setState({isLoading: true});
 
@@ -157,10 +175,9 @@ class SiteAdd extends React.Component {
         }, 1000 * secondsToSendReq);
     }
 
-    viewResult(e) {
+    viewResult(e, redirectTo) {
         e.preventDefault();
-        const {result} = this.state;
-        window.open(result.resultUrl, '_self');
+        window.open(redirectTo, '_self');
     }
 
     modalYesClick() {
@@ -174,8 +191,27 @@ class SiteAdd extends React.Component {
         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
     }
 
+    getLoggedUserUrlData(loggedUserObj) {
+        var url = AppConstants.API_URL + AppConstants.URL_GET_LOGGED_USER_URL_API;
+        urlApi.getUrlData(url, {userEmail: loggedUserObj.email}).then((data) => {
+            this.setState({oldUrlResults: data});
+        });
+    }
+
+    viewHistory() {
+        this.setState({isViewHistoryVisible: !this.state.isViewHistoryVisible});
+    }
+
     render() {
-        const {urlObject, isLoading, isModalVisible, loggedUserObj, result} = this.state;
+        const {
+            urlObject,
+            isLoading,
+            isModalVisible,
+            loggedUserObj,
+            result,
+            isViewHistoryVisible,
+            oldUrlResults
+        } = this.state;
 
         return (
             <Fragment>
@@ -187,7 +223,7 @@ class SiteAdd extends React.Component {
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
                 {
                     (loggedUserObj)
-                        ? <NavContainer loggedUserObj={loggedUserObj}/>
+                        ? <NavContainer loggedUserObj={loggedUserObj} viewHistory={this.viewHistory}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -235,7 +271,8 @@ class SiteAdd extends React.Component {
                         {
                             result.isResultRecieved
                                 ? <div className="result-container">
-                                      <a className="btn btn-primary" href="#" onClick={this.viewResult}>
+                                      <a className="btn btn-primary" href="#"
+                                          onClick={(e) => this.viewResult(e, result.resultUrl)}>
                                           View Result for {result.searchedUrl}
                                       </a>
                                   </div>
@@ -243,6 +280,32 @@ class SiteAdd extends React.Component {
                         }
                     </form>
                 </div>
+                {
+                    (isViewHistoryVisible)
+                        ? <h4 className="history-view">View History</h4>
+                        : null
+                }
+                <Panel expanded={isViewHistoryVisible} className="history-view">
+                    <Panel.Collapse>
+                        <Panel.Body className="history-view container">
+                            {
+                                oldUrlResults.map((oldUrlResult, i) => {
+                                    return <div className="row url-result">
+                                              <div className="col-xs-7 col-md-7">
+                                                  {oldUrlResult.url}
+                                              </div>
+                                              <div className="col-xs-5 col-md-5">
+                                                  <a className="btn btn-primary view-result-btn" href="#"
+                                                      onClick={(e) => this.viewResult(e, oldUrlResult.resultUrl)}>
+                                                      View Result
+                                                  </a>
+                                              </div>
+                                           </div>;
+                                })
+                            }
+                        </Panel.Body>
+                    </Panel.Collapse>
+                </Panel>
             </Fragment>
         );
     }

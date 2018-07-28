@@ -28,11 +28,11 @@ class NavContainer extends React.Component {
     }
 
     render() {
-        const {loggedUserObj} = this.props;
+        const {loggedUserObj, viewHistory} = this.props;
         return (
             <div className="nav-container">
                 <img className="logo-nav-sm-img" src="./assets/img/logo.png"/>
-                <button className="view-history">
+                <button className="view-history" onClick={viewHistory}>
                     <span>View History</span>
                 </button>
                 <LoginContainer loggedUserObj={loggedUserObj}/>

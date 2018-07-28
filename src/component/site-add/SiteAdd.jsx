@@ -18,6 +18,10 @@ class SiteAdd extends React.Component {
         this.state  = this.getInitialState();
     }
 
+    componentDidMount() {
+        document.title = "Site Add - xSum";
+    }
+
     // Returns initial props
     getInitialState() {
         var initialState = {
