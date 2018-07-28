@@ -282,30 +282,35 @@ class SiteAdd extends React.Component {
                 </div>
                 {
                     (isViewHistoryVisible)
-                        ? <h4 className="history-view">View History</h4>
+                        ? (oldUrlResults.length !== 0)
+                            ? <Fragment>
+                                 <h4 className="history-view">View History</h4>
+                                 <Panel expanded={isViewHistoryVisible} className="history-view">
+                                     <Panel.Collapse>
+                                         <Panel.Body className="history-view container">
+                                             {
+                                                 oldUrlResults.map((oldUrlResult, i) => {
+                                                     return <div className="row url-result">
+                                                               <div className="col-xs-7 col-md-7">
+                                                                   {oldUrlResult.url}
+                                                               </div>
+                                                               <div className="col-xs-5 col-md-5">
+                                                                   <a className="btn btn-primary view-result-btn" href="#"
+                                                                       onClick={(e) => this.viewResult(e, oldUrlResult.resultUrl)}>
+                                                                       View Result
+                                                                   </a>
+                                                               </div>
+                                                            </div>;
+                                                 })
+                                             }
+                                         </Panel.Body>
+                                     </Panel.Collapse>
+                                 </Panel>
+                              </Fragment>
+                            : <h4 className="history-view">You don't have search history</h4>
                         : null
                 }
-                <Panel expanded={isViewHistoryVisible} className="history-view">
-                    <Panel.Collapse>
-                        <Panel.Body className="history-view container">
-                            {
-                                oldUrlResults.map((oldUrlResult, i) => {
-                                    return <div className="row url-result">
-                                              <div className="col-xs-7 col-md-7">
-                                                  {oldUrlResult.url}
-                                              </div>
-                                              <div className="col-xs-5 col-md-5">
-                                                  <a className="btn btn-primary view-result-btn" href="#"
-                                                      onClick={(e) => this.viewResult(e, oldUrlResult.resultUrl)}>
-                                                      View Result
-                                                  </a>
-                                              </div>
-                                           </div>;
-                                })
-                            }
-                        </Panel.Body>
-                    </Panel.Collapse>
-                </Panel>
+
             </Fragment>
         );
     }

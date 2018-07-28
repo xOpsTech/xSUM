@@ -1,5 +1,4 @@
-//export const API_URL = 'http://xsum.xops.it:5000';
-export const API_URL = 'http://localhost:5000';
+export const API_URL = 'http://xsum.xops.it:5000';
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
