@@ -20,23 +20,41 @@ class NavContainer extends React.Component {
 
     // Returns initial props
     getInitialState() {
-        var initialState = {
-
-        };
+        var initialState = {};
 
         return initialState;
     }
 
     render() {
-        const {loggedUserObj, viewHistory} = this.props;
+        const {loggedUserObj, viewHistory, addJob, siteLoad} = this.props;
         return (
-            <div className="nav-container">
-                <img className="logo-nav-sm-img" src="./assets/img/logo.png"/>
-                <button className="view-history" onClick={viewHistory}>
-                    <span>View History</span>
-                </button>
+            <nav className="nav-container navbar navbar-expand-lg navbar-light bg-light">
+                <a className="navbar-brand" href="#">
+                    <img className="logo-nav-sm-img" src="./assets/img/logo.png"/>
+                </a>
+                {
+                    (viewHistory)
+                        ? <button className="view-history" onClick={viewHistory}>
+                              <span>View History</span>
+                          </button>
+                        : null
+                }
+                {
+                    (addJob)
+                        ? <button className="view-history" onClick={addJob}>
+                              <span>+ Add a job</span>
+                          </button>
+                        : null
+                }
+                {
+                    (siteLoad)
+                        ? <button className="view-history" onClick={siteLoad}>
+                              <span>Site Load</span>
+                          </button>
+                        : null
+                }
                 <LoginContainer loggedUserObj={loggedUserObj}/>
-            </div>
+            </nav>
         );
     }
 }

@@ -16,9 +16,24 @@ export const URL_ID_COOKIE = 'urlId';
 export const STORAGE_ID    = 'STORAGE_ID';
 
 // Routes
+export const SITEADD_ROUTE = '/siteAdd';
 export const SITELOAD_ROUTE = '/siteLoad';
 export const LOGIN_ROUTE = '/login';
 
 // URL status
 export const URL_DONE_STATE = 'Done';
 export const URL_NEW_STATE  = 'New';
+
+export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
+
+export const BROWSER_ARRAY = [
+    {value: 'Chrome', textValue: 'Chrome'},
+    {value: 'Safari', textValue: 'Safari'},
+    {value: 'FireFox', textValue: 'FireFox'}
+];
+
+export const RECURSIVE_EXECUTION_ARRAY = [
+    {value: 'Daily Execution', textValue: 'Daily Execution'},
+    {value: 'Weekly Execution', textValue: 'Weekly Execution'},
+    {value: 'Monthly Execution', textValue: 'Monthly Execution'}
+];

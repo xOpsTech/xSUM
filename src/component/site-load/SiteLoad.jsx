@@ -32,6 +32,7 @@ class SiteAdd extends React.Component {
         this.viewResult           = this.viewResult.bind(this);
         this.getLoggedUserUrlData = this.getLoggedUserUrlData.bind(this);
         this.viewHistory          = this.viewHistory.bind(this);
+        this.redirectToAddJob     = this.redirectToAddJob.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -202,6 +203,13 @@ class SiteAdd extends React.Component {
         this.setState({isViewHistoryVisible: !this.state.isViewHistoryVisible});
     }
 
+    redirectToAddJob() {
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
+            {
+                userObj: JSON.stringify(this.state.loggedUserObj)
+            });
+    }
+
     render() {
         const {
             urlObject,
@@ -223,7 +231,10 @@ class SiteAdd extends React.Component {
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
                 {
                     (loggedUserObj)
-                        ? <NavContainer loggedUserObj={loggedUserObj} viewHistory={this.viewHistory}/>
+                        ? <NavContainer
+                              loggedUserObj={loggedUserObj}
+                              viewHistory={this.viewHistory}
+                              addJob={this.redirectToAddJob}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
