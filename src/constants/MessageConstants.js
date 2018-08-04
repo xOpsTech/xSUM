@@ -12,6 +12,9 @@ export const REGISTERING_MESSAGE = 'Registering...';
 export const LOADING_MESSAGE = 'Loading...';
 export const SENDING_MAIL_MESSAGE = 'Sending email...';
 export const CHECKING_EMAIL_MESSAGE = 'Checking email...';
+export const ADDING_A_JOB = 'Adding a Job...';
+export const FETCHING_JOBS = 'Fetching Jobs...';
+export const REMOVING_A_JOB = 'Removing a Job..';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +

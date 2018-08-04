@@ -38,7 +38,7 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
-        document.title = "Login - xSum";
+        document.title = 'Login - xSum';
     }
 
     handleChange(stateObj) {
@@ -97,7 +97,7 @@ class Login extends React.Component {
     }
 
     googleResponseFail(response) {
-        console.log("EFG", response);
+        alert('Error', response);
     }
 
     render() {

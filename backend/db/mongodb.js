@@ -38,7 +38,7 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
         dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
             if (err) throw err;
 
-            console.log("1 url data has been inserted");
+            console.log("one row added for " + collectionName);
             response.send(objectToInsert);
             callBackFunction(collectionName, objectToInsert);
 
@@ -60,6 +60,21 @@ MongoDB.prototype.updateData = function(collectionName, idValue, newObjectWithVa
         );
         db.close();
 
+    });
+
+}
+
+MongoDB.prototype.deleteOneData = function(collectionName, query, response) {
+
+    connectMongoDB().then((db) => {
+        var dbo = db.db(dbName);
+        dbo.collection(collectionName).remove(
+            query,
+            {justOne: true}
+        );
+        db.close();
+
+        response.send(query)
     });
 
 }

@@ -101,4 +101,55 @@ function executeResultGenerator(collectionName, objectToInsert) {
     );
 }
 
+Api.prototype.handleJobs = function(req, res) {
+    var action = req.query.action;
+    switch (action) {
+        case "insertJob":
+            new Api().insertJob(req, res);
+            break;
+        case "removeJob":
+            new Api().removeJob(req, res);
+            break;
+        case "getAllJobs":
+            new Api().getAllJobs(req, res);
+            break;
+        default:
+            res.send("no data");
+    }
+}
+
+Api.prototype.insertJob = function(req, res) {
+    var jobObj = req.body;
+    var jobInsertObj = {
+        jobId: jobObj.jobId,
+        siteObject: {value: jobObj.siteObject.value},
+        browser: jobObj.browser,
+        scheduleDate: jobObj.scheduleDate,
+        isRecursiveCheck: jobObj.isRecursiveCheck,
+        recursiveSelect: jobObj.recursiveSelect,
+        result: [],
+        userEmail: jobObj.userEmail
+    };
+
+    MongoDB.insertData(AppConstants.DB_JOB_LIST, jobInsertObj, res, executeScheduleJob);
+}
+
+function executeScheduleJob() {
+    console.log("ScheduleJob");
+}
+
+Api.prototype.getAllJobs = function(req, res) {
+    var userObj = req.body;
+    var queryObj = {userEmail: userObj.userEmail};
+    MongoDB.fetchData(AppConstants.DB_JOB_LIST, queryObj, res);
+}
+
+Api.prototype.removeJob = function(req, res) {
+    var jobObj = req.body;
+    var queryToRemoveJob = {
+        jobId: jobObj.jobId
+    };
+    MongoDB.deleteOneData(AppConstants.DB_JOB_LIST, queryToRemoveJob, res);
+}
+
 module.exports = new Api();

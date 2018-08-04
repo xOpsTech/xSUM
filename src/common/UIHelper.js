@@ -1,5 +1,6 @@
 import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
+import {randomBytes} from 'crypto';
 
 import * as AppConstants from '../constants/AppConstants';
 
@@ -75,4 +76,8 @@ export function toTitleCase(str) {
 
 export function isUrlHasError(value) {
     return !RegExp(AppConstants.URL_PATTERN).test(value);
+}
+
+export function getRandomHexaValue() {
+    return randomBytes(10).toString('hex');
 }

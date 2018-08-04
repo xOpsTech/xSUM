@@ -3,8 +3,9 @@ import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
-import LoginContainer from '../common/login-container/LoginContainer';
+import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
+import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as UIHelper from '../../common/UIHelper';
@@ -19,18 +20,21 @@ class SiteAdd extends React.Component {
         super(props);
 
         this.handleChange = this.handleChange.bind(this);
-        this.addClick     = this.addClick.bind(this);
         this.onChangeDateTime = this.onChangeDateTime.bind(this);
         this.redirectToSiteLoad = this.redirectToSiteLoad.bind(this);
         this.recursiveCheckBoxClick = this.recursiveCheckBoxClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
+        this.addJobClick = this.addJobClick.bind(this);
+        this.removeJobClick = this.removeJobClick.bind(this);
+        this.startJobClick = this.startJobClick.bind(this);
+        this.getAllJobs = this.getAllJobs.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
     }
 
     componentDidMount() {
-        document.title = "Site Add - xSum";
+        document.title = 'Site Add - xSum';
     }
 
     componentWillMount() {
@@ -38,6 +42,10 @@ class SiteAdd extends React.Component {
         if (this.props.location.query.userObj) {
             var loggedUserObject = JSON.parse(this.props.location.query.userObj);
             this.setState({loggedUserObj: loggedUserObject});
+
+            this.getAllJobs(loggedUserObject);
+        } else {
+            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
     }
@@ -45,9 +53,10 @@ class SiteAdd extends React.Component {
     // Returns initial props
     getInitialState() {
         var initialState = {
+            isLoading: false,
+            loadingMessage: '',
             siteObject: {value:'', error: {}},
             browser  : AppConstants.BROWSER_ARRAY[0].value,
-            error    : {},
             siteList : [],
             scheduleDate: new Date(),
             loggedUserObj: null,
@@ -67,22 +76,70 @@ class SiteAdd extends React.Component {
         this.setState(stateObj);
     }
 
-    addClick(e) {
+    getAllJobs(loggedUserObj) {
+        var url = AppConstants.API_URL + AppConstants.JOBS_GET_API;
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
+            this.setState({siteList: data, isLoading: false, loadingMessage: ''});
+        });
+    }
+
+    addJobClick(e) {
         e.preventDefault();
 
         var {siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect} = this.state;
-        siteObject.value = 'http://' + siteObject.value;
-        this.state.siteList.push({
-            siteObject,
-            browser,
-            scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
-            isRecursiveCheck,
-            recursiveSelect
+
+        if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
+            siteObject.value = 'http://' + siteObject.value;
+            let jobObjectToInsert = {
+                jobId: UIHelper.getRandomHexaValue(),
+                siteObject,
+                browser,
+                scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
+                isRecursiveCheck,
+                recursiveSelect,
+                userEmail: this.state.loggedUserObj.email
+            };
+
+            var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
+            this.setState({isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB});
+            jobApi.addJob(url, jobObjectToInsert).then((data) => {
+                this.state.siteList.push(data);
+                this.setState({isLoading: false, loadingMessage: ''});
+            });
+
+            this.setState({
+                siteObject: {value:'', error: {}}
+            });
+        } else {
+            this.setState({
+                siteObject: {
+                    error: {
+                        hasError: UIHelper.isUrlHasError(siteObject.value),
+                        name: MessageConstants.URL_ERROR
+                    }
+                }
+            });
+        }
+
+    }
+
+    startJobClick(e, jobIdToStart) {
+        e.preventDefault();
+    }
+
+    removeJobClick(e, jobIdToRemove) {
+        e.preventDefault();
+
+        this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
+        var url = AppConstants.API_URL + AppConstants.JOB_REMOVE_API;
+        jobApi.removeJob(url, {jobId: jobIdToRemove}).then(() => {
+            let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
+                return siteObject.jobId !== jobIdToRemove;
+            });
+            this.setState({siteList: arrayAfterRemove, isLoading: false, loadingMessage: ''});
         });
 
-        this.setState({
-            siteObject: {value:'', error: {}}
-        });
     }
 
     redirectToSiteLoad() {
@@ -96,13 +153,14 @@ class SiteAdd extends React.Component {
         this.setState(stateObject);
     }
 
-    recursiveCheckBoxClick(e) {
+    recursiveCheckBoxClick() {
         this.setState({isRecursiveCheck: !this.state.isRecursiveCheck});
     }
 
     render() {
         const {
-            error,
+            isLoading,
+            loadingMessage,
             siteList,
             scheduleDate,
             siteObject,
@@ -114,6 +172,7 @@ class SiteAdd extends React.Component {
 
         return (
             <Fragment>
+                <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
@@ -158,6 +217,7 @@ class SiteAdd extends React.Component {
                                     id="urlObjectInput"
                                     placeholder="URL"/>
                             </div>
+                            <ErrorMessageComponent error={siteObject.error}/>
                         </div>
                         <div className="form-group">
                             <select
@@ -165,8 +225,10 @@ class SiteAdd extends React.Component {
                                   value={browser}
                                   onChange={(e) => this.dropDownClick({browser: e.target.value})}>
                                   {
-                                      AppConstants.BROWSER_ARRAY.map(browser => {
-                                          return <option value={browser.value}>{browser.textValue}</option>
+                                      AppConstants.BROWSER_ARRAY.map((browser, i) => {
+                                          return <option key={'browser_' + i} value={browser.value}>
+                                                    {browser.textValue}
+                                                </option>;
                                       })
                                   }
                               </select>
@@ -183,7 +245,7 @@ class SiteAdd extends React.Component {
                                             id="recursiveCheck"
                                             value={isRecursiveCheck}
                                             onChange={this.recursiveCheckBoxClick}/>
-                                        <label className="form-check-label" for="recursiveCheck">
+                                        <label className="form-check-label" htmlFor="recursiveCheck">
                                             Recursive Execution
                                         </label>
                                     </div>
@@ -196,14 +258,22 @@ class SiteAdd extends React.Component {
                                       value={recursiveSelect}
                                       onChange={(e) => this.dropDownClick({recursiveSelect: e.target.value})}>
                                       {
-                                          AppConstants.RECURSIVE_EXECUTION_ARRAY.map(execution => {
-                                              return <option value={execution.value}>{execution.textValue}</option>
+                                          AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
+                                              return <option key={'execution_' + i} value={execution.value}>
+                                                        {execution.textValue}
+                                                    </option>;
                                           })
                                       }
                                   </select>
                                 : null
                         }
-                        <ErrorMessageComponent error={error}/>
+                        <div className="form-group">
+                            <button
+                                className="btn btn-primary form-control"
+                                onClick={(e) => this.addJobClick(e)}>
+                                Add a job
+                            </button>
+                        </div>
                         {
                             (siteList.length > 0)
                                 ? <div className="container site-list">
@@ -213,15 +283,15 @@ class SiteAdd extends React.Component {
                                             <tr>
                                                 <th>Site URL</th>
                                                 <th>Browser</th>
-                                                <th>Schedule Date</th>
+                                                <th>Scheduled Date and Time</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {
-                                                siteList.map(site => {
+                                                siteList.map((site, i) => {
                                                     return (
-                                                        <tr>
+                                                        <tr className="table-row" key={'siteDetail' + i}>
                                                             <td className="table-cell">{site.siteObject.value}</td>
                                                             <td className="table-cell">{site.browser}</td>
                                                             <td className="table-cell">
@@ -234,9 +304,16 @@ class SiteAdd extends React.Component {
                                                             </td>
                                                             <td>
                                                                 <button
-                                                                    className="btn-danger form-control"
-                                                                    onClick={(e) => this.loginClick(e)}>
-                                                                    X
+                                                                    className="btn-danger form-control form-group"
+                                                                    onClick={(e) => this.removeJobClick(e, site.jobId)}
+                                                                    title={'Remove job of ' + site.siteObject.value}>
+                                                                    <span className="glyphicon glyphicon-remove"></span>
+                                                                </button>
+                                                                <button
+                                                                    className="btn-primary form-control"
+                                                                    onClick={(e) => this.startJobClick(e, site.jobId)}
+                                                                    title={'Start job of ' + site.siteObject.value}>
+                                                                    <span className="glyphicon glyphicon-play"></span>
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -248,13 +325,6 @@ class SiteAdd extends React.Component {
                                   </div>
                                 : null
                         }
-                        <div className="form-group">
-                            <button
-                                className="btn btn-primary form-control"
-                                onClick={(e) => this.addClick(e)}>
-                                Add a job
-                            </button>
-                        </div>
                     </form>
                 </div>
             </Fragment>

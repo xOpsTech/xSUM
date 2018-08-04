@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react';
-import {randomBytes} from 'crypto';
 import {Panel} from 'react-bootstrap';
+import moment from 'moment';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
@@ -55,7 +55,7 @@ class SiteAdd extends React.Component {
     }
 
     componentDidMount() {
-        document.title = "Site Load - xSum";
+        document.title = 'Site Load - xSum';
     }
 
     // Returns initial props
@@ -103,7 +103,7 @@ class SiteAdd extends React.Component {
             if (storageID) {
                 UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
             } else {
-                let randomHash = randomBytes(10).toString('hex');
+                let randomHash = UIHelper.getRandomHexaValue();
 
                 // Store in backend
                 this.insertToDB(randomHash);
@@ -167,7 +167,13 @@ class SiteAdd extends React.Component {
                         this.setState({isLoading: false});
                         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
                         clearInterval(intervalUrl);
-                        this.setState({result: {isResultRecieved: true, resultUrl: data[0].resultUrl, searchedUrl: data[0].url}});
+                        this.setState({
+                            result: {
+                                isResultRecieved: true,
+                                resultUrl: data[0].resultUrl,
+                                searchedUrl: data[0].url
+                            }
+                        });
                         // TODO: display result set(need to update the state of result array)
                     }
                 });
@@ -299,21 +305,40 @@ class SiteAdd extends React.Component {
                                  <Panel expanded={isViewHistoryVisible} className="history-view">
                                      <Panel.Collapse>
                                          <Panel.Body className="history-view container">
-                                             {
-                                                 oldUrlResults.map((oldUrlResult, i) => {
-                                                     return <div className="row url-result">
-                                                               <div className="col-xs-7 col-md-7">
-                                                                   {oldUrlResult.url}
-                                                               </div>
-                                                               <div className="col-xs-5 col-md-5">
-                                                                   <a className="btn btn-primary view-result-btn" href="#"
-                                                                       onClick={(e) => this.viewResult(e, oldUrlResult.resultUrl)}>
-                                                                       View Result
-                                                                   </a>
-                                                               </div>
-                                                            </div>;
-                                                 })
-                                             }
+                                            <table className="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Site URL</th>
+                                                        <th>Scheduled Date and Time</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        oldUrlResults.map((oldUrlResult, i) => {
+                                                            return <tr className="table-row" key={'urlResult' + i}>
+                                                                        <td className="table-cell">
+                                                                            {oldUrlResult.url}
+                                                                        </td>
+                                                                        <td className="table-cell">
+                                                                            {moment(oldUrlResult.dateTime)
+                                                                                .format(AppConstants.DATE_FORMAT)}
+                                                                        </td>
+                                                                        <td>
+                                                                            <button
+                                                                                className="btn-primary form-control"
+                                                                                onClick={
+                                                                                    (e) => this.viewResult(e,
+                                                                                        oldUrlResult.resultUrl)
+                                                                                }>
+                                                                                Result
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>;
+                                                        })
+                                                    }
+                                                </tbody>
+                                            </table>
                                          </Panel.Body>
                                      </Panel.Collapse>
                                  </Panel>
