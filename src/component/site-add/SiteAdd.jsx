@@ -61,7 +61,7 @@ class SiteAdd extends React.Component {
             scheduleDate: new Date(),
             loggedUserObj: null,
             isRecursiveCheck: false,
-            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0].value
+            recursiveSelect: {}
         };
 
         return initialState;
@@ -255,11 +255,12 @@ class SiteAdd extends React.Component {
                             (isRecursiveCheck)
                                 ? <select
                                       className="form-control form-control-sm form-group"
-                                      value={recursiveSelect}
-                                      onChange={(e) => this.dropDownClick({recursiveSelect: e.target.value})}>
+                                      onChange={(e) => this.dropDownClick(
+                                          {recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[e.target.value]})
+                                      }>
                                       {
                                           AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
-                                              return <option key={'execution_' + i} value={execution.value}>
+                                              return <option key={'execution_' + i} value={i}>
                                                         {execution.textValue}
                                                     </option>;
                                           })
@@ -298,7 +299,7 @@ class SiteAdd extends React.Component {
                                                                 {site.scheduleDate}
                                                                 {
                                                                     (site.isRecursiveCheck)
-                                                                        ? <div>({site.recursiveSelect})</div>
+                                                                        ? <div>({site.recursiveSelect.textValue})</div>
                                                                         : null
                                                                 }
                                                             </td>
