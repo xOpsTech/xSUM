@@ -9,6 +9,7 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
+export const JOB_START_API = '/handleJobs?action=startorStopJob';
 
 // Constants for patterns
 export const URL_PATTERN       = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;

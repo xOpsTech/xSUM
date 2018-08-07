@@ -49,11 +49,11 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
 
 }
 
-MongoDB.prototype.updateData = function(collectionName, idValue, newObjectWithValues) {
+MongoDB.prototype.updateData = function(collectionName, updateIdObject, newObjectWithValues) {
 
     connectMongoDB().then((db) => {
         var dbo = db.db(dbName);
-        dbo.collection(collectionName).updateOne({ID: idValue},
+        dbo.collection(collectionName).updateOne(updateIdObject,
             {
                 $set: newObjectWithValues
             }

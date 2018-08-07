@@ -96,7 +96,7 @@ function executeResultGenerator(collectionName, objectToInsert) {
                 status: 'Done',
                 resultUrl: pathToResult
             };
-            MongoDB.updateData(collectionName, objectToInsert.ID, newValueObj);
+            MongoDB.updateData(collectionName, {ID: objectToInsert.ID}, newValueObj);
         }
     );
 }
@@ -112,6 +112,9 @@ Api.prototype.handleJobs = function(req, res) {
             break;
         case "getAllJobs":
             new Api().getAllJobs(req, res);
+            break;
+        case "startorStopJob":
+            new Api().startorStopJob(req, res);
             break;
         default:
             res.send("no data");
@@ -150,6 +153,16 @@ Api.prototype.removeJob = function(req, res) {
         jobId: jobObj.jobId
     };
     MongoDB.deleteOneData(AppConstants.DB_JOB_LIST, queryToRemoveJob, res);
+}
+
+Api.prototype.startorStopJob = function(req, res) {
+    var jobObj = req.body.job;
+    var newValueObj = {
+        recursiveSelect: jobObj.recursiveSelect
+    };
+    MongoDB.updateData(AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, newValueObj);
+
+    res.send(jobObj);
 }
 
 module.exports = new Api();

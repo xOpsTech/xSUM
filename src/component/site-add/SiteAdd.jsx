@@ -26,7 +26,7 @@ class SiteAdd extends React.Component {
         this.dropDownClick = this.dropDownClick.bind(this);
         this.addJobClick = this.addJobClick.bind(this);
         this.removeJobClick = this.removeJobClick.bind(this);
-        this.startJobClick = this.startJobClick.bind(this);
+        this.startOrStopJobClick = this.startOrStopJobClick.bind(this);
         this.getAllJobs = this.getAllJobs.bind(this);
 
         // Setting initial state objects
@@ -61,7 +61,7 @@ class SiteAdd extends React.Component {
             scheduleDate: new Date(),
             loggedUserObj: null,
             isRecursiveCheck: false,
-            recursiveSelect: {}
+            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0]
         };
 
         return initialState;
@@ -124,8 +124,19 @@ class SiteAdd extends React.Component {
 
     }
 
-    startJobClick(e, jobIdToStart) {
+    startOrStopJobClick(e, jobToStartOrStop) {
         e.preventDefault();
+
+        this.setState({isLoading: true, loadingMessage: MessageConstants.START_A_JOB});
+        var url = AppConstants.API_URL + AppConstants.JOB_START_API;
+
+        var isStartValue = (jobToStartOrStop.recursiveSelect.isStart !== undefined
+                                && jobToStartOrStop.recursiveSelect.isStart);
+        jobToStartOrStop.recursiveSelect.isStart = !isStartValue;
+        jobApi.startOrStopJob(url, {job: jobToStartOrStop}).then(() => {
+            this.setState({isLoading: false, loadingMessage: ''});
+        });
+
     }
 
     removeJobClick(e, jobIdToRemove) {
@@ -166,8 +177,7 @@ class SiteAdd extends React.Component {
             siteObject,
             browser,
             loggedUserObj,
-            isRecursiveCheck,
-            recursiveSelect
+            isRecursiveCheck
         } = this.state;
 
         return (
@@ -310,12 +320,43 @@ class SiteAdd extends React.Component {
                                                                     title={'Remove job of ' + site.siteObject.value}>
                                                                     <span className="glyphicon glyphicon-remove"></span>
                                                                 </button>
-                                                                <button
-                                                                    className="btn-primary form-control"
-                                                                    onClick={(e) => this.startJobClick(e, site.jobId)}
-                                                                    title={'Start job of ' + site.siteObject.value}>
-                                                                    <span className="glyphicon glyphicon-play"></span>
-                                                                </button>
+                                                                {
+                                                                    (site.isRecursiveCheck)
+                                                                        ? (site.recursiveSelect.isStart !== undefined
+                                                                              && site.recursiveSelect.isStart)
+                                                                            ? <button
+                                                                                className="btn-primary form-control"
+                                                                                onClick={
+                                                                                    (e) => this.startOrStopJobClick(e,
+                                                                                        site, i)
+                                                                                }
+                                                                                title={
+                                                                                    'Stop job of '
+                                                                                    + site.siteObject.value
+                                                                                }>
+                                                                                <span
+                                                                                    className="glyphicon
+                                                                                    glyphicon-stop">
+                                                                                </span>
+                                                                            </button>
+                                                                            : <button
+                                                                                className="btn-primary form-control"
+                                                                                onClick={
+                                                                                    (e) => this.startOrStopJobClick(e,
+                                                                                        site, i)
+                                                                                }
+                                                                                title={
+                                                                                    'Start job of '
+                                                                                    + site.siteObject.value
+                                                                                }>
+                                                                                <span
+                                                                                    className="glyphicon
+                                                                                    glyphicon-play">
+                                                                                </span>
+                                                                            </button>
+                                                                        : null
+                                                                }
+
                                                             </td>
                                                         </tr>
                                                     );
