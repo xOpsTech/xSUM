@@ -38,7 +38,7 @@ export const BROWSER_ARRAY = [
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
-    {value: 3600*24, textValue: 'Daily Execution'},
-    {value: 3600*24*7, textValue: 'Weekly Execution'},
-    {value: 3600*24*7*30, textValue: 'Monthly Execution'}
+    {value: 1000*3600*24, textValue: 'Daily Execution'},
+    {value: 1000*3600*24*7, textValue: 'Weekly Execution'},
+    {value: 1000*3600*24*7*30, textValue: 'Monthly Execution'}
 ];

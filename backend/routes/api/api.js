@@ -3,6 +3,8 @@ var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
 var cmd = require('node-cmd');
 
+var jobTimers = {};
+
 function Api(){};
 
 Api.prototype.handleHTML = function(req, res) {
@@ -137,8 +139,8 @@ Api.prototype.insertJob = function(req, res) {
     MongoDB.insertData(AppConstants.DB_JOB_LIST, jobInsertObj, res, executeScheduleJob);
 }
 
-function executeScheduleJob() {
-    console.log("ScheduleJob");
+function executeScheduleJob(collectionName, insertedObject) {
+    executeJob(collectionName, insertedObject);
 }
 
 Api.prototype.getAllJobs = function(req, res) {
@@ -152,17 +154,50 @@ Api.prototype.removeJob = function(req, res) {
     var queryToRemoveJob = {
         jobId: jobObj.jobId
     };
+    clearInterval(jobTimers[jobObj.jobId]);
     MongoDB.deleteOneData(AppConstants.DB_JOB_LIST, queryToRemoveJob, res);
 }
 
 Api.prototype.startorStopJob = function(req, res) {
     var jobObj = req.body.job;
+    if (jobObj.recursiveSelect.isStart) {
+        // Start the job
+        jobTimers[jobObj.jobId] = setInterval(
+            function() {
+                //console.log("jobObj.jobId", jobObj.jobId)
+                executeJob(AppConstants.DB_JOB_LIST, jobObj)
+            },
+            jobObj.recursiveSelect.value
+        );
+    } else {
+        // Stop the job
+        clearInterval(jobTimers[jobObj.jobId]);
+    }
+
     var newValueObj = {
         recursiveSelect: jobObj.recursiveSelect
     };
+
     MongoDB.updateData(AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, newValueObj);
 
     res.send(jobObj);
+}
+
+function executeJob(collectionName, objectToInsert) {
+    var siteName = objectToInsert.siteObject.value.split('/')[2];
+    var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.jobId;
+    //Send process request to sitespeed
+    var commandStr = 'docker run --shm-size=1g --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:7.2.1 --outputFolder ' + pathToResult + ' ' + objectToInsert.siteObject.value;
+    cmd.get(
+        commandStr,
+        function(err, data, stderr) {
+            objectToInsert.result.push({resultUrl: pathToResult, executedDate: new Date()});
+            var newValueObj = {
+                result: objectToInsert.result
+            };
+            MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
+        }
+    );
 }
 
 module.exports = new Api();
