@@ -66,6 +66,14 @@ module.exports = {
                         "css-loader",
                         "less-loader",
                      ],
+            },
+            {
+                test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)|\.jpg($|\?)/,
+                use: [
+                        {
+                            loader: "file-loader?name=../assets/img/[name].[ext]"
+                        },
+                     ],
             }
         ]
     }
