@@ -348,7 +348,8 @@ class SiteAdd extends React.Component {
                                                                         ? (site.recursiveSelect.isStart !== undefined
                                                                               && site.recursiveSelect.isStart)
                                                                             ? <button
-                                                                                className="btn-primary form-control"
+                                                                                className="btn-primary form-control
+                                                                                    form-group"
                                                                                 onClick={
                                                                                     (e) => this.startOrStopJobClick(e,
                                                                                         site, i)
