@@ -233,7 +233,8 @@ class SiteAdd extends React.Component {
                     title={MessageConstants.SEARCH_URL_WARNING_MESSAGE}
                     yesClick={this.modalYesClick}
                     noClick={this.modalNoClick}
-                    isModalVisible={isModalVisible}/>
+                    isModalVisible={isModalVisible}
+                    modalType={AppConstants.CONFIRMATION_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
                 {
                     (loggedUserObj)

@@ -6,6 +6,7 @@ import ErrorMessageComponent from '../common/error-message-component/ErrorMessag
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import jobApi from '../../api/jobApi';
+import ModalContainer from '../common/modal-container/ModalContainer';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as UIHelper from '../../common/UIHelper';
@@ -28,6 +29,9 @@ class SiteAdd extends React.Component {
         this.removeJobClick = this.removeJobClick.bind(this);
         this.startOrStopJobClick = this.startOrStopJobClick.bind(this);
         this.getAllJobs = this.getAllJobs.bind(this);
+        this.viewResultJobClick = this.viewResultJobClick.bind(this);
+        this.closeClick = this.closeClick.bind(this);
+        this.viewResult = this.viewResult.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -61,7 +65,9 @@ class SiteAdd extends React.Component {
             scheduleDate: new Date(),
             loggedUserObj: null,
             isRecursiveCheck: false,
-            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0]
+            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
+            isModalVisible: false,
+            siteToResult: null
         };
 
         return initialState;
@@ -82,6 +88,11 @@ class SiteAdd extends React.Component {
         jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
             this.setState({siteList: data, isLoading: false, loadingMessage: ''});
         });
+    }
+
+    viewResult(e, redirectTo) {
+        e.preventDefault();
+        window.open(redirectTo, '_self');
     }
 
     addJobClick(e) {
@@ -168,6 +179,16 @@ class SiteAdd extends React.Component {
         this.setState({isRecursiveCheck: !this.state.isRecursiveCheck});
     }
 
+    viewResultJobClick(e, siteForResult) {
+        e.preventDefault();
+        this.setState({isModalVisible: true});
+        this.setState({siteToResult: siteForResult});
+    }
+
+    closeClick() {
+        this.setState({isModalVisible: false});
+    }
+
     render() {
         const {
             isLoading,
@@ -177,7 +198,9 @@ class SiteAdd extends React.Component {
             siteObject,
             browser,
             loggedUserObj,
-            isRecursiveCheck
+            isRecursiveCheck,
+            isModalVisible,
+            siteToResult
         } = this.state;
 
         return (
@@ -340,7 +363,8 @@ class SiteAdd extends React.Component {
                                                                                 </span>
                                                                             </button>
                                                                             : <button
-                                                                                className="btn-primary form-control"
+                                                                                className="btn-primary
+                                                                                    form-control form-group"
                                                                                 onClick={
                                                                                     (e) => this.startOrStopJobClick(e,
                                                                                         site, i)
@@ -356,7 +380,32 @@ class SiteAdd extends React.Component {
                                                                             </button>
                                                                         : null
                                                                 }
-
+                                                                {
+                                                                    (site.result.length !== 0)
+                                                                        ? <button
+                                                                              className="btn-primary
+                                                                                  form-control form-group"
+                                                                              onClick={
+                                                                                  (e) =>
+                                                                                    this.viewResultJobClick(e, site)
+                                                                              }
+                                                                              title={
+                                                                                  'Results of ' + site.siteObject.value
+                                                                              }>
+                                                                              <span
+                                                                                  className="glyphicon
+                                                                                    glyphicon glyphicon-tasks">
+                                                                              </span>
+                                                                          </button>
+                                                                        : null
+                                                                }
+                                                                <ModalContainer
+                                                                    title={MessageConstants.SITE_RESULT_MESSAGE}
+                                                                    closeClick={this.closeClick}
+                                                                    viewResult={this.viewResult}
+                                                                    isModalVisible={isModalVisible}
+                                                                    modalType={AppConstants.DATA_MODAL}
+                                                                    dataObject={siteToResult}/>
                                                             </td>
                                                         </tr>
                                                     );

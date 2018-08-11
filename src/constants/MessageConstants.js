@@ -22,3 +22,4 @@ export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'your system administrator. Once approved\n' + 'you can';
 
 export const SEARCH_URL_WARNING_MESSAGE = 'Warning!! Are you sure you want to continue the last search?';
+export const SITE_RESULT_MESSAGE = 'Results for ';

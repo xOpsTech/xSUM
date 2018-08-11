@@ -11,6 +11,10 @@ export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 
+// ModalTypes
+export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
+export const DATA_MODAL = 'DATA_MODAL';
+
 // Constants for patterns
 export const URL_PATTERN       = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
 export const EMAIL_PATTERN      = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

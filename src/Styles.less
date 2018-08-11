@@ -1,3 +1,5 @@
+@import (reference) "./variables.less";
+
 @media only screen and (min-width: 600px) {
     html {
         background: url('../assets/img/background.jpg') no-repeat center center fixed;
@@ -17,16 +19,20 @@
 }
 
 body {
-    color: #fff;
+    color: @main-text-color;
     background: none;
 }
 
 .root-container {
     padding-top: 100px;
-    max-width: 600px;
+    max-width: @container-max-width;
     margin: auto auto;
 }
 
 .table > tbody > .table-row > td {
     vertical-align: middle;
+}
+
+.react-calendar, .react-datetime-picker__button__input__amPm {
+    background: @calendar-background;
 }
