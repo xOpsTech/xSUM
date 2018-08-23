@@ -14,6 +14,7 @@ export const SENDING_MAIL_MESSAGE = 'Sending email...';
 export const CHECKING_EMAIL_MESSAGE = 'Checking email...';
 export const ADDING_A_JOB = 'Adding a Job...';
 export const FETCHING_JOBS = 'Fetching Jobs...';
+export const FETCHING_RESULT = 'Fetching Result...';
 export const REMOVING_A_JOB = 'Removing a Job..';
 export const START_A_JOB = 'Starting a Job..';
 

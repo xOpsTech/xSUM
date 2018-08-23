@@ -90,9 +90,12 @@ class SiteAdd extends React.Component {
         });
     }
 
-    viewResult(e, redirectTo) {
+    viewResult(e, resultID) {
         e.preventDefault();
-        window.open(redirectTo, '_self');
+        UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, {
+            userObj: JSON.stringify(this.state.loggedUserObj),
+            resultID
+        });
     }
 
     addJobClick(e) {

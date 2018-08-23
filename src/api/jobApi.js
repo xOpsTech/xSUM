@@ -44,6 +44,17 @@ class jobApi {
             return Promise.reject(response);
         });
     }
+
+    static getResult(webserviceUrl, jobObj) {
+        return fetchRequests.postRequest(webserviceUrl, jobObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
 }
 
 export default jobApi;
