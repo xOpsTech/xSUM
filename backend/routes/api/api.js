@@ -1,4 +1,5 @@
 var MongoDB = require('../../db/mongodb');
+var InfluxDB = require('../../db/influxdb');
 var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
 var cmd = require('node-cmd');
@@ -187,7 +188,7 @@ function executeJob(collectionName, objectToInsert) {
     var siteName = objectToInsert.siteObject.value.split('/')[2];
     var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.jobId;
     //Send process request to sitespeed
-    var commandStr = 'docker run --shm-size=1g --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:7.2.1 --outputFolder ' + pathToResult + ' ' + objectToInsert.siteObject.value;
+    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6 --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum --influxdb.tags "jobid=' + objectToInsert.jobId + '" ' + objectToInsert.siteObject.value;
     cmd.get(
         commandStr,
         function(err, data, stderr) {
@@ -198,6 +199,22 @@ function executeJob(collectionName, objectToInsert) {
             MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
         }
     );
+}
+
+Api.prototype.handleResults = function(req, res) {
+    var action = req.query.action;
+    switch (action) {
+        case "getResult":
+            new Api().getResult(req, res);
+            break;
+        default:
+            res.send("no data");
+    }
+}
+
+Api.prototype.getResult = function(req, res) {
+    var jobObj = req.body;
+    InfluxDB.getAllData("SELECT * FROM pageLoadTime where jobid='" + jobObj.jobId+ "'", res);
 }
 
 module.exports = new Api();
