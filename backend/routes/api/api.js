@@ -217,8 +217,8 @@ Api.prototype.handleResults = function(req, res) {
 }
 
 Api.prototype.getResult = function(req, res) {
-    var jobObj = req.body;
-    InfluxDB.getAllData("SELECT * FROM pageLoadTime where jobid='" + jobObj.jobId+ "'", res);
+    var resultObj = req.body;
+    InfluxDB.getAllData("SELECT * FROM pageLoadTime where resultID='" + resultObj.resultID+ "'", res);
 }
 
 module.exports = new Api();
