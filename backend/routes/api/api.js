@@ -3,6 +3,7 @@ var InfluxDB = require('../../db/influxdb');
 var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
 var cmd = require('node-cmd');
+var crypto = require('crypto');
 
 var jobTimers = {};
 
@@ -187,8 +188,11 @@ Api.prototype.startorStopJob = function(req, res) {
 function executeJob(collectionName, objectToInsert) {
     var siteName = objectToInsert.siteObject.value.split('/')[2];
     var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.jobId;
+    var resultID = crypto.randomBytes(10).toString('hex');
     //Send process request to sitespeed
-    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6 --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum --influxdb.tags "jobid=' + objectToInsert.jobId + '" ' + objectToInsert.siteObject.value;
+    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
+        ' --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID + '" ' + objectToInsert.siteObject.value;
     cmd.get(
         commandStr,
         function(err, data, stderr) {
