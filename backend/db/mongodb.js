@@ -92,11 +92,15 @@ MongoDB.prototype.fetchDataWithInflux = function(collectionName, query, response
             ).then((pageLoadData) => {
 
                 for (var i = 0; i < result.length; i++) {
-                    result[i].jobResult = [];
+                    result[i].result = [];
                     for(var j=0; j < pageLoadData.length; j++) {
 
                         if (result[i].jobId === pageLoadData[j].jobid) {
-                            result[i].jobResult.push(pageLoadData[j].resultID);
+                            result[i].result.push({
+                                resultID: pageLoadData[j].resultID,
+                                executedDate: pageLoadData[j].time
+                            });
+                            continue;
                         }
 
                     }
