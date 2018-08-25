@@ -52,7 +52,7 @@ Api.prototype.insertUrlData = function(req, res) {
         url: urlObj.urlValue,
         dateTime: currentDate.toString(),
         status: 'New',
-        resultUrl: ''
+        resultID: ''
     };
 
     MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res, executeResultGenerator);
@@ -66,7 +66,7 @@ Api.prototype.insertLoggedUserUrlData = function(req, res) {
         url: urlObj.urlValue,
         dateTime: currentDate.toString(),
         status: 'New',
-        resultUrl: '',
+        resultID: '',
         userEmail: urlObj.userEmail
     };
 
@@ -89,16 +89,18 @@ Api.prototype.getLoggedUserUrlData = function(req, res) {
 }
 
 function executeResultGenerator(collectionName, objectToInsert) {
-    var siteName = objectToInsert.url.split('/')[2];
-    var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.ID;
-    // Send process request to sitespeed
-    var commandStr = 'docker run --shm-size=1g --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:7.2.1 --outputFolder ' + pathToResult + ' ' + objectToInsert.url;
+    var resultID = crypto.randomBytes(10).toString('hex');
+
+    //Send process request to sitespeed
+    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
+        ' --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.tags "jobid=' + objectToInsert.ID + ',resultID=' + resultID + '" ' + objectToInsert.url;
     cmd.get(
         commandStr,
         function(err, data, stderr) {
             var newValueObj = {
                 status: 'Done',
-                resultUrl: pathToResult
+                resultID: resultID
             };
             MongoDB.updateData(collectionName, {ID: objectToInsert.ID}, newValueObj);
         }
