@@ -38,9 +38,9 @@ export const URL_NEW_STATE  = 'New';
 export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
 
 export const BROWSER_ARRAY = [
-    {value: 'Chrome', textValue: 'Chrome'},
-    {value: 'Safari', textValue: 'Safari'},
-    {value: 'FireFox', textValue: 'FireFox'}
+    {value: 'chrome', textValue: 'Chrome'},
+    {value: 'safari', textValue: 'Safari'},
+    {value: 'firefox', textValue: 'FireFox'}
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [

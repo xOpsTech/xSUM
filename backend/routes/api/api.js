@@ -192,6 +192,7 @@ function executeJob(collectionName, objectToInsert) {
     //Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum' +
+        ' --browser ' + objectToInsert.browser +
         ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID + '" ' + objectToInsert.siteObject.value;
     cmd.get(
         commandStr,
