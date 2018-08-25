@@ -186,10 +186,9 @@ Api.prototype.startorStopJob = function(req, res) {
 }
 
 function executeJob(collectionName, objectToInsert) {
-    var siteName = objectToInsert.siteObject.value.split('/')[2];
-    var pathToResult = './sitespeed-result/' + siteName + '/' + objectToInsert.jobId;
     var resultID = crypto.randomBytes(10).toString('hex');
-    //Send process request to sitespeed
+
+    // Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
@@ -197,11 +196,8 @@ function executeJob(collectionName, objectToInsert) {
     cmd.get(
         commandStr,
         function(err, data, stderr) {
-            objectToInsert.result.push({resultUrl: pathToResult, executedDate: new Date()});
-            var newValueObj = {
-                result: objectToInsert.result
-            };
-            MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
+            if (err) console.log("Error", err);
+            if (stderr) console.log("StdError", stderr);
         }
     );
 }
