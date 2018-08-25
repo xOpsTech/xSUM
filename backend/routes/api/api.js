@@ -148,7 +148,7 @@ function executeScheduleJob(collectionName, insertedObject) {
 Api.prototype.getAllJobs = function(req, res) {
     var userObj = req.body;
     var queryObj = {userEmail: userObj.userEmail};
-    MongoDB.fetchDataWithInflux(AppConstants.DB_JOB_LIST, queryObj, res);
+    MongoDB.fetchData(AppConstants.DB_JOB_LIST, queryObj, res);
 }
 
 Api.prototype.removeJob = function(req, res) {
@@ -188,7 +188,7 @@ Api.prototype.startorStopJob = function(req, res) {
 function executeJob(collectionName, objectToInsert) {
     var resultID = crypto.randomBytes(10).toString('hex');
 
-    // Send process request to sitespeed
+    //Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host 10.128.0.14 --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
@@ -196,8 +196,11 @@ function executeJob(collectionName, objectToInsert) {
     cmd.get(
         commandStr,
         function(err, data, stderr) {
-            if (err) console.log("Error", err);
-            if (stderr) console.log("StdError", stderr);
+            objectToInsert.result.push({resultID: resultID, executedDate: new Date()});
+            var newValueObj = {
+                result: objectToInsert.result
+            };
+            MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
         }
     );
 }
