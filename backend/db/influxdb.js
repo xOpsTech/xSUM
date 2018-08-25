@@ -6,14 +6,8 @@ const influx = new Influx.InfluxDB({
 
 function InfluxDB(){};
 
-InfluxDB.prototype.getAllData = function(query, response) {
-
-    influx.query(query).then((result) => {
-        response.send(result);
-    }).catch((error) => {
-        response.send(error);
-    });
-
+InfluxDB.prototype.getAllData = function(query) {
+    return influx.query(query);
 }
 
 module.exports = new InfluxDB();

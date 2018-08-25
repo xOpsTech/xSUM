@@ -148,7 +148,7 @@ function executeScheduleJob(collectionName, insertedObject) {
 Api.prototype.getAllJobs = function(req, res) {
     var userObj = req.body;
     var queryObj = {userEmail: userObj.userEmail};
-    MongoDB.fetchData(AppConstants.DB_JOB_LIST, queryObj, res);
+    MongoDB.fetchDataWithInflux(AppConstants.DB_JOB_LIST, queryObj, res);
 }
 
 Api.prototype.removeJob = function(req, res) {
@@ -218,7 +218,13 @@ Api.prototype.handleResults = function(req, res) {
 
 Api.prototype.getResult = function(req, res) {
     var resultObj = req.body;
-    InfluxDB.getAllData("SELECT * FROM pageLoadTime where resultID='" + resultObj.resultID+ "'", res);
+    InfluxDB.getAllData(
+        "SELECT * FROM pageLoadTime where resultID='" + resultObj.resultID+ "'"
+    ).then((result) => {
+        res.send(result);
+    }).catch((error) => {
+        res.send(error);
+    });
 }
 
 module.exports = new Api();

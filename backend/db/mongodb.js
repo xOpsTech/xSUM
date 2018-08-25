@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var InfluxDB = require('./influxdb');
 var dbName = 'xsum';
 var url = 'mongodb://xview.xops.it:27017/' + dbName;
 
@@ -75,6 +76,45 @@ MongoDB.prototype.deleteOneData = function(collectionName, query, response) {
         db.close();
 
         response.send(query)
+    });
+
+}
+
+MongoDB.prototype.fetchDataWithInflux = function(collectionName, query, response) {
+
+    connectMongoDB().then((db) => {
+        var dbo = db.db(dbName);
+        dbo.collection(collectionName).find(query).toArray((error, result) => {
+            db.close();
+
+            InfluxDB.getAllData(
+                "SELECT * FROM pageLoadTime"
+            ).then((pageLoadData) => {
+
+                for (var i = 0; i < result.length; i++) {
+                    result[i].jobResult = [];
+                    for(var j=0; j < pageLoadData.length; j++) {
+
+                        if (result[i].jobId === pageLoadData[j].jobid) {
+                            result[i].jobResult.push(pageLoadData[j].resultID);
+                        }
+
+                    }
+
+                }
+
+                response.send(result);
+
+            }).catch((errorInPageLoad) => {
+                res.send(errorInPageLoad);
+            });
+
+            if (error) {
+                response.send(error);
+            }
+        });
+    }).catch((err) => {
+        response.send(err);
     });
 
 }
