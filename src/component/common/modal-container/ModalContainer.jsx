@@ -68,7 +68,7 @@ class ModalContainer extends React.Component {
                                                             className="btn-primary form-control"
                                                             onClick={
                                                                 (e) => viewResult(e,
-                                                                    'ad6881efb999285e1381')
+                                                                    result.resultID)
                                                             }>
                                                             Result
                                                         </button>

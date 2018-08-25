@@ -93,13 +93,22 @@ MongoDB.prototype.fetchDataWithInflux = function(collectionName, query, response
 
                 for (var i = 0; i < result.length; i++) {
                     result[i].result = [];
-                    for(var j=0; j < pageLoadData.length; j++) {
+                    for(var j = 0; j < pageLoadData.length; j++) {
 
                         if (result[i].jobId === pageLoadData[j].jobid) {
-                            result[i].result.push({
-                                resultID: pageLoadData[j].resultID,
-                                executedDate: pageLoadData[j].time
+
+                            // Check Result ID exists
+                            var isResultIdFound = result[i].result.find(function(jobResult) {
+                                return jobResult.resultID === pageLoadData[j].resultID;
                             });
+
+                            if (!isResultIdFound) {
+                                result[i].result.push({
+                                    resultID: pageLoadData[j].resultID,
+                                    executedDate: pageLoadData[j].time
+                                });
+                            }
+
                             continue;
                         }
 
