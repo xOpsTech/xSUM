@@ -170,7 +170,7 @@ class SiteAdd extends React.Component {
                         this.setState({
                             result: {
                                 isResultRecieved: true,
-                                resultUrl: data[0].resultUrl,
+                                resultID: data[0].resultID,
                                 searchedUrl: data[0].url
                             }
                         });
@@ -182,9 +182,23 @@ class SiteAdd extends React.Component {
         }, 1000 * secondsToSendReq);
     }
 
-    viewResult(e, redirectTo) {
+    viewResult(e, result) {
+
         e.preventDefault();
-        window.open(redirectTo, '_self');
+        var objectToPass;
+
+        if (this.state.loggedUserObj) {
+            objectToPass = {
+                userObj: JSON.stringify(this.state.loggedUserObj),
+                resultID: result.resultID
+            };
+        } else {
+            objectToPass = {
+                resultID: result.resultID
+            };
+        }
+
+        UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, objectToPass);
     }
 
     modalYesClick() {
@@ -290,7 +304,7 @@ class SiteAdd extends React.Component {
                             result.isResultRecieved
                                 ? <div className="result-container">
                                       <a className="btn btn-primary" href="#"
-                                          onClick={(e) => this.viewResult(e, result.resultUrl)}>
+                                          onClick={(e) => this.viewResult(e, result)}>
                                           View Result for {result.searchedUrl}
                                       </a>
                                   </div>
@@ -330,7 +344,7 @@ class SiteAdd extends React.Component {
                                                                                 className="btn-primary form-control"
                                                                                 onClick={
                                                                                     (e) => this.viewResult(e,
-                                                                                        oldUrlResult.resultUrl)
+                                                                                        oldUrlResult)
                                                                                 }>
                                                                                 Result
                                                                             </button>

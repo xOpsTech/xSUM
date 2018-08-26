@@ -29,9 +29,12 @@ class ResultView extends React.Component {
 
     componentWillMount() {
 
-        if (this.props.location.query.userObj) {
-            var loggedUserObject = JSON.parse(this.props.location.query.userObj);
-            this.setState({loggedUserObj: loggedUserObject});
+        if (this.props.location.query.resultID) {
+
+            if (this.props.location.query.userObj) {
+                var loggedUserObject = JSON.parse(this.props.location.query.userObj);
+                this.setState({loggedUserObj: loggedUserObject});
+            }
 
             this.getResult(this.props.location.query.resultID);
         } else {
@@ -91,11 +94,18 @@ class ResultView extends React.Component {
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                    {
-                        <NavContainer
+                {
+                    (loggedUserObj)
+                        ? <NavContainer
                                   loggedUserObj={loggedUserObj}
                                   siteLoad={this.redirectToSiteLoad}/>
-                    }
+                        : <div className="sign-in-button">
+                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
+                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
+                                  Sign in
+                              </button>
+                          </div>
+                }
                 <div className="root-container result-view">
                     <h2>Results View</h2>
                     {
