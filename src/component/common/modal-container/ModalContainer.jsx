@@ -82,10 +82,32 @@ class ModalContainer extends React.Component {
                         </Modal.Body>
                     </Modal>
                 );
-            } else {
-                return null;
             }
+            return null;
 
+        } else if (modalType === AppConstants.RESULT_MODAL) {
+            const {resultObject, closeClick} = this.props;
+
+            if (resultObject !== null) {
+                return (
+                    <Modal show={isModalVisible}>
+                        <Modal.Header>
+                            <h4 className="data-modal-header">{title + ' ' + resultObject.url}</h4>
+                            <button type="button" className="close"
+                                onClick={closeClick} aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </Modal.Header>
+                        <Modal.Body className="result-list-body">
+                            Test
+                        </Modal.Body>
+                    </Modal>
+                );
+            }
+            return null;
+
+        } else {
+            return null;
         }
 
     }

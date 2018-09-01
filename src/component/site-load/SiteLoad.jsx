@@ -3,6 +3,7 @@ import {Panel} from 'react-bootstrap';
 import moment from 'moment';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
+import GoogleLoginButton from '../common/google-login-button/GoogleLoginButton'
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import ModalContainer from '../common/modal-container/ModalContainer';
@@ -33,6 +34,9 @@ class SiteAdd extends React.Component {
         this.getLoggedUserUrlData = this.getLoggedUserUrlData.bind(this);
         this.viewHistory          = this.viewHistory.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
+        this.closeResultModal     = this.closeResultModal.bind(this);
+        this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
+        this.googleResponseFail    = this.googleResponseFail.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -67,7 +71,9 @@ class SiteAdd extends React.Component {
             isModalVisible: false,
             result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''},
             oldUrlResults: [],
-            isViewHistoryVisible: false
+            isViewHistoryVisible: false,
+            resultObject: null,
+            isResultModalVisible: false
         };
 
         return initialState;
@@ -183,7 +189,6 @@ class SiteAdd extends React.Component {
     }
 
     viewResult(e, result) {
-
         e.preventDefault();
         var objectToPass;
 
@@ -230,6 +235,25 @@ class SiteAdd extends React.Component {
             });
     }
 
+    closeResultModal() {
+        this.setState({isResultModalVisible: false});
+    }
+
+    googleResponseSuccess(response) {
+        var basicProfile = response.getBasicProfile();
+        this.setState({
+            loggedUserObj: {
+                name: basicProfile.getName(),
+                email: basicProfile.getEmail(),
+                profilePicPath: basicProfile.getImageUrl()
+            }
+        });
+    }
+
+    googleResponseFail(response) {
+        alert('Error', response);
+    }
+
     render() {
         const {
             urlObject,
@@ -238,7 +262,9 @@ class SiteAdd extends React.Component {
             loggedUserObj,
             result,
             isViewHistoryVisible,
-            oldUrlResults
+            oldUrlResults,
+            resultObject,
+            isResultModalVisible
         } = this.state;
 
         return (
@@ -250,24 +276,27 @@ class SiteAdd extends React.Component {
                     isModalVisible={isModalVisible}
                     modalType={AppConstants.CONFIRMATION_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
+                <ModalContainer
+                    title={MessageConstants.SITE_RESULT_MESSAGE}
+                    closeClick={this.closeResultModal}
+                    isModalVisible={isResultModalVisible}
+                    modalType={AppConstants.RESULT_MODAL}
+                    resultObject={resultObject}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
                               loggedUserObj={loggedUserObj}
                               viewHistory={this.viewHistory}
                               addJob={this.redirectToAddJob}/>
-                        : <div className="sign-in-button">
-                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
-                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                  Sign in
-                              </button>
-                          </div>
+                          : null
                 }
-
+                <div className="logo-div-container">
+                    <img className="logo-img" src="./assets/img/logo.png"/>
+                </div>
                 <div className="root-container">
-                    <div className="logo-div">
-                        <img className="logo-img" src="./assets/img/logo.png"/>
-                    </div>
+                    <h3 className="search-text">
+                        Run a one-time test
+                    </h3>
                     <form name="site-add-form">
                         <div className={
                                 'input-group has-feedback ' +
@@ -293,7 +322,7 @@ class SiteAdd extends React.Component {
                                 disabled={(isLoading)? 'disabled' : ''}
                                 className="form-control"
                                 id="urlObjectInput"
-                                placeholder="URL"/>
+                                placeholder="ENTER WEBSITE URL"/>
                             <span className="input-group-addon"
                                 onClick={this.searchClick}>
                                 <i className="glyphicon glyphicon-search"></i>
@@ -308,6 +337,21 @@ class SiteAdd extends React.Component {
                                           View Result for {result.searchedUrl}
                                       </a>
                                   </div>
+                                : null
+                        }
+                        {
+                            (!loggedUserObj)
+                                ? <Fragment>
+                                      <h3 className="search-text">
+                                          Or
+                                      </h3>
+                                      <h3 className="search-text">
+                                          Monitor your site 24/7
+                                      </h3>
+                                      <GoogleLoginButton
+                                          googleResponseSuccess={this.googleResponseSuccess}
+                                          googleResponseFail={this.googleResponseFail}/>
+                                      </Fragment>
                                 : null
                         }
                     </form>

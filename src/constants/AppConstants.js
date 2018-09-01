@@ -1,4 +1,5 @@
 export const API_URL = 'http://xsum.xops.it:5000';
+//export const API_URL = 'http://localhost:5000';
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
@@ -15,6 +16,7 @@ export const GET_RESULT_API = '/handleResults?action=getResult';
 // ModalTypes
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
 export const DATA_MODAL = 'DATA_MODAL';
+export const RESULT_MODAL = 'RESULT_MODAL';
 
 // Constants for patterns
 export const URL_PATTERN       = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
