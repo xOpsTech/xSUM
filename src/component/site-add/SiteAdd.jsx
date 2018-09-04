@@ -64,7 +64,7 @@ class SiteAdd extends React.Component {
             siteList : [],
             scheduleDate: new Date(),
             loggedUserObj: null,
-            isRecursiveCheck: false,
+            isRecursiveCheck: true,
             recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
             isModalVisible: false,
             siteToResult: null
@@ -118,7 +118,13 @@ class SiteAdd extends React.Component {
             var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
             this.setState({isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB});
             jobApi.addJob(url, jobObjectToInsert).then((data) => {
-                this.state.siteList.push(data);
+
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    this.state.siteList.push(data);
+                }
+
                 this.setState({isLoading: false, loadingMessage: ''});
             });
 
@@ -274,20 +280,23 @@ class SiteAdd extends React.Component {
                                 className="col-sm-6 my-1 datepicker-for-scheduler"
                                 onChange={(scheduleDate) => this.onChangeDateTime(scheduleDate)}
                                 value={scheduleDate}/>
-                                <div className="col-auto my-1">
-                                    <div className="form-check">
-                                        <input className="form-check-input recursive-checkbox"
-                                            type="checkbox"
-                                            id="recursiveCheck"
-                                            value={isRecursiveCheck}
-                                            onChange={this.recursiveCheckBoxClick}/>
-                                        <label className="form-check-label" htmlFor="recursiveCheck">
-                                            Recursive Execution
-                                        </label>
-                                    </div>
-                                </div>
+                                {   /* TODO : Uncomment for enable recursive selection
+                                        <div className="col-auto my-1">
+                                        <div className="form-check">
+                                            <input className="form-check-input recursive-checkbox"
+                                                type="checkbox"
+                                                id="recursiveCheck"
+                                                value={isRecursiveCheck}
+                                                onChange={this.recursiveCheckBoxClick}/>
+                                            <label className="form-check-label" htmlFor="recursiveCheck">
+                                                Recursive Execution
+                                            </label>
+                                        </div>
+                                    </div>*/
+                                }
                         </div>
                         {
+                            /* TODO : Uncomment for enable recursive selection
                             (isRecursiveCheck)
                                 ? <select
                                       className="form-control form-control-sm form-group"
@@ -302,12 +311,13 @@ class SiteAdd extends React.Component {
                                           })
                                       }
                                   </select>
-                                : null
+                                : null*/
                         }
                         <div className="form-group">
                             <button
                                 className="btn btn-primary form-control"
-                                onClick={(e) => this.addJobClick(e)}>
+                                onClick={(e) => this.addJobClick(e)}
+                                {...(siteList.length >= 5) && {disabled: true}}>
                                 Add a job
                             </button>
                         </div>

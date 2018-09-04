@@ -1,5 +1,4 @@
 export const API_URL = 'http://xsum.xops.it:5000';
-//export const API_URL = 'http://localhost:5000';
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
@@ -46,6 +45,7 @@ export const BROWSER_ARRAY = [
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
+    {value: 1000*60*10, textValue: 'Every 10 Minutes'},
     {value: 1000*3600*24, textValue: 'Daily Execution'},
     {value: 1000*3600*24*7, textValue: 'Weekly Execution'},
     {value: 1000*3600*24*7*30, textValue: 'Monthly Execution'}

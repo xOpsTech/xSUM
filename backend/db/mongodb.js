@@ -50,6 +50,34 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
 
 }
 
+MongoDB.prototype.insertJobWithUserCheck = function(collectionName, objectToInsert, response, callBackFunction) {
+    connectMongoDB().then((db) => {
+        var dbo = db.db(dbName);
+
+        dbo.collection(collectionName).find(query).toArray((error, result) => {
+
+            if (error) response.send(error);
+
+            if (result.length < 5) {
+                dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
+                    if (err) response.send(err);
+
+                    console.log("one row added for " + collectionName);
+                    response.send(objectToInsert);
+                    callBackFunction(collectionName, objectToInsert);
+                });
+            } else {
+                response.send({error: 'You can add only five jobs'})
+            }
+
+        });
+
+    }).catch((err) => {
+        response.send(err);
+    });
+
+}
+
 MongoDB.prototype.updateData = function(collectionName, updateIdObject, newObjectWithValues) {
 
     connectMongoDB().then((db) => {
