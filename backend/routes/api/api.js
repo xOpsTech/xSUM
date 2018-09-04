@@ -161,6 +161,7 @@ Api.prototype.removeJob = function(req, res) {
     };
     clearInterval(jobTimers[jobObj.jobId]);
     MongoDB.deleteOneData(AppConstants.DB_JOB_LIST, queryToRemoveJob, res);
+    InfluxDB.removeData("DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId+ "'");
 }
 
 Api.prototype.startorStopJob = function(req, res) {

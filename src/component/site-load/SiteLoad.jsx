@@ -241,6 +241,14 @@ class SiteAdd extends React.Component {
 
     googleResponseSuccess(response) {
         var basicProfile = response.getBasicProfile();
+        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
+            {
+                userObj: JSON.stringify({
+                    name: basicProfile.getName(),
+                    email: basicProfile.getEmail(),
+                    profilePicPath: basicProfile.getImageUrl()
+                })
+            });
         this.setState({
             loggedUserObj: {
                 name: basicProfile.getName(),

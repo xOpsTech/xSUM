@@ -10,4 +10,8 @@ InfluxDB.prototype.getAllData = function(query) {
     return influx.query(query);
 }
 
+InfluxDB.prototype.removeData = function(query) {
+    influx.query(query);
+}
+
 module.exports = new InfluxDB();

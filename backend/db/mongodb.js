@@ -54,13 +54,13 @@ MongoDB.prototype.insertJobWithUserCheck = function(collectionName, objectToInse
     connectMongoDB().then((db) => {
         var dbo = db.db(dbName);
 
-        dbo.collection(collectionName).find(query).toArray((error, result) => {
+        dbo.collection(collectionName).find({userEmail: objectToInsert.userEmail}).toArray((error, result) => {
 
             if (error) response.send(error);
 
             if (result.length < 5) {
                 dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
-                    if (err) response.send(err);
+                    if (err) throw err;
 
                     console.log("one row added for " + collectionName);
                     response.send(objectToInsert);
