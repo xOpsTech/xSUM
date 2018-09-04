@@ -130,9 +130,6 @@ Api.prototype.handleJobs = function(req, res) {
 Api.prototype.insertJob = function(req, res) {
     var jobObj = req.body;
 
-    var queryObj = {userEmail: jobObj.userEmail};
-    MongoDB.fetchData(AppConstants.DB_JOB_LIST, queryObj, res);
-
     var jobInsertObj = {
         jobId: jobObj.jobId,
         siteObject: {value: jobObj.siteObject.value},
