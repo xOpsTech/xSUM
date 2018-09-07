@@ -215,6 +215,9 @@ Api.prototype.handleResults = function(req, res) {
         case "getResult":
             new Api().getResult(req, res);
             break;
+        case "getAllResultsForJob":
+            new Api().getAllResultsForJob(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -224,6 +227,17 @@ Api.prototype.getResult = function(req, res) {
     var resultObj = req.body;
     InfluxDB.getAllData(
         "SELECT * FROM pageLoadTime where resultID='" + resultObj.resultID+ "'"
+    ).then((result) => {
+        res.send(result);
+    }).catch((error) => {
+        res.send(error);
+    });
+}
+
+Api.prototype.getAllResultsForJob = function(req, res) {
+    var jobObj = req.body;
+    InfluxDB.getAllData(
+        "SELECT * FROM pageLoadTime where jobid='" + jobObj.jobID+ "'"
     ).then((result) => {
         res.send(result);
     }).catch((error) => {
