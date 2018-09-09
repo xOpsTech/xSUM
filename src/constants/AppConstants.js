@@ -11,6 +11,7 @@ export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const GET_RESULT_API = '/handleResults?action=getResult';
+export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJob';
 
 // ModalTypes
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
@@ -31,6 +32,7 @@ export const SITEADD_ROUTE = '/siteAdd';
 export const SITELOAD_ROUTE = '/siteLoad';
 export const LOGIN_ROUTE = '/login';
 export const SITE_RESULT_ROUTE = '/resultView';
+export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 
 // URL status
 export const URL_DONE_STATE = 'Done';

@@ -3,9 +3,6 @@ import PropTypes from 'prop-types';
 
 import LoginContainer from '../login-container/LoginContainer';
 
-import * as AppConstants from '../../../constants/AppConstants';
-import * as UIHelper from '../../../common/UIHelper';
-
 /* eslint-disable no-unused-vars */
 import Styles from './NavContainerStyles.less';
 /* eslint-enable no-unused-vars */

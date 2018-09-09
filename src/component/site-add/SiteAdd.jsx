@@ -190,8 +190,22 @@ class SiteAdd extends React.Component {
 
     viewResultJobClick(e, siteForResult) {
         e.preventDefault();
-        this.setState({isModalVisible: true});
-        this.setState({siteToResult: siteForResult});
+
+        if (siteForResult.result.length > 1) {
+
+            // Route to result chart view
+            UIHelper.redirectTo(AppConstants.SITE_CHART_RESULT_ROUTE, {
+                userObj: JSON.stringify(this.state.loggedUserObj),
+                job: JSON.stringify(siteForResult)
+            });
+        } else {
+            // Route to single result view
+            UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, {
+                userObj: JSON.stringify(this.state.loggedUserObj),
+                resultID: siteForResult.result[0].resultID
+            });
+        }
+
     }
 
     closeClick() {
