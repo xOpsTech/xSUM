@@ -301,7 +301,7 @@ class SiteAdd extends React.Component {
                 <div className="logo-div-container">
                     <img className="logo-img" src="./assets/img/logo.png"/>
                 </div>
-                <div className="root-container">
+                <div className="site-load-container">
                     <h3 className="search-text">
                         Run a one-time test
                     </h3>
@@ -363,57 +363,57 @@ class SiteAdd extends React.Component {
                                 : null
                         }
                     </form>
-                </div>
-                {
-                    (isViewHistoryVisible)
-                        ? (oldUrlResults.length !== 0)
-                            ? <Fragment>
-                                 <h4 className="history-view">View History</h4>
-                                 <Panel expanded={isViewHistoryVisible} className="history-view">
-                                     <Panel.Collapse>
-                                         <Panel.Body className="history-view container">
-                                            <table className="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Site URL</th>
-                                                        <th>Scheduled Date and Time</th>
-                                                        <th></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {
-                                                        oldUrlResults.map((oldUrlResult, i) => {
-                                                            return <tr className="table-row" key={'urlResult' + i}>
-                                                                        <td className="table-cell">
-                                                                            {oldUrlResult.url}
-                                                                        </td>
-                                                                        <td className="table-cell">
-                                                                            {moment(oldUrlResult.dateTime)
-                                                                                .format(AppConstants.DATE_FORMAT)}
-                                                                        </td>
-                                                                        <td>
-                                                                            <button
-                                                                                className="btn-primary form-control"
-                                                                                onClick={
-                                                                                    (e) => this.viewResult(e,
-                                                                                        oldUrlResult)
-                                                                                }>
-                                                                                Result
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>;
-                                                        })
-                                                    }
-                                                </tbody>
-                                            </table>
-                                         </Panel.Body>
-                                     </Panel.Collapse>
-                                 </Panel>
-                              </Fragment>
-                            : <h4 className="history-view">You don't have search history</h4>
-                        : null
-                }
 
+                    {
+                        (isViewHistoryVisible)
+                            ? (oldUrlResults.length !== 0)
+                                ? <Fragment>
+                                     <h4 className="history-view">View History</h4>
+                                     <Panel expanded={isViewHistoryVisible} className="history-view">
+                                         <Panel.Collapse>
+                                             <Panel.Body className="history-view container">
+                                                <table className="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Site URL</th>
+                                                            <th>Scheduled Date and Time</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {
+                                                            oldUrlResults.map((oldUrlResult, i) => {
+                                                                return <tr className="table-row" key={'urlResult' + i}>
+                                                                            <td className="table-cell">
+                                                                                {oldUrlResult.url}
+                                                                            </td>
+                                                                            <td className="table-cell">
+                                                                                {moment(oldUrlResult.dateTime)
+                                                                                    .format(AppConstants.DATE_FORMAT)}
+                                                                            </td>
+                                                                            <td>
+                                                                                <button
+                                                                                    className="btn-primary form-control"
+                                                                                    onClick={
+                                                                                        (e) => this.viewResult(e,
+                                                                                            oldUrlResult)
+                                                                                    }>
+                                                                                    Result
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>;
+                                                            })
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                             </Panel.Body>
+                                         </Panel.Collapse>
+                                     </Panel>
+                                  </Fragment>
+                                : <h4 className="history-view">You don't have search history</h4>
+                            : null
+                    }
+                </div>
             </Fragment>
         );
     }

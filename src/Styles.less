@@ -20,7 +20,7 @@
 
 body {
     color: @main-text-color;
-    background: none;
+    background-color: #e6efec;
 }
 
 .root-container {
@@ -31,4 +31,29 @@ body {
 
 .table > tbody > .table-row > td {
     vertical-align: middle;
+}
+
+.button-all-caps-text {
+    text-transform: uppercase;
+}
+
+.half-button {
+    width: 47%;
+}
+
+.half-button:nth-child(2) {
+    margin-left: 6%;
+}
+
+.input-group, select.form-control {
+    border: 2px #a9a9a9 solid;
+    border-radius: 4px;
+}
+
+.table-bordered {
+    border: 2px solid #000;
+}
+
+.table-bordered>thead>tr>th, .table-bordered>tbody>tr>td {
+    border: 2px solid #000;
 }

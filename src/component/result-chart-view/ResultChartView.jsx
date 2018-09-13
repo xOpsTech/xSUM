@@ -77,10 +77,10 @@ class ResultChartView extends React.Component {
             datasets: [
                 {
                     label: 'Max Response time',
-                    fillColor: 'rgba(220,220,220,0.5)',
-                    strokeColor: 'rgba(220,220,220,0.8)',
-                    highlightFill: 'rgba(220,220,220,0.75)',
-                    highlightStroke: 'rgba(220,220,220,1)',
+                    fillColor: '#d3d9e2',
+                    strokeColor: '#75777a',
+                    highlightFill: '#bec5d1',
+                    highlightStroke: '#555759',
                     data: []
                 }
             ],
@@ -92,10 +92,10 @@ class ResultChartView extends React.Component {
             datasets: [
                 {
                     label: 'Min Response time',
-                    fillColor: 'rgba(220,220,220,0.5)',
-                    strokeColor: 'rgba(220,220,220,0.8)',
-                    highlightFill: 'rgba(220,220,220,0.75)',
-                    highlightStroke: 'rgba(220,220,220,1)',
+                    fillColor: '#d3d9e2',
+                    strokeColor: '#75777a',
+                    highlightFill: '#bec5d1',
+                    highlightStroke: '#555759',
                     data: []
                 }
             ],
@@ -107,10 +107,10 @@ class ResultChartView extends React.Component {
             datasets: [
                 {
                     label: 'Mean Response time',
-                    fillColor: 'rgba(220,220,220,0.5)',
-                    strokeColor: 'rgba(220,220,220,0.8)',
-                    highlightFill: 'rgba(220,220,220,0.75)',
-                    highlightStroke: 'rgba(220,220,220,1)',
+                    fillColor: '#d3d9e2',
+                    strokeColor: '#75777a',
+                    highlightFill: '#bec5d1',
+                    highlightStroke: '#555759',
                     data: []
                 }
             ],
@@ -122,10 +122,10 @@ class ResultChartView extends React.Component {
             datasets: [
                 {
                     label: 'Median Response time',
-                    fillColor: 'rgba(220,220,220,0.5)',
-                    strokeColor: 'rgba(220,220,220,0.8)',
-                    highlightFill: 'rgba(220,220,220,0.75)',
-                    highlightStroke: 'rgba(220,220,220,1)',
+                    fillColor: '#d3d9e2',
+                    strokeColor: '#75777a',
+                    highlightFill: '#bec5d1',
+                    highlightStroke: '#555759',
                     data: []
                 }
             ],
@@ -145,19 +145,19 @@ class ResultChartView extends React.Component {
 
             if (!isResultIdFound) {
                 maxDataObj.labels.push('Execution ' + (maxResultNo++));
-                maxDataObj.datasets[0].data.push(recievedData[i].max);
+                maxDataObj.datasets[0].data.push(recievedData[i].max/1000);
                 maxDataObj.resultObjects.push(recievedData[i]);
 
                 minDataObj.labels.push('Execution ' + (minResultNo++));
-                minDataObj.datasets[0].data.push(recievedData[i].min);
+                minDataObj.datasets[0].data.push(recievedData[i].min/1000);
                 minDataObj.resultObjects.push(recievedData[i]);
 
                 meanDataObj.labels.push('Execution ' + (meanResultNo++));
-                meanDataObj.datasets[0].data.push(recievedData[i].mean);
+                meanDataObj.datasets[0].data.push(recievedData[i].mean/1000);
                 meanDataObj.resultObjects.push(recievedData[i]);
 
                 medianDataObj.labels.push('Execution ' + (medianResultNo++));
-                medianDataObj.datasets[0].data.push(recievedData[i].median);
+                medianDataObj.datasets[0].data.push(recievedData[i].median/1000);
                 medianDataObj.resultObjects.push(recievedData[i]);
             }
 

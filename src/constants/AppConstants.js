@@ -41,14 +41,14 @@ export const URL_NEW_STATE  = 'New';
 export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
 
 export const BROWSER_ARRAY = [
-    {value: 'chrome', textValue: 'Chrome'},
-    {value: 'safari', textValue: 'Safari'},
-    {value: 'firefox', textValue: 'FireFox'}
+    {value: 'chrome', textValue: 'CHROME'},
+    {value: 'safari', textValue: 'SAFARI'},
+    {value: 'firefox', textValue: 'FIREFOX'}
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
-    {value: 1000*60*10, textValue: 'Every 10 Minutes'},
-    {value: 1000*3600*24, textValue: 'Daily Execution'},
-    {value: 1000*3600*24*7, textValue: 'Weekly Execution'},
-    {value: 1000*3600*24*7*30, textValue: 'Monthly Execution'}
+    {value: 1000*60*10, textValue: 'TEST FREQUENCY - 10 Minute Intervals'},
+    {value: 1000*3600*24, textValue: 'TEST FREQUENCY - 24 Hour Intervals'},
+    {value: 1000*3600*24*7, textValue: 'TEST FREQUENCY - 7 Day Intervals'},
+    {value: 1000*3600*24*7*30, textValue: 'TEST FREQUENCY - 30 Day Intervals'}
 ];

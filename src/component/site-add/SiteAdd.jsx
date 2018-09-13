@@ -32,6 +32,7 @@ class SiteAdd extends React.Component {
         this.viewResultJobClick = this.viewResultJobClick.bind(this);
         this.closeClick = this.closeClick.bind(this);
         this.viewResult = this.viewResult.bind(this);
+        this.navigateToResultView = this.navigateToResultView.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -212,6 +213,10 @@ class SiteAdd extends React.Component {
         this.setState({isModalVisible: false});
     }
 
+    navigateToResultView(e) {
+        e.preventDefault();
+    }
+
     render() {
         const {
             isLoading,
@@ -241,13 +246,14 @@ class SiteAdd extends React.Component {
                               </button>
                           </div>
                 }
-                <div className="root-container">
-                    <div className="logo-div">
-                        <img className="logo-img" src="./assets/img/logo.png"/>
-                    </div>
+                <div className="logo-div-container">
+                    <img className="logo-img" src="./assets/img/logo.png"/>
+                </div>
+                <div className="site-add-container">
                     <form
                         name="site-add-form"
                         method="post">
+                        <h1 className="site-add-title">Monitor Site 24/7</h1>
                         <div className="form-group">
                             <div className={
                                     'input-group has-feedback ' +
@@ -271,7 +277,7 @@ class SiteAdd extends React.Component {
                                     type="text"
                                     className="form-control"
                                     id="urlObjectInput"
-                                    placeholder="URL"/>
+                                    placeholder="ENTER WEBSITE URL"/>
                             </div>
                             <ErrorMessageComponent error={siteObject.error}/>
                         </div>
@@ -290,11 +296,12 @@ class SiteAdd extends React.Component {
                               </select>
                         </div>
                         <div className="form-group form-row">
-                            <DateTimePicker
-                                className="col-sm-6 my-1 datepicker-for-scheduler"
-                                onChange={(scheduleDate) => this.onChangeDateTime(scheduleDate)}
-                                value={scheduleDate}/>
-                                {   /* TODO : Uncomment for enable recursive selection
+                            {
+                                /* TODO : Uncomment for enable recursive selection
+                                <DateTimePicker
+                                    className="col-sm-6 my-1 datepicker-for-scheduler"
+                                    onChange={(scheduleDate) => this.onChangeDateTime(scheduleDate)}
+                                    value={scheduleDate}/>
                                         <div className="col-auto my-1">
                                         <div className="form-check">
                                             <input className="form-check-input recursive-checkbox"
@@ -310,7 +317,6 @@ class SiteAdd extends React.Component {
                                 }
                         </div>
                         {
-                            /* TODO : Uncomment for enable recursive selection
                             (isRecursiveCheck)
                                 ? <select
                                       className="form-control form-control-sm form-group"
@@ -325,14 +331,19 @@ class SiteAdd extends React.Component {
                                           })
                                       }
                                   </select>
-                                : null*/
+                                : null
                         }
                         <div className="form-group">
                             <button
-                                className="btn btn-primary form-control"
+                                className="btn btn-primary form-control half-button button-all-caps-text"
                                 onClick={(e) => this.addJobClick(e)}
                                 {...(siteList.length >= 5) && {disabled: true}}>
-                                Add a job
+                                Save Test
+                            </button>
+                            <button
+                                className="btn btn-primary form-control half-button button-all-caps-text"
+                                onClick={(e) => this.navigateToResultView(e)}>
+                                See Results
                             </button>
                         </div>
                         {
