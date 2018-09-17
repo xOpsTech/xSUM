@@ -2,25 +2,52 @@
 
 @media only screen and (min-width: 600px) {
     html {
-        //background: url('../assets/img/background.jpg') no-repeat center center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-        height: 100%;
+        // //background: url('../assets/img/background.jpg') no-repeat center center fixed;
+        // -webkit-background-size: cover;
+        // -moz-background-size: cover;
+        // -o-background-size: cover;
+        // background-size: cover;
+        // height: 100%;
     }
 }
 
 @media only screen and (max-width: 600px) {
     html {
-        //background: url('../assets/img/background.jpg') no-repeat center center fixed;
-        height: 100%;
+        // //background: url('../assets/img/background.jpg') no-repeat center center fixed;
+        // height: 100%;
     }
+}
+
+#background-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+#app {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.5);
+    color: #f1f1f1;
+    width: 100%;
+    height: 100%;
+}
+
+.input-group-addon {
+    background-color: #6e6e6d;
+    color: @main-text-color;
+}
+
+div.input-group > input {
+    background-color: transparent;
+    color: @main-text-color;
 }
 
 body {
     color: @main-text-color;
-    background-color: #e6efec;
+    margin: 0;
+    //background-color: #e6efec;
 }
 
 .root-container {
@@ -56,4 +83,28 @@ body {
 
 .table-bordered>thead>tr>th, .table-bordered>tbody>tr>td {
     border: 2px solid #000;
+}
+
+.google-login-btn {
+    height: 40px;
+    background-color: @button-color;
+    color: @main-text-color;
+    font-weight: bold;
+    border-color: @button-border-color;
+    text-transform: uppercase;
+}
+
+span.google-icon {
+    padding-right: 10px;
+    color: #ff0000;
+    font-weight: bolder;
+    display: none;
+}
+
+.btn[disabled].btn-primary, .btn-primary {
+    background-color: @button-color;
+    border-color: @button-border-color;
+}
+.btn-primary:hover {
+    background-color: @button-color;
 }

@@ -130,7 +130,9 @@ class SiteAdd extends React.Component {
             });
 
             this.setState({
-                siteObject: {value:'', error: {}}
+                siteObject     : {value:'', error: {}},
+                recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
+                browser        : AppConstants.BROWSER_ARRAY[0].value
             });
         } else {
             this.setState({
@@ -319,10 +321,13 @@ class SiteAdd extends React.Component {
                         {
                             (isRecursiveCheck)
                                 ? <select
-                                      className="form-control form-control-sm form-group"
-                                      onChange={(e) => this.dropDownClick(
-                                          {recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[e.target.value]})
-                                      }>
+                                      disabled
+                                      className="form-control form-control-sm form-group">
+                                      {
+                                      //     onChange={(e) => this.dropDownClick(
+                                      //     {recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[e.target.value]})
+                                      // }>
+                                      }
                                       {
                                           AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
                                               return <option key={'execution_' + i} value={i}>
@@ -347,113 +352,113 @@ class SiteAdd extends React.Component {
                             </button>
                         </div>
                         {
-                            (siteList.length > 0)
-                                ? <div className="container site-list">
-                                    <h4>Job List</h4>
-                                    <table className="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Site URL</th>
-                                                <th>Browser</th>
-                                                <th>Scheduled Date and Time</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                siteList.map((site, i) => {
-                                                    return (
-                                                        <tr className="table-row" key={'siteDetail' + i}>
-                                                            <td className="table-cell">{site.siteObject.value}</td>
-                                                            <td className="table-cell">{site.browser}</td>
-                                                            <td className="table-cell">
-                                                                {site.scheduleDate}
-                                                                {
-                                                                    (site.isRecursiveCheck)
-                                                                        ? <div>({site.recursiveSelect.textValue})</div>
-                                                                        : null
-                                                                }
-                                                            </td>
-                                                            <td>
-                                                                <button
-                                                                    className="btn-danger form-control form-group"
-                                                                    onClick={(e) => this.removeJobClick(e, site.jobId)}
-                                                                    title={'Remove job of ' + site.siteObject.value}>
-                                                                    <span className="glyphicon glyphicon-remove"></span>
-                                                                </button>
-                                                                {
-                                                                    (site.isRecursiveCheck)
-                                                                        ? (site.recursiveSelect.isStart !== undefined
-                                                                              && site.recursiveSelect.isStart)
-                                                                            ? <button
-                                                                                className="btn-primary form-control
-                                                                                    form-group"
-                                                                                onClick={
-                                                                                    (e) => this.startOrStopJobClick(e,
-                                                                                        site, i)
-                                                                                }
-                                                                                title={
-                                                                                    'Stop job of '
-                                                                                    + site.siteObject.value
-                                                                                }>
-                                                                                <span
-                                                                                    className="glyphicon
-                                                                                    glyphicon-stop">
-                                                                                </span>
-                                                                            </button>
-                                                                            : <button
-                                                                                className="btn-primary
-                                                                                    form-control form-group"
-                                                                                onClick={
-                                                                                    (e) => this.startOrStopJobClick(e,
-                                                                                        site, i)
-                                                                                }
-                                                                                title={
-                                                                                    'Start job of '
-                                                                                    + site.siteObject.value
-                                                                                }>
-                                                                                <span
-                                                                                    className="glyphicon
-                                                                                    glyphicon-play">
-                                                                                </span>
-                                                                            </button>
-                                                                        : null
-                                                                }
-                                                                {
-                                                                    (site.result.length !== 0)
-                                                                        ? <button
-                                                                              className="btn-primary
-                                                                                  form-control form-group"
-                                                                              onClick={
-                                                                                  (e) =>
-                                                                                    this.viewResultJobClick(e, site)
-                                                                              }
-                                                                              title={
-                                                                                  'Results of ' + site.siteObject.value
-                                                                              }>
-                                                                              <span
-                                                                                  className="glyphicon
-                                                                                    glyphicon glyphicon-tasks">
-                                                                              </span>
-                                                                          </button>
-                                                                        : null
-                                                                }
-                                                                <ModalContainer
-                                                                    title={MessageConstants.SITE_RESULT_MESSAGE}
-                                                                    closeClick={this.closeClick}
-                                                                    viewResult={this.viewResult}
-                                                                    isModalVisible={isModalVisible}
-                                                                    modalType={AppConstants.DATA_MODAL}
-                                                                    dataObject={siteToResult}/>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            }
-                                        </tbody>
-                                    </table>
-                                  </div>
-                                : null
+                            // (siteList.length > 0)
+                            //     ? <div className="container site-list">
+                            //         <h4>Job List</h4>
+                            //         <table className="table table-bordered">
+                            //             <thead>
+                            //                 <tr>
+                            //                     <th>Site URL</th>
+                            //                     <th>Browser</th>
+                            //                     <th>Scheduled Date and Time</th>
+                            //                     <th></th>
+                            //                 </tr>
+                            //             </thead>
+                            //             <tbody>
+                            //                 {
+                            //                     siteList.map((site, i) => {
+                            //                         return (
+                            //                             <tr className="table-row" key={'siteDetail' + i}>
+                            //                                 <td className="table-cell">{site.siteObject.value}</td>
+                            //                                 <td className="table-cell">{site.browser}</td>
+                            //                                 <td className="table-cell">
+                            //                                     {site.scheduleDate}
+                            //                                     {
+                            //                                         (site.isRecursiveCheck)
+                            //                                             ? <div>({site.recursiveSelect.textValue})</div>
+                            //                                             : null
+                            //                                     }
+                            //                                 </td>
+                            //                                 <td>
+                            //                                     <button
+                            //                                         className="btn-danger form-control form-group"
+                            //                                         onClick={(e) => this.removeJobClick(e, site.jobId)}
+                            //                                         title={'Remove job of ' + site.siteObject.value}>
+                            //                                         <span className="glyphicon glyphicon-remove"></span>
+                            //                                     </button>
+                            //                                     {
+                            //                                         (site.isRecursiveCheck)
+                            //                                             ? (site.recursiveSelect.isStart !== undefined
+                            //                                                   && site.recursiveSelect.isStart)
+                            //                                                 ? <button
+                            //                                                     className="btn-primary form-control
+                            //                                                         form-group"
+                            //                                                     onClick={
+                            //                                                         (e) => this.startOrStopJobClick(e,
+                            //                                                             site, i)
+                            //                                                     }
+                            //                                                     title={
+                            //                                                         'Stop job of '
+                            //                                                         + site.siteObject.value
+                            //                                                     }>
+                            //                                                     <span
+                            //                                                         className="glyphicon
+                            //                                                         glyphicon-stop">
+                            //                                                     </span>
+                            //                                                 </button>
+                            //                                                 : <button
+                            //                                                     className="btn-primary
+                            //                                                         form-control form-group"
+                            //                                                     onClick={
+                            //                                                         (e) => this.startOrStopJobClick(e,
+                            //                                                             site, i)
+                            //                                                     }
+                            //                                                     title={
+                            //                                                         'Start job of '
+                            //                                                         + site.siteObject.value
+                            //                                                     }>
+                            //                                                     <span
+                            //                                                         className="glyphicon
+                            //                                                         glyphicon-play">
+                            //                                                     </span>
+                            //                                                 </button>
+                            //                                             : null
+                            //                                     }
+                            //                                     {
+                            //                                         (site.result.length !== 0)
+                            //                                             ? <button
+                            //                                                   className="btn-primary
+                            //                                                       form-control form-group"
+                            //                                                   onClick={
+                            //                                                       (e) =>
+                            //                                                         this.viewResultJobClick(e, site)
+                            //                                                   }
+                            //                                                   title={
+                            //                                                       'Results of ' + site.siteObject.value
+                            //                                                   }>
+                            //                                                   <span
+                            //                                                       className="glyphicon
+                            //                                                         glyphicon glyphicon-tasks">
+                            //                                                   </span>
+                            //                                               </button>
+                            //                                             : null
+                            //                                     }
+                            //                                     <ModalContainer
+                            //                                         title={MessageConstants.SITE_RESULT_MESSAGE}
+                            //                                         closeClick={this.closeClick}
+                            //                                         viewResult={this.viewResult}
+                            //                                         isModalVisible={isModalVisible}
+                            //                                         modalType={AppConstants.DATA_MODAL}
+                            //                                         dataObject={siteToResult}/>
+                            //                                 </td>
+                            //                             </tr>
+                            //                         );
+                            //                     })
+                            //                 }
+                            //             </tbody>
+                            //         </table>
+                            //       </div>
+                            //     : null
                         }
                     </form>
                 </div>

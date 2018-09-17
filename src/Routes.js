@@ -11,7 +11,6 @@ import ResultChartView from './component/result-chart-view/ResultChartView';
 export default (
     <Route path={'/'} component={Page}>
         <IndexRoute component={SiteLoad}/>
-        <Route path="login" component={Login}/>
         <Route path="siteadd" component={SiteAdd}/>
         <Route path="siteload" component={SiteLoad}/>
         <Route path="resultView" component={ResultView}/>
