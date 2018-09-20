@@ -48,7 +48,7 @@ class SiteAdd extends React.Component {
             var loggedUserObject = JSON.parse(this.props.location.query.userObj);
             this.setState({loggedUserObj: loggedUserObject});
 
-            this.getAllJobs(loggedUserObject);
+            //this.getAllJobs(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -217,6 +217,10 @@ class SiteAdd extends React.Component {
 
     navigateToResultView(e) {
         e.preventDefault();
+        UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE,
+            {
+                userObj: JSON.stringify(this.state.loggedUserObj)
+            });
     }
 
     render() {
@@ -239,8 +243,7 @@ class SiteAdd extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}
-                              siteLoad={this.redirectToSiteLoad}/>
+                              loggedUserObj={loggedUserObj}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
