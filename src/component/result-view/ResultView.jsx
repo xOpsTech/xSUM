@@ -18,7 +18,7 @@ class ResultView extends React.Component {
         super(props);
 
         this.getResult = this.getResult.bind(this);
-        this.redirectToSiteLoad = this.redirectToSiteLoad.bind(this);
+        this.redirectToAddJob = this.redirectToAddJob.bind(this);
         // Setting initial state objects
         this.state  = this.getInitialState();
     }
@@ -63,11 +63,8 @@ class ResultView extends React.Component {
         });
     }
 
-    redirectToSiteLoad() {
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
-            {
-                userObj: JSON.stringify(this.state.loggedUserObj)
-            });
+    redirectToAddJob() {
+        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE);
     }
 
     render() {
@@ -80,12 +77,12 @@ class ResultView extends React.Component {
 
         const ResultTile = (props) => {
             return (
-                <div className="col-sm-5 tile">
-                    <div className="result-heading">
+                <div className="row result-tile">
+                    <div className="arrow-title-div col-sm-5">
                         {props.tileName}
                     </div>
-                    <div className="result-value">
-                        {(props.value / 1000)} <span className="measurement">seconds</span>
+                    <div className="value-div col-sm-7">
+                        {props.value}
                     </div>
                 </div>
             );
@@ -95,40 +92,46 @@ class ResultView extends React.Component {
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 {
-                    (loggedUserObj)
-                        ? <NavContainer
-                                  loggedUserObj={loggedUserObj}
-                                  siteLoad={this.redirectToSiteLoad}/>
-                        : <div className="sign-in-button">
-                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
-                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                  Sign in
-                              </button>
-                          </div>
+                    // (loggedUserObj)
+                    //     ? <NavContainer
+                    //               loggedUserObj={loggedUserObj}
+                    //               siteLoad={this.redirectToSiteLoad}/>
+                    //     : <div className="sign-in-button">
+                    //           <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
+                    //               className="btn btn-primary btn-sm log-out-drop-down--li--button">
+                    //               Sign in
+                    //           </button>
+                    //       </div>
                 }
-                <div className="root-container result-view">
-                    <h2>Results View</h2>
+                <div className="">
                     {
                         (resultObj)
                             ? <Fragment>
-                                  <div className="row tile-row">
-                                      <ResultTile tileName="Max Response Time" value={resultObj[0].max}/>
-                                      <div className="col-sm-2"></div>
-                                      <ResultTile tileName="Min Response Time" value={resultObj[0].min}/>
-                                  </div>
-                                  <div className="row tile-row">
-                                      <ResultTile tileName="Mean Response Time" value={resultObj[0].mean}/>
-                                      <div className="col-sm-2"></div>
-                                      <ResultTile tileName="Median Response Time" value={resultObj[0].median}/>
-                                  </div>
-                                  <div className="row tile-row">
-                                      <div className="col-sm-12 tile">
-                                          <div className="result-heading">
-                                              Executed Date and Time
+                                  <div className="row">
+                                      <div className="col-xs-3 result-summary">
+                                          <ResultTile tileName="Website"
+                                              value={UIHelper.replaceCharacter(resultObj[0].group, '_', '.')}/>
+                                          <ResultTile tileName="Date"
+                                              value={moment(resultObj[0].time).format(AppConstants.DATE_ONLY_FORMAT)}/>
+                                          <ResultTile tileName="Time"
+                                              value={moment(resultObj[0].time).format(AppConstants.TIME_ONLY_FORMAT)}/>
+                                          <ResultTile tileName="Browser"
+                                              value={UIHelper.toTitleCase(resultObj[0].browser)}/>
+                                          <ResultTile tileName="Max Time" value={resultObj[0].max/1000}/>
+                                          <ResultTile tileName="Min Time" value={resultObj[0].min/1000}/>
+                                          <ResultTile tileName="Mean Time" value={resultObj[0].mean/1000}/>
+                                          <ResultTile tileName="Median Time" value={resultObj[0].median/1000}/>
+
+                                          <div className="row backbutton" onClick={this.redirectToAddJob}>
+                                              <div className="col-sm-4">
+                                              </div>
+                                              <div className="arrow-back-div col-sm-8">
+                                                  Run another test
+                                              </div>
                                           </div>
-                                          <div className="result-value">
-                                              {moment(resultObj[0].time).format(AppConstants.DATE_FORMAT)}
-                                          </div>
+                                      </div>
+                                      <div className="col-xs-8">
+                                          Map goes here
                                       </div>
                                   </div>
                               </Fragment>

@@ -81,3 +81,7 @@ export function isUrlHasError(value) {
 export function getRandomHexaValue() {
     return randomBytes(10).toString('hex');
 }
+
+export function replaceCharacter(stringToReplace, replace, replaceFrom) {
+    return stringToReplace.replace(new RegExp(replace, 'g'), replaceFrom);
+}

@@ -1,9 +1,6 @@
 div.result-view {
     padding-top: 0;
 }
-.tile-row {
-    margin-top: 10px;
-}
 
 .tile {
     background-color: #468847;
@@ -21,4 +18,76 @@ div.result-view {
 
 .measurement {
     font-size: 18px;
+}
+
+div.arrow-title-div, div.arrow-back-div {
+    min-width: 70px;
+    line-height: 20px;
+    position: relative;
+    background: #36353e;
+    text-align: center;
+    padding: 10px;
+    text-transform: uppercase;
+}
+
+div.arrow-title-div:after, div.arrow-title-div:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 50%;
+    left: 100%;
+    z-index: 10;
+}
+
+div.arrow-title-div:after, div.arrow-back-div:after {
+    bottom: 0;
+    background: linear-gradient(to right bottom, #36353e 50%, transparent 50%);
+}
+
+div.arrow-title-div:before, div.arrow-back-div:before {
+    top: 0;
+    background: linear-gradient(to right top, #36353e 50%, transparent 50%);
+}
+
+div.value-div {
+    padding: 10px 10px 10px 25px;
+    background: #4a4851;
+}
+
+div.arrow-back-div:after, div.arrow-back-div:before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 50%;
+    right: 100%;
+    z-index: 10;
+}
+
+div.arrow-back-div:after, div.arrow-back-div:after {
+    bottom: 0;
+    background: linear-gradient(to left bottom, #36353e 50%, transparent 50%);
+}
+
+div.arrow-back-div:before, div.arrow-back-div:before {
+    top: 0;
+    background: linear-gradient(to left top, #36353e 50%, transparent 50%);
+}
+
+.backbutton {
+    text-align: right;
+    margin: 30px 0 10px 0;
+}
+
+.arrow-back-div:hover {
+    cursor: pointer;
+}
+
+.result-summary {
+    padding: 20px 10px;
+    background-color: #2c2a37;
+    margin-left: 50px;
+}
+
+.result-tile {
+    margin: 10px 0 10px 0;
 }

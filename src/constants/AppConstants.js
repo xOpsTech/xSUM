@@ -33,12 +33,15 @@ export const SITELOAD_ROUTE = '/siteLoad';
 export const LOGIN_ROUTE = '/login';
 export const SITE_RESULT_ROUTE = '/resultView';
 export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
+export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
 
 // URL status
 export const URL_DONE_STATE = 'Done';
 export const URL_NEW_STATE  = 'New';
 
 export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
+export const DATE_ONLY_FORMAT = 'MM/DD/YYYY';
+export const TIME_ONLY_FORMAT = 'h:mm a';
 
 export const BROWSER_ARRAY = [
     {value: 'chrome', textValue: 'CHROME'},
@@ -51,4 +54,11 @@ export const RECURSIVE_EXECUTION_ARRAY = [
     {value: 1000*3600*24, textValue: 'TEST FREQUENCY - 24 Hour Intervals'},
     {value: 1000*3600*24*7, textValue: 'TEST FREQUENCY - 7 Day Intervals'},
     {value: 1000*3600*24*7*30, textValue: 'TEST FREQUENCY - 30 Day Intervals'}
+];
+
+export const CHART_TYPES_ARRAY = [
+    {value: 'min', textValue: 'Min Value Chart'},
+    {value: 'max', textValue: 'Max Value Chart'},
+    {value: 'mean', textValue: 'Mean Value Chart'},
+    {value: 'median', textValue: 'Median Value Chart'}
 ];
