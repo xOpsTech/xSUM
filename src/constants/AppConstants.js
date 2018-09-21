@@ -62,3 +62,5 @@ export const CHART_TYPES_ARRAY = [
     {value: 'mean', textValue: 'Mean Value Chart'},
     {value: 'median', textValue: 'Median Value Chart'}
 ];
+
+export const GOOGLE_MAP_KEY = 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk';

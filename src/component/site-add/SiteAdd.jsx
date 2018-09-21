@@ -48,7 +48,7 @@ class SiteAdd extends React.Component {
             var loggedUserObject = JSON.parse(this.props.location.query.userObj);
             this.setState({loggedUserObj: loggedUserObject});
 
-            //this.getAllJobs(loggedUserObject);
+            this.getAllJobs(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }

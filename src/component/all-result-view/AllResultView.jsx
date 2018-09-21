@@ -232,7 +232,7 @@ class AllResultView extends React.Component {
                 <div className="all-result-view">
                     <div className="row map-container">
                         <GoogleMapReact
-                            bootstrapURLKeys={{ key: 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk' }}
+                            bootstrapURLKeys={{key: AppConstants.GOOGLE_MAP_KEY}}
                             defaultCenter={googleMaps.center}
                             defaultZoom={googleMaps.zoom}>
                             <LocationMarker
