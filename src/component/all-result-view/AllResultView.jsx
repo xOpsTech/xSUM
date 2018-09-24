@@ -1,4 +1,6 @@
 import React, {Fragment} from 'react';
+import moment from 'moment';
+import AmCharts from '@amcharts/amcharts3-react';
 import {Bar} from 'react-chartjs';
 import GoogleMapReact from 'google-map-react';
 
@@ -21,7 +23,7 @@ class AllResultView extends React.Component {
         this.getAllJobs           = this.getAllJobs.bind(this);
         this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
-        this.getArrangedChartData = this.getArrangedChartData.bind(this);
+        this.getArrangedBarChartData = this.getArrangedBarChartData.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -80,7 +82,7 @@ class AllResultView extends React.Component {
                         result: jobResult,
                         selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                         selectedChartIndex: '0',
-                        chartData: this.getArrangedChartData(jobResult, 0)
+                        barChartData: this.getArrangedBarChartData(jobResult, 0)
                     });
                     this.setState({jobsWithResults: resultsArr});
                 });
@@ -91,45 +93,35 @@ class AllResultView extends React.Component {
         });
     }
 
-    getArrangedChartData(jobResult, selectedChartIndex) {
-        var chartDataObj = {
-            labels: [],
-            datasets: [
-                {
-                    label: 'Max Response time',
-                    fillColor: '#ba10c1',
-                    strokeColor: '#75777a',
-                    highlightFill: '#bec5d1',
-                    highlightStroke: '#555759',
-                    data: []
-                }
-            ],
-            resultObjects: []
-        };
+    getArrangedBarChartData(jobResult, selectedChartIndex) {
+        var resultArray = [];
 
         var resultCount = 1;
         for (var i = 0; i < jobResult.length; i++) {
 
             // Check Result ID exists
-            var isResultIdFound = chartDataObj.resultObjects.find(function(jobObj) {
+            var isResultIdFound = resultArray.find(function(jobObj) {
                 return jobObj.resultID === jobResult[i].resultID;
             });
 
             if (!isResultIdFound) {
-                chartDataObj.labels.push('Execution ' + (resultCount++));
-                chartDataObj.datasets[0].data.push(jobResult[i][AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000);
-                chartDataObj.resultObjects.push(jobResult[i]);
+                resultArray.push({
+                    execution: moment(jobResult[i].time).format(AppConstants.TIME_ONLY_FORMAT),
+                    responseTime: jobResult[i][AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    color: '#eb00ff',
+                    resultID: jobResult[i].resultID
+                });
             }
         }
 
-        return chartDataObj;
+        return resultArray;
     }
 
     chartDropDownClick(jobIndex, jobWithResult, selectedChartIndex) {
         var jobsList = this.state.jobsWithResults;
         jobWithResult.selectedChartIndex = selectedChartIndex;
         jobWithResult.selectedChart = AppConstants.CHART_TYPES_ARRAY[selectedChartIndex];
-        jobWithResult.chartData = this.getArrangedChartData(jobWithResult.result, selectedChartIndex);
+        jobWithResult.barChartData = this.getArrangedBarChartData(jobWithResult.result, selectedChartIndex);
         // Remove old job and add updated job
         jobsList.splice(jobIndex, 1, jobWithResult);
         this.setState({jobsWithResults: jobsList});
@@ -164,10 +156,77 @@ class AllResultView extends React.Component {
         } = this.state;
 
         const ResultViewContainer = (props) => {
-            var barChartOptions = {
-                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-                scaleBeginAtZero : false
+            const barChartConfig = {
+                color: '#fff',
+                type: 'serial',
+                theme: 'light',
+                dataProvider: props.jobWithResult.barChartData,
+                valueAxes: [
+                    {
+                        gridColor: '#FFFFFF',
+                        gridAlpha: 0.2,
+                        dashLength: 0
+                    }
+                ],
+                gridAboveGraphs: true,
+                startDuration: 1,
+                graphs: [
+                    {
+                        balloonText: '[[category]]: <b>[[value]]</b>',
+                        fillAlphas: 0.8,
+                        lineAlpha: 0.2,
+                        type: 'column',
+                        valueField: 'responseTime',
+                        fillColorsField: 'color'
+                    }
+                ],
+                chartCursor: {
+                    categoryBalloonEnabled: false,
+                    cursorAlpha: 0,
+                    zoomable: false
+                },
+                categoryField: 'execution',
+                categoryAxis: {
+                    gridPosition: 'start',
+                    gridAlpha: 0,
+                    tickPosition: 'start',
+                    tickLength: 20
+                },
+                export: {
+                    enabled: true
+                }
             };
+
+            const pieChartConfig = {
+                type: 'pie',
+                theme: 'light',
+                outlineAlpha: 1,
+                outlineColor: 'none',
+                labelsEnabled: false,
+                dataProvider: [
+                    {
+                        title: 'Average Response Time',
+                        value: 3
+                    },
+                    {
+                        title: 'Last Test Average',
+                        value: props.jobWithResult.barChartData[props.jobWithResult.barChartData.length-1].responseTime
+                    }
+                ],
+                colors: [
+                    '#222029', '#eb00ff'
+                ],
+                titleField: 'title',
+                valueField: 'value',
+                labelRadius: 5,
+                radius: '42%',
+                innerRadius: '70%',
+                labelText: '[[title]]',
+                export: {
+                    enabled: true
+                }
+            };
+
             return (
                 <div className="row single-chart">
                     <select className="form-control form-control-sm form-group chart-drop-down"
@@ -189,9 +248,15 @@ class AllResultView extends React.Component {
                     </select>
                     <div className="row">
                         <div className="col-sm-4">
+                            <div className="row">
+                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+                            </div>
+                            <div className="row pie-chart-heading">
+                                Last Test Average
+                            </div>
                         </div>
                         <div className="col-sm-8">
-                            <Bar data={props.jobWithResult.chartData} options={barChartOptions} width="600" height="300"/>
+                            <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
                         </div>
                     </div>
                 </div>
@@ -245,7 +310,7 @@ class AllResultView extends React.Component {
                         {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
-                                      return <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>
+                                      return <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>;
                                   })
                                 : null
                         }
@@ -253,8 +318,12 @@ class AllResultView extends React.Component {
                     <div className="row add-test-section">
                         <div className="col-sm-4"></div>
                         <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                            Add a test
-                            <div className="plus-icon">+</div>
+                            <div className="row">
+                                Add a test
+                            </div>
+                            <div className="row">
+                                <i className="plus-icon glyphicon glyphicon-plus"></i>
+                            </div>
                         </div>
                         <div className="col-sm-4"></div>
                     </div>

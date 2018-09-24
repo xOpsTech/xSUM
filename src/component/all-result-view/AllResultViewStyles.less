@@ -1,13 +1,11 @@
 @import (reference) "../../variables.less";
 
 .all-result-view {
-    margin: 0 2%;
 }
 
-.map-container {
-    width: 100%;
-    height: 400px;
-    margin: 0;
+div.map-container {
+    height: 330px;
+    margin: 0 2% 40px 15%;
 }
 
 .map-marker {
@@ -22,12 +20,18 @@
 }
 
 .chart-view {
-    margin: 10px 0 0 0;
+    margin-top: 10px;
+}
+
+.pie-chart-heading {
+    font-size: 18px;
+    text-transform: uppercase;
 }
 
 div.single-chart, .add-test-section {
-    margin: 10px 0;
-    background-color: #2c2a37;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #343242;
     text-align: center;
 }
 
@@ -36,13 +40,21 @@ div.single-chart, .add-test-section {
 }
 
 .add-test-text {
-    font-size: 30px;
+    font-size: 40px;
     cursor: pointer;
 }
 
 .plus-icon {
-    color: #ba10c1;
-    font-size: 100px;
+    font-size: 82.5px;
+    height: 100px;
+    background-image: -webkit-linear-gradient(bottom, #eb00ff, #dd00ef, #cc00dd); /* For Chrome and Safari */
+    background-image: -moz-linear-gradient(bottom, #eb00ff, #dd00ef, #cc00dd); /* For old Fx (3.6 to 15) */
+    background-image: -ms-linear-gradient(bottom, #eb00ff, #dd00ef, #cc00dd); /* For pre-releases of IE 10*/
+    background-image: -o-linear-gradient(bottom, #eb00ff, #dd00ef, #cc00dd); /* For old Opera (11.1 to 12.0) */
+    background-image: linear-gradient(to bottom, #eb00ff, #dd00ef 34%, #cc00dd 53%, #b800c7 68%, #760080); /* Standard syntax; must be last */
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
 }
 
 .chart-drop-down {
