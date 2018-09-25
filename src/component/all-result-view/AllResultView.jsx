@@ -1,11 +1,10 @@
 import React, {Fragment} from 'react';
 import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
-import {Bar} from 'react-chartjs';
-import GoogleMapReact from 'google-map-react';
 
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
+import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
@@ -51,12 +50,6 @@ class AllResultView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            siteList: [],
-            isChartDataArrived: false,
-            maxChartData: null,
-            minChartData: null,
-            meanChartData: null,
-            medianChartData: null,
             jobsWithResults: []
         };
 
@@ -74,8 +67,6 @@ class AllResultView extends React.Component {
                 var currentJob = data[i];
 
                 jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}).then((jobResult) => {
-
-
                     var resultsArr = this.state.jobsWithResults;
                     resultsArr.push({
                         job: currentJob,
@@ -89,14 +80,13 @@ class AllResultView extends React.Component {
 
             }
 
-            this.setState({siteList: data, isLoading: false, loadingMessage: ''});
+            this.setState({isLoading: false, loadingMessage: ''});
         });
     }
 
     getArrangedBarChartData(jobResult, selectedChartIndex) {
         var resultArray = [];
 
-        var resultCount = 1;
         for (var i = 0; i < jobResult.length; i++) {
 
             // Check Result ID exists
@@ -146,12 +136,6 @@ class AllResultView extends React.Component {
             isLoading,
             loadingMessage,
             loggedUserObj,
-            isChartDataArrived,
-            maxChartData,
-            minChartData,
-            meanChartData,
-            medianChartData,
-            siteList,
             jobsWithResults
         } = this.state;
 
@@ -271,23 +255,6 @@ class AllResultView extends React.Component {
 
         };
 
-        const googleMaps = {
-            center: {
-                lat: 6.927079,
-                lng: 79.861244
-            },
-            zoom: 5
-        };
-
-        const LocationMarker = (props) => {
-            return (
-                <Fragment>
-                    <i className="glyphicon glyphicon-map-marker map-marker"/>
-                    <h4 className="map-text">{props.text}</h4>
-                </Fragment>
-            );
-        };
-
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -304,15 +271,7 @@ class AllResultView extends React.Component {
                 }
                 <div className="all-result-view">
                     <div className="row map-container">
-                        <GoogleMapReact
-                            bootstrapURLKeys={{key: AppConstants.GOOGLE_MAP_KEY}}
-                            defaultCenter={googleMaps.center}
-                            defaultZoom={googleMaps.zoom}>
-                            <LocationMarker
-                                lat={6.927079}
-                                lng={79.861244}
-                                text={'Your Location'}/>
-                        </GoogleMapReact>
+                        <MapContainer height="100%" width="100%"/>
                     </div>
                     <div className="row chart-view">
                         {

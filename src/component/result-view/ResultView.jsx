@@ -1,9 +1,10 @@
 import React, {Fragment} from 'react';
 import moment from 'moment';
-import GoogleMapReact from 'google-map-react';
+import AmCharts from '@amcharts/amcharts3-react';
 
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
+import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
@@ -89,23 +90,6 @@ class ResultView extends React.Component {
             );
         };
 
-        const googleMaps = {
-            center: {
-                lat: 6.927079,
-                lng: 79.861244
-            },
-            zoom: 5
-        };
-
-        const LocationMarker = (props) => {
-            return (
-                <Fragment>
-                    <i className="glyphicon glyphicon-map-marker map-marker"/>
-                    <h4 className="map-text">{props.text}</h4>
-                </Fragment>
-            );
-        };
-
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -149,15 +133,7 @@ class ResultView extends React.Component {
                                           </div>
                                       </div>
                                       <div className="col-xs-8 result-view-map">
-                                          <GoogleMapReact
-                                              bootstrapURLKeys={{key: AppConstants.GOOGLE_MAP_KEY}}
-                                              defaultCenter={googleMaps.center}
-                                              defaultZoom={googleMaps.zoom}>
-                                              <LocationMarker
-                                                  lat={6.927079}
-                                                  lng={79.861244}
-                                                  text={'Your Location'}/>
-                                          </GoogleMapReact>
+                                          <MapContainer height="100%" width="100%"/>
                                       </div>
                                   </div>
                               </Fragment>

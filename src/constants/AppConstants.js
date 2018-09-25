@@ -64,3 +64,50 @@ export const CHART_TYPES_ARRAY = [
 ];
 
 export const GOOGLE_MAP_KEY = 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk';
+
+var worldDataProvider = {
+    map: 'worldLow',
+    getAreasFromMap: true
+};
+
+export const MAP_CONTENT_DATA = {
+    map: 'continentsLow',
+    areas: [
+        {
+            id: 'africa',
+            linkToObject: worldDataProvider,
+            color: '#605675',
+            passZoomValuesToTarget: true
+        },
+        {
+            id: 'asia',
+            linkToObject: worldDataProvider,
+            color: '#a791b4',
+            passZoomValuesToTarget: true
+        },
+        {
+            id: 'australia',
+            linkToObject: worldDataProvider,
+            color: '#7f7891',
+            passZoomValuesToTarget: true
+        },
+        {
+            id: 'europe',
+            linkToObject: worldDataProvider,
+            color: '#9186a2',
+            passZoomValuesToTarget: true
+        },
+        {
+            id: 'north_america',
+            linkToObject: worldDataProvider,
+            color: '#868191',
+            passZoomValuesToTarget: true
+        },
+        {
+            id: 'south_america',
+            linkToObject: worldDataProvider,
+            color: '#8f7ea9',
+            passZoomValuesToTarget: true
+        }
+    ]
+};
