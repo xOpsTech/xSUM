@@ -230,40 +230,45 @@ class AllResultView extends React.Component {
                 }
             };
 
-            return (
-                <div className="row single-chart">
-                    <select className="form-control form-control-sm form-group chart-drop-down"
-                        value={props.jobWithResult.selectedChartIndex}
-                        onChange={(e) => this.chartDropDownClick(
-                            props.keyID,
-                            props.jobWithResult,
-                            e.target.value)
-                        }>
-                        {
-                            AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
-                                return (
-                                    <option key={'chartType_' + i} value={i}>
-                                        {chartType.textValue}
-                                    </option>
-                                );
-                            })
-                        }
-                    </select>
-                    <div className="row">
-                        <div className="col-sm-4">
-                            <div className="row">
-                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+            if (props.jobWithResult.result.length > 0) {
+                return (
+                    <div className="row single-chart">
+                        <select className="form-control form-control-sm form-group chart-drop-down"
+                            value={props.jobWithResult.selectedChartIndex}
+                            onChange={(e) => this.chartDropDownClick(
+                                props.keyID,
+                                props.jobWithResult,
+                                e.target.value)
+                            }>
+                            {
+                                AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
+                                    return (
+                                        <option key={'chartType_' + i} value={i}>
+                                            {chartType.textValue}
+                                        </option>
+                                    );
+                                })
+                            }
+                        </select>
+                        <div className="row">
+                            <div className="col-sm-4">
+                                <div className="row">
+                                    <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+                                </div>
+                                <div className="row pie-chart-heading">
+                                    Last Test Average
+                                </div>
                             </div>
-                            <div className="row pie-chart-heading">
-                                Last Test Average
+                            <div className="col-sm-8">
+                                <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
                             </div>
-                        </div>
-                        <div className="col-sm-8">
-                            <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
                         </div>
                     </div>
-                </div>
-            );
+                );
+            } else {
+                return null;
+            }
+
         };
 
         const googleMaps = {
