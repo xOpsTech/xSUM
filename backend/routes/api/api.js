@@ -142,6 +142,13 @@ Api.prototype.insertJob = function(req, res) {
     };
 
     MongoDB.insertJobWithUserCheck(AppConstants.DB_JOB_LIST, jobInsertObj, res, executeScheduleJob);
+
+    jobTimers[jobObj.jobId] = setInterval(
+        function() {
+            executeJob(AppConstants.DB_JOB_LIST, jobInsertObj)
+        },
+        jobObj.recursiveSelect.value
+    );
 }
 
 function executeScheduleJob(collectionName, insertedObject) {

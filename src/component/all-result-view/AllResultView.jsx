@@ -156,11 +156,12 @@ class AllResultView extends React.Component {
         } = this.state;
 
         const ResultViewContainer = (props) => {
+            const {barChartData} = props.jobWithResult;
             const barChartConfig = {
                 color: '#fff',
                 type: 'serial',
                 theme: 'light',
-                dataProvider: props.jobWithResult.barChartData,
+                dataProvider: barChartData,
                 valueAxes: [
                     {
                         gridColor: '#FFFFFF',
@@ -197,6 +198,8 @@ class AllResultView extends React.Component {
                 }
             };
 
+            var lastTestAvg = barChartData[barChartData.length-1] && barChartData[barChartData.length-1].responseTime;
+
             const pieChartConfig = {
                 type: 'pie',
                 theme: 'light',
@@ -210,7 +213,7 @@ class AllResultView extends React.Component {
                     },
                     {
                         title: 'Last Test Average',
-                        value: props.jobWithResult.barChartData[props.jobWithResult.barChartData.length-1].responseTime
+                        value: lastTestAvg
                     }
                 ],
                 colors: [
