@@ -251,9 +251,11 @@ class SiteAdd extends React.Component {
                               </button>
                           </div>
                 }
-                <div className="logo-div-container">
-                    <img className="logo-img" src="./assets/img/logo.png"/>
-                </div>
+                {
+                    // <div className="logo-div-container">
+                    //     <img className="logo-img" src="./assets/img/logo.png"/>
+                    // </div>
+                }
                 <div className="site-add-container">
                     <form
                         name="site-add-form"

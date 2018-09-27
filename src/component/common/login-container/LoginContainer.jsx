@@ -41,11 +41,18 @@ class LoginContainer extends React.Component {
         };
         const LogOutPopOver = (
             <DropDownPopOver className="log-out-drop-down">
-                <div>
-                    {UIHelper.toTitleCase(loggedUserObj.name)}
-                </div>
-                <div>
-                    {loggedUserObj.email}
+                <div className="row">
+                    <div className="col-xs-2 logged-user-img">
+                        <img className="profile-pic-img" src={loggedUserObj.profilePicPath}/>
+                    </div>
+                    <div className="col-xs-10">
+                        <div>
+                            {UIHelper.toTitleCase(loggedUserObj.name)}
+                        </div>
+                        <div>
+                            {loggedUserObj.email}
+                        </div>
+                    </div>
                 </div>
                 <div className="divider"></div>
                 <div className="logout-button-div">
@@ -61,8 +68,7 @@ class LoginContainer extends React.Component {
             <div className="login-container">
                 <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={LogOutPopOver}>
                     <button className="login-button">
-                        <span className="first-name">{UIHelper.toTitleCase(loggedUserObj.name)}</span>
-                        <img className="profile-pic-img" src={loggedUserObj.profilePicPath}/>
+                        <img className="profile-icon" src="./assets/img/user-icon.png"/>
                     </button>
                 </OverlayTrigger>
             </div>

@@ -51,6 +51,9 @@ class NavContainer extends React.Component {
                         : null
                 }
                 <LoginContainer loggedUserObj={loggedUserObj}/>
+                <div className="get-involved-container">
+                    <img className="get-involve-icon" src="./assets/img/get-involve-img.png"/>
+                </div>
             </nav>
         );
     }
