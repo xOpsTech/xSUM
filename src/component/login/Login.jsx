@@ -1,8 +1,12 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
-import GoogleLogin from 'react-google-login';
+import LogoContainer from '../common/logo-container/LogoContainer';
+import GoogleLoginButton from '../common/google-login-button/GoogleLoginButton';
+import ForgotPassword from '../common/forgot-password/ForgotPassword';
+import OneTimeTest from '../common/one-time-test/OneTimeTest';
+import userApi from '../../api/userApi';
 
 import * as MessageConstants from '../../constants/MessageConstants';
 import * as AppConstants from '../../constants/AppConstants';
@@ -18,6 +22,7 @@ class Login extends React.Component {
 
         this.handleChange          = this.handleChange.bind(this);
         this.loginClick            = this.loginClick.bind(this);
+        this.signUpClick           = this.signUpClick.bind(this);
         this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
         this.googleResponseFail    = this.googleResponseFail.bind(this);
 
@@ -39,6 +44,7 @@ class Login extends React.Component {
 
     componentDidMount() {
         document.title = 'Login - xSum';
+        document.getElementById("background-video").style.display = 'block';
     }
 
     handleChange(stateObj) {
@@ -51,37 +57,22 @@ class Login extends React.Component {
         this.setState({isLogin: true});
         this.setState({error: {}});
 
-        //var {emailValue, passwordValue} = this.state;
+        var url = AppConstants.API_URL + AppConstants.USER_CHECK_LOGIN_API;
 
-        // var url = AppConstants.API_URL + AppConstants.USER_CHECK_API;
-        //
-        // var loginData = {
-        //     identifier: emailValue,
-        //     password  : passwordValue
-        // };
+        var userData = {
+            email   : email.value,
+            password: password.value
+        };
 
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE);
-
-        /*userApi.login(url, loginData).then((response) => {
+        userApi.loginUser(url, userData).then((response) => {
             this.setState({isLogin: false});
+        });
+    }
 
-            if (response.ok) {
+    signUpClick(e) {
+        e.preventDefault();
 
-                // Pass logged user to next page
-                response.json().then((data) => {
-                    var loggedUser = data.user;
-                    UIHelper.setCookie('username', loggedUser.username);
-                    window.location = '/vertical-solution/vertical-solution';
-                });
-
-            } else {
-                response.json().then((errorData) => {
-                    this.setState({error: {hasError: true, name: errorData.message}});
-                });
-            }
-
-        });*/
-
+        UIHelper.redirectTo(AppConstants.SIGN_UP_ROUTE, {});
     }
 
     googleResponseSuccess(response) {
@@ -105,48 +96,59 @@ class Login extends React.Component {
 
         // Google secret client id : pQMZvMj2I_sxM6t7HNLYLKr7
         return (
-            <div className="root-container">
-                <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>
-                <h1>Login</h1>
-                <form
-                    name="login-form"
-                    method="post">
-                    <div className="form-group">
-                        <input
-                            value={this.state.emailValue}
-                            onChange={(e) => this.handleChange({emailValue: e.target.value})}
-                            type="email"
-                            className="form-control"
-                            id="emailInput"
-                            placeholder="Email"/>
-                    </div>
-                    <div className="form-group">
-                        <input
-                            value={this.state.passwordValue}
-                            onChange={(e) => this.handleChange({passwordValue: e.target.value})}
-                            type="password"
-                            className="form-control"
-                            id="passwordInput"
-                            placeholder="Password"/>
-                    </div>
-                    <ErrorMessageComponent error={error}/>
-                    <div className="form-group">
-                        <button
-                            className="btn btn-primary form-control"
-                            onClick={(e) => this.loginClick(e)}>
-                            Login
-                        </button>
-                    </div>
-                    <GoogleLogin
-                        clientId={'213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com'}
-                        className="google-login-btn form-control"
-                        onSuccess={this.googleResponseSuccess}
-                        onFailure={this.googleResponseFail}>
-                        <span className="fa fa-google google-icon"></span>
-                        <span>Sign in with Google</span>
-                    </GoogleLogin>
-                </form>
-            </div>
+            <Fragment>
+                <LogoContainer/>
+                <div className="login-container-div">
+                    <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>
+                    <h1 className="site-add-title">Login</h1>
+                    <form
+                        name="login-form"
+                        method="post">
+                        <div className="form-group">
+                            <input
+                                value={this.state.emailValue}
+                                onChange={(e) => this.handleChange({emailValue: e.target.value})}
+                                type="email"
+                                className="form-control"
+                                id="emailInput"
+                                placeholder="Email"/>
+                        </div>
+                        <div className="form-group">
+                            <input
+                                value={this.state.passwordValue}
+                                onChange={(e) => this.handleChange({passwordValue: e.target.value})}
+                                type="password"
+                                className="form-control"
+                                id="passwordInput"
+                                placeholder="Password"/>
+                            <ForgotPassword/>
+                        </div>
+                        <ErrorMessageComponent error={error}/>
+                        <GoogleLoginButton
+                            googleResponseSuccess={this.googleResponseSuccess}
+                            googleResponseFail={this.googleResponseFail}/>
+                        {
+                            // <div className="form-group">
+                            //     <button
+                            //         className="btn btn-primary form-control"
+                            //         onClick={(e) => this.loginClick(e)}>
+                            //         Login
+                            //     </button>
+                            // </div>
+                        }
+                        <div className="form-group">
+                            <button
+                                className="btn btn-primary form-control button-all-caps-text"
+                                onClick={(e) => this.signUpClick(e)}>
+                                Create a new account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div className="login-container-div">
+                    <OneTimeTest urlObject={{}}/>
+                </div>
+            </Fragment>
         );
     }
 }

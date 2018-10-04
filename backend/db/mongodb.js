@@ -1,7 +1,9 @@
 var MongoClient = require('mongodb').MongoClient;
 var InfluxDB = require('./influxdb');
+var AppConstants = require('../constants/AppConstants');
 var dbName = 'xsum';
 var url = 'mongodb://xview.xops.it:27017/' + dbName;
+const bcrypt = require('bcryptjs');
 
 function MongoDB(){};
 
@@ -13,6 +15,40 @@ MongoClient.connect(url, function(err, db) {
 
 function connectMongoDB() {
     return MongoClient.connect(url);
+}
+
+function connectDB() {
+    return new Promise((resolve) => {
+        connectMongoDB().then((db) => {
+            resolve(db);
+        });
+    });
+}
+
+function getResult(db, collectionName, query) {
+    return new Promise((resolve) => {
+        var dbo = db.db(dbName);
+        dbo.collection(collectionName).find(query).toArray((error, result) => {
+
+            if (error) {
+                resolve(error);
+            }
+
+            resolve(result);
+        });
+    });
+}
+
+function insertDataTo(db, collectionName, objectToInsert, callBackFunction) {
+    return new Promise((resolve) => {
+        var dbo = db.db(dbName);
+        dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
+            if (err) resolve(err);
+            console.log("one row added for " + collectionName);
+            callBackFunction && callBackFunction(collectionName, objectToInsert);
+            resolve(res);
+        });
+    });
 }
 
 MongoDB.prototype.fetchData = function(collectionName, query, response) {
@@ -32,6 +68,24 @@ MongoDB.prototype.fetchData = function(collectionName, query, response) {
 
 }
 
+MongoDB.prototype.checkUserExists = async function(collectionName, query, typedPassword, response) {
+    var dbObject = await connectDB();
+    var userData = await getResult(dbObject, collectionName, query);
+
+    if (userData.length > 0) {
+        var storedPassword = userData[0].password;
+
+        if (bcrypt.compareSync(typedPassword, storedPassword)) {
+            response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userData[0].email}});
+        } else {
+            response.send({message: 'Email and password does not match'});
+        }
+    } else {
+        response.send({message: 'Email not exists'});
+    }
+
+}
+
 MongoDB.prototype.insertData = function(collectionName, objectToInsert, response, callBackFunction) {
     connectMongoDB().then((db) => {
         var dbo = db.db(dbName);
@@ -41,13 +95,25 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
 
             console.log("one row added for " + collectionName);
             response.send(objectToInsert);
-            callBackFunction(collectionName, objectToInsert);
+            callBackFunction && callBackFunction(collectionName, objectToInsert);
 
         });
     }).catch((err) => {
         response.send(err);
     });
 
+}
+
+MongoDB.prototype.insertUser = async function(collectionName, queryObj, objectToInsert, response) {
+    var dbObject = await connectDB();
+    var userData = await getResult(dbObject, collectionName, queryObj);
+
+    if (userData.length > 0) {
+        response.send({message: AppConstants.RESPONSE_ERROR});
+    } else {
+        var insertMessage = await insertDataTo(dbObject, collectionName, objectToInsert);
+        response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: objectToInsert.email}});
+    }
 }
 
 MongoDB.prototype.insertJobWithUserCheck = function(collectionName, objectToInsert, response, callBackFunction) {

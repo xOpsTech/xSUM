@@ -13,6 +13,13 @@ export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const GET_RESULT_API = '/handleResults?action=getResult';
 export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJob';
 
+export const USER_ADD_API = '/userAuth?action=registerUserData';
+export const USER_REMOVE_API = '/userAuth?action=removeUserData';
+export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
+
+export const RESPONSE_ERROR = 'Fail';
+export const RESPONSE_SUCCESS = 'Success';
+
 // ModalTypes
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
 export const DATA_MODAL = 'DATA_MODAL';
@@ -31,6 +38,7 @@ export const STORAGE_ID    = 'STORAGE_ID';
 export const SITEADD_ROUTE = '/siteAdd';
 export const SITELOAD_ROUTE = '/siteLoad';
 export const LOGIN_ROUTE = '/login';
+export const SIGN_UP_ROUTE = '/sign-up';
 export const SITE_RESULT_ROUTE = '/resultView';
 export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
@@ -64,6 +72,7 @@ export const CHART_TYPES_ARRAY = [
 ];
 
 export const GOOGLE_MAP_KEY = 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk';
+export const GOOGLE_SIGN_IN_CLIENT_ID = '213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com';
 
 var worldDataProvider = {
     map: 'worldLow',

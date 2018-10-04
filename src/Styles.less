@@ -18,12 +18,17 @@
     }
 }
 
+body {
+    background: #222029;
+}
+
 #background-video {
     position: fixed;
     right: 0;
     bottom: 0;
     min-width: 100%;
     min-height: 100%;
+    display: none;
 }
 
 #app {
@@ -86,22 +91,6 @@ body {
     border: 2px solid #000;
 }
 
-.google-login-btn {
-    height: 40px;
-    background-color: @button-color;
-    color: @main-text-color;
-    font-weight: bold;
-    border-color: @button-border-color;
-    text-transform: uppercase;
-}
-
-span.google-icon {
-    padding-right: 10px;
-    color: #ff0000;
-    font-weight: bolder;
-    display: none;
-}
-
 .btn[disabled].btn-primary, .btn-primary {
     background-image: @button-background-image;
     border-color: @button-border-color;
@@ -113,4 +102,9 @@ span.google-icon {
 
 .row {
     margin: 0;
+}
+
+.form-group > input.form-control, &:focus {
+    border: none;
+    background-color: #222029;
 }

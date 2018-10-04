@@ -7,6 +7,7 @@ import GoogleLoginButton from '../common/google-login-button/GoogleLoginButton';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import ModalContainer from '../common/modal-container/ModalContainer';
+import LogoContainer from '../common/logo-container/LogoContainer';
 import urlApi from '../../api/urlApi';
 
 import * as AppConstants from '../../constants/AppConstants';
@@ -60,6 +61,7 @@ class SiteAdd extends React.Component {
 
     componentDidMount() {
         document.title = 'Site Load - xSum';
+        document.getElementById("background-video").style.display = 'block';
     }
 
     // Returns initial props
@@ -297,9 +299,7 @@ class SiteAdd extends React.Component {
                               addJob={this.redirectToAddJob}/>
                           : null
                 }
-                <div className="logo-div-container">
-                    <img className="logo-img" src="./assets/img/logo.png"/>
-                </div>
+                <LogoContainer/>
                 <div className="site-load-container">
                     <h3 className="search-text">
                         Run a one-time test

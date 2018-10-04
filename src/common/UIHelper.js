@@ -78,6 +78,14 @@ export function isUrlHasError(value) {
     return !RegExp(AppConstants.URL_PATTERN).test(value);
 }
 
+export function isEmailHasError(value) {
+    return !RegExp(AppConstants.EMAIL_PATTERN).test(value);
+}
+
+export function isPasswordHasError(value) {
+    return !RegExp(AppConstants.PASSWORD_PATTERN).test(value);
+}
+
 export function getRandomHexaValue() {
     return randomBytes(10).toString('hex');
 }

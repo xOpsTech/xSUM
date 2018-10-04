@@ -1,6 +1,7 @@
 import React from 'react';
 import GoogleLogin from 'react-google-login';
 
+import * as AppConstants from '../../../constants/AppConstants';
 /* eslint-disable no-unused-vars */
 import Styles from './GoogleLoginStyles.less';
 /* eslint-enable no-unused-vars */
@@ -14,7 +15,7 @@ class GoogleLoginButton extends React.Component {
         const {googleResponseSuccess, googleResponseFail} = this.props;
         return (
             <GoogleLogin
-                clientId={'213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com'}
+                clientId={AppConstants.GOOGLE_SIGN_IN_CLIENT_ID}
                 className="google-login-btn form-control"
                 onSuccess={googleResponseSuccess}
                 onFailure={googleResponseFail}>
