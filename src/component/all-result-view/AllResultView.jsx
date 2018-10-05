@@ -30,6 +30,7 @@ class AllResultView extends React.Component {
 
     componentDidMount() {
         document.title = 'Results View - xSum';
+        document.getElementById("background-video").style.display = 'none';
     }
 
     componentWillMount() {

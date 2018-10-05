@@ -26,6 +26,7 @@ class ResultChartView extends React.Component {
 
     componentDidMount() {
         document.title = 'Result Chart View - xSum';
+        document.getElementById("background-video").style.display = 'none';
     }
 
     componentWillMount() {
