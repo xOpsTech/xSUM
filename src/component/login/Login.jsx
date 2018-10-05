@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
+import ErrorIconComponent from '../common/error-icon-component/ErrorIconComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import LogoContainer from '../common/logo-container/LogoContainer';
 import GoogleLoginButton from '../common/google-login-button/GoogleLoginButton';
@@ -21,7 +22,7 @@ class Login extends React.Component {
         super(props);
 
         this.handleChange          = this.handleChange.bind(this);
-        this.loginClick            = this.loginClick.bind(this);
+        this.loginCheck            = this.loginCheck.bind(this);
         this.signUpClick           = this.signUpClick.bind(this);
         this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
         this.googleResponseFail    = this.googleResponseFail.bind(this);
@@ -33,10 +34,10 @@ class Login extends React.Component {
     // Returns initial props
     getInitialState() {
         var initialState = {
-            emailValue   : '',
-            passwordValue: '',
-            isLogin      : false,
-            error        : {}
+            email     : {value:'', error: {}},
+            password  : {value:'', error: {}},
+            isLogin   : false,
+            loginError: {}
         };
 
         return initialState;
@@ -47,37 +48,76 @@ class Login extends React.Component {
         document.getElementById("background-video").style.display = 'block';
     }
 
-    handleChange(stateObj) {
+    handleChange(e, stateObj) {
+        e.preventDefault();
         this.setState(stateObj);
     }
 
-    loginClick(e) {
-        e.preventDefault();
+    loginCheck(e) {
 
-        this.setState({isLogin: true});
-        this.setState({error: {}});
+        if(e.key == 'Enter') {
+            e.preventDefault();
 
-        var url = AppConstants.API_URL + AppConstants.USER_CHECK_LOGIN_API;
+            const {email, password} = this.state;
+            var undefinedCheck = !(email.error.hasError === undefined);
+            var errorCheck = !(email.error.hasError);
 
-        var userData = {
-            email   : email.value,
-            password: password.value
-        };
+            // Check form has errors
+            if (undefinedCheck && errorCheck) {
 
-        userApi.loginUser(url, userData).then((response) => {
-            this.setState({isLogin: false});
-        });
+                this.setState({isLogin: true});
+
+                var url = AppConstants.API_URL + AppConstants.USER_CHECK_LOGIN_API;
+
+                var userData = {
+                    email   : email.value,
+                    password: password.value
+                };
+
+                userApi.loginUser(url, userData).then((response) => {
+                    this.setState({isLogin: false});
+
+                    if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
+                            {
+                                userObj: JSON.stringify({
+                                    email: response.user.email
+                                })
+                            });
+                    } else {
+                        this.setState({loginError: {hasError: true, name: response.message}});
+                    }
+
+                });
+            } else {
+
+                if(email.error.hasError === undefined) {
+                    this.setState({
+                        email: {
+                            value: email.value,
+                            error: {
+                                hasError: true,
+                                name: MessageConstants.EMAIL_ERROR
+                            }
+                        }
+                    });
+                }
+
+            }
+
+        }
+
+
     }
 
     signUpClick(e) {
         e.preventDefault();
-
         UIHelper.redirectTo(AppConstants.SIGN_UP_ROUTE, {});
     }
 
     googleResponseSuccess(response) {
         var basicProfile = response.getBasicProfile();
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
             {
                 userObj: JSON.stringify({
                     name: basicProfile.getName(),
@@ -92,7 +132,7 @@ class Login extends React.Component {
     }
 
     render() {
-        const {isLogin, error} = this.state;
+        const {isLogin, loginError, email, password} = this.state;
 
         // Google secret client id : pQMZvMj2I_sxM6t7HNLYLKr7
         return (
@@ -104,26 +144,47 @@ class Login extends React.Component {
                     <form
                         name="login-form"
                         method="post">
-                        <div className="form-group">
+                        <div className={
+                            'form-group has-feedback ' +
+                            ((email.error.hasError !== undefined)
+                                ? ((email.error.hasError) ? 'has-error' : 'has-success') : '')
+                            }>
                             <input
-                                value={this.state.emailValue}
-                                onChange={(e) => this.handleChange({emailValue: e.target.value})}
+                                value={email.value}
+                                onChange={(e) => {
+                                    this.handleChange(e, {
+                                        email: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isEmailHasError(e.target.value),
+                                                name: MessageConstants.EMAIL_ERROR
+                                            }
+                                        }
+                                    });
+                                }}
                                 type="email"
                                 className="form-control"
                                 id="emailInput"
-                                placeholder="Email"/>
+                                placeholder="EMAIL"/>
+                            <ErrorIconComponent error={email.error}/>
+                            <ErrorMessageComponent error={email.error}/>
                         </div>
                         <div className="form-group">
                             <input
-                                value={this.state.passwordValue}
-                                onChange={(e) => this.handleChange({passwordValue: e.target.value})}
+                                value={password.value}
+                                onChange={(e) => this.handleChange(e, {
+                                    password: {
+                                        value: e.target.value
+                                    }
+                                })}
                                 type="password"
                                 className="form-control"
                                 id="passwordInput"
-                                placeholder="Password"/>
+                                placeholder="Password"
+                                onKeyPress={this.loginCheck}/>
                             <ForgotPassword/>
                         </div>
-                        <ErrorMessageComponent error={error}/>
+                        <ErrorMessageComponent error={loginError}/>
                         <GoogleLoginButton
                             googleResponseSuccess={this.googleResponseSuccess}
                             googleResponseFail={this.googleResponseFail}/>
@@ -131,7 +192,7 @@ class Login extends React.Component {
                             // <div className="form-group">
                             //     <button
                             //         className="btn btn-primary form-control"
-                            //         onClick={(e) => this.loginClick(e)}>
+                            //         onClick={(e) => this.loginCheck(e)}>
                             //         Login
                             //     </button>
                             // </div>

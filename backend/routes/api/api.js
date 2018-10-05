@@ -93,7 +93,7 @@ function executeResultGenerator(collectionName, objectToInsert) {
 
     //Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
-        ' --influxdb.host 10.128.0.16 --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --influxdb.tags "jobid=' + objectToInsert.ID + ',resultID=' + resultID + '" ' + objectToInsert.url;
     cmd.get(
         commandStr,
@@ -201,7 +201,7 @@ function executeJob(collectionName, objectToInsert) {
 
     //Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
-        ' --influxdb.host 10.128.0.16 --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
         ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID + '" ' + objectToInsert.siteObject.value;
     cmd.get(

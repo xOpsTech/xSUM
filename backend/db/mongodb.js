@@ -78,10 +78,10 @@ MongoDB.prototype.checkUserExists = async function(collectionName, query, typedP
         if (bcrypt.compareSync(typedPassword, storedPassword)) {
             response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userData[0].email}});
         } else {
-            response.send({message: 'Email and password does not match'});
+            response.send({message: AppConstants.EMAIL_AND_PASSWORD_NOT_MATCH});
         }
     } else {
-        response.send({message: 'Email not exists'});
+        response.send({message: AppConstants.EMAIL_NOT_EXISTS});
     }
 
 }
@@ -109,7 +109,7 @@ MongoDB.prototype.insertUser = async function(collectionName, queryObj, objectTo
     var userData = await getResult(dbObject, collectionName, queryObj);
 
     if (userData.length > 0) {
-        response.send({message: AppConstants.RESPONSE_ERROR});
+        response.send({message: AppConstants.USER_EXISTS});
     } else {
         var insertMessage = await insertDataTo(dbObject, collectionName, objectToInsert);
         response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: objectToInsert.email}});

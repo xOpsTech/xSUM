@@ -7,7 +7,9 @@ import Styles from './ForgotPasswordStyles.less';
 class ForgotPassword extends React.Component {
     render() {
         return (
-            <a className="forgot-password">Forgot your password?</a>
+            <div className="row">
+                <a className="forgot-password">Forgot your password?</a>
+            </div>
         );
     }
 }

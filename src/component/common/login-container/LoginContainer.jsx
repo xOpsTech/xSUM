@@ -42,9 +42,13 @@ class LoginContainer extends React.Component {
         const LogOutPopOver = (
             <DropDownPopOver className="log-out-drop-down">
                 <div className="row">
-                    <div className="col-xs-2 logged-user-img">
-                        <img className="profile-pic-img" src={loggedUserObj.profilePicPath}/>
-                    </div>
+                    {
+                        (loggedUserObj.profilePicPath)
+                            ? <div className="col-xs-2 logged-user-img">
+                                  <img className="profile-pic-img" src={loggedUserObj.profilePicPath}/>
+                              </div>
+                            : null
+                    }
                     <div className="col-xs-10">
                         <div>
                             {UIHelper.toTitleCase(loggedUserObj.name)}
@@ -56,7 +60,7 @@ class LoginContainer extends React.Component {
                 </div>
                 <div className="divider"></div>
                 <div className="logout-button-div">
-                    <button onClick={() => {UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE);}}
+                    <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                         className="btn btn-primary btn-sm log-out-drop-down--li--button">
                         Sign Out
                     </button>

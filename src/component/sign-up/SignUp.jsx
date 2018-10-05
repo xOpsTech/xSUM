@@ -32,7 +32,7 @@ class SignUp extends React.Component {
     getInitialState() {
         var initialState = {
             isSignup        : false,
-            error           : {},
+            regError        : {},
             email           : {value:'', error: {}},
             password        : {value:'', error: {}},
             confirmPassword : {value:'', error: {}},
@@ -97,15 +97,18 @@ class SignUp extends React.Component {
                 password: password.value
             };
 
-            //UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE);
-
             userApi.registerUser(url, userData).then((response) => {
                 this.setState({isSignup: false});
 
-                if (response.message === AppConstants.RESPONSE_ERROR) {
-                    alert('User already exists');
+                if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                    UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
+                        {
+                            userObj: JSON.stringify({
+                                email: response.user.email
+                            })
+                        });
                 } else {
-                    alert('User adding success');
+                    this.setState({regError: {hasError: true, name: response.message}});
                 }
 
             });
@@ -147,7 +150,7 @@ class SignUp extends React.Component {
     }
 
     render() {
-        const {email, isSignup, error, password, confirmPassword} = this.state;
+        const {email, isSignup, regError, password, confirmPassword} = this.state;
 
         return (
             <Fragment>
@@ -194,9 +197,9 @@ class SignUp extends React.Component {
                                 type="password"
                                 className="form-control"
                                 id="passwordInput"
-                                value={this.state.password.value}
+                                value={password.value}
                                 onChange={(e) => {
-                                    this.passwordCheck(e.target.value, this.state.confirmPassword.value);
+                                    this.passwordCheck(e.target.value, confirmPassword.value);
                                 }}
                                 placeholder="Password"/>
                             <ErrorIconComponent error={password.error}/>
@@ -211,13 +214,14 @@ class SignUp extends React.Component {
                                 type="password"
                                 className="form-control"
                                 id="passwordConfirmInput"
-                                value={this.state.confirmPassword.value}
+                                value={confirmPassword.value}
                                 onChange={(e) => {
-                                    this.passwordCheck(this.state.password.value, e.target.value);
+                                    this.passwordCheck(password.value, e.target.value);
                                 }}
                                 placeholder="Confirm Password"/>
                             <ErrorIconComponent error={confirmPassword.error}/>
                         </div>
+                        <ErrorMessageComponent error={regError}/>
                         <div className="form-group">
                             <button
                                 className="btn btn-primary form-control button-all-caps-text"

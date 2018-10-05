@@ -1,4 +1,4 @@
-export const API_URL = 'http://xsum.xops.it:5000';
+export const API_URL = 'http://xsum.xops.it';
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
@@ -17,7 +17,6 @@ export const USER_ADD_API = '/userAuth?action=registerUserData';
 export const USER_REMOVE_API = '/userAuth?action=removeUserData';
 export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
 
-export const RESPONSE_ERROR = 'Fail';
 export const RESPONSE_SUCCESS = 'Success';
 
 // ModalTypes
