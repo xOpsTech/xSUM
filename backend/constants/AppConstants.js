@@ -8,4 +8,4 @@ exports.USER_EXISTS = 'User already exists. Try with another email address';
 exports.EMAIL_NOT_EXISTS = 'Email does not exists';
 exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
 
-exports.INFLUXDB_IP = '10.128.0.18';
+exports.INFLUXDB_IP = '162.222.180.36';

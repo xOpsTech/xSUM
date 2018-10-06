@@ -1,6 +1,7 @@
 const Influx = require('influx');
+var AppConstants = require('../constants/AppConstants');
 const influx = new Influx.InfluxDB({
-    host: 'localhost',
+    host: AppConstants.INFLUXDB_IP,
     database: 'xsum'
 });
 

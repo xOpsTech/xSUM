@@ -207,7 +207,7 @@ class Login extends React.Component {
                     </form>
                 </div>
                 <div className="login-container-div">
-                    <OneTimeTest urlObject={{}}/>
+                    <OneTimeTest/>
                 </div>
             </Fragment>
         );
