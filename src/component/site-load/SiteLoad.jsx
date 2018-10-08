@@ -86,21 +86,20 @@ class SiteAdd extends React.Component {
 
     googleResponseSuccess(response) {
         var basicProfile = response.getBasicProfile();
-        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
-            {
-                userObj: JSON.stringify({
-                    name: basicProfile.getName(),
-                    email: basicProfile.getEmail(),
-                    profilePicPath: basicProfile.getImageUrl()
-                })
-            });
-        this.setState({
-            loggedUserObj: {
-                name: basicProfile.getName(),
-                email: basicProfile.getEmail(),
-                profilePicPath: basicProfile.getImageUrl()
-            }
+        var userObject = JSON.stringify({
+            name: basicProfile.getName(),
+            email: basicProfile.getEmail(),
+            profilePicPath: basicProfile.getImageUrl()
         });
+        UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
+        // this.setState({
+        //     loggedUserObj: {
+        //         name: basicProfile.getName(),
+        //         email: basicProfile.getEmail(),
+        //         profilePicPath: basicProfile.getImageUrl()
+        //     }
+        // });
     }
 
     googleResponseFail(response) {

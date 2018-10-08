@@ -44,9 +44,10 @@ class SiteAdd extends React.Component {
     }
 
     componentWillMount() {
+        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
 
-        if (this.props.location.query.userObj) {
-            var loggedUserObject = JSON.parse(this.props.location.query.userObj);
+        if (siteLoginCookie) {
+            var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
 
             this.getAllJobs(loggedUserObject);
@@ -218,10 +219,7 @@ class SiteAdd extends React.Component {
 
     navigateToResultView(e) {
         e.preventDefault();
-        UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE,
-            {
-                userObj: JSON.stringify(this.state.loggedUserObj)
-            });
+        UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
     }
 
     render() {

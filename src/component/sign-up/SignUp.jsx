@@ -101,12 +101,11 @@ class SignUp extends React.Component {
                 this.setState({isSignup: false});
 
                 if (response.message === AppConstants.RESPONSE_SUCCESS) {
-                    UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
-                        {
-                            userObj: JSON.stringify({
-                                email: response.user.email
-                            })
-                        });
+                    var userObject = JSON.stringify({
+                        email: response.user.email
+                    });
+                    UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
+                    UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
                 } else {
                     this.setState({regError: {hasError: true, name: response.message}});
                 }

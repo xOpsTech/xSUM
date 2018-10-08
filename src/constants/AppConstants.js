@@ -1,4 +1,6 @@
 export const API_URL = 'http://xsum.xops.it';
+export const SITE_LOGIN_COOKIE = 'xSumCookie';
+export const LOGIN_COOKIE_EXPIRES = 5;
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';

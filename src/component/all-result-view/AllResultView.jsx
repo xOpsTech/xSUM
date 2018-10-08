@@ -35,8 +35,10 @@ class AllResultView extends React.Component {
 
     componentWillMount() {
 
-        if (this.props.location.query.userObj) {
-            var loggedUserObject = JSON.parse(this.props.location.query.userObj);
+        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+
+        if (siteLoginCookie) {
+            var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
             this.getAllJobs(loggedUserObject);
         } else {
@@ -126,10 +128,7 @@ class AllResultView extends React.Component {
     }
 
     redirectToAddJob() {
-        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE,
-            {
-                userObj: JSON.stringify(this.state.loggedUserObj)
-            });
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
     }
 
     render() {

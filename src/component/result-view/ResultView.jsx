@@ -33,9 +33,10 @@ class ResultView extends React.Component {
     componentWillMount() {
 
         if (this.props.location.query.resultID) {
+            var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
 
-            if (this.props.location.query.userObj) {
-                var loggedUserObject = JSON.parse(this.props.location.query.userObj);
+            if (siteLoginCookie) {
+                var loggedUserObject = JSON.parse(siteLoginCookie);
                 this.setState({loggedUserObj: loggedUserObject});
             }
 
