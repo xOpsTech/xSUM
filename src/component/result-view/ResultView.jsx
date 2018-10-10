@@ -92,6 +92,19 @@ class ResultView extends React.Component {
             );
         };
 
+        var locationMarker = [];
+
+        if (resultObj) {
+            locationMarker.push({
+                svgPath: AppConstants.TARGET_SVG,
+                zoomLevel: 5,
+                scale: 2,
+                title: resultObj[0].locationTitle,
+                latitude: resultObj[0].latitude,
+                longitude: resultObj[0].longitude
+            });
+        }
+
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -135,7 +148,7 @@ class ResultView extends React.Component {
                                           </div>
                                       </div>
                                       <div className="col-xs-8 result-view-map">
-                                          <MapContainer height="100%" width="100%"/>
+                                          <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
                                       </div>
                                   </div>
                               </Fragment>

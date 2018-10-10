@@ -53,7 +53,8 @@ class AllResultView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            jobsWithResults: []
+            jobsWithResults: [],
+            locationMarker: []
         };
 
         return initialState;
@@ -71,6 +72,7 @@ class AllResultView extends React.Component {
 
                 jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}).then((jobResult) => {
                     var resultsArr = this.state.jobsWithResults;
+                    var locationMarkerArr = this.state.locationMarker;
                     resultsArr.push({
                         job: currentJob,
                         result: jobResult,
@@ -78,7 +80,19 @@ class AllResultView extends React.Component {
                         selectedChartIndex: '0',
                         barChartData: this.getArrangedBarChartData(jobResult, 0)
                     });
-                    this.setState({jobsWithResults: resultsArr});
+
+                    for (var j = 0; j < jobResult.length; j++) {
+                        locationMarkerArr.push({
+                            svgPath: AppConstants.TARGET_SVG,
+                            zoomLevel: 5,
+                            scale: 2,
+                            title: jobResult[j].locationTitle,
+                            latitude: jobResult[j].latitude,
+                            longitude: jobResult[j].longitude
+                        });
+                    }
+
+                    this.setState({jobsWithResults: resultsArr, locationMarker: locationMarkerArr});
                 });
 
             }
@@ -136,7 +150,8 @@ class AllResultView extends React.Component {
             isLoading,
             loadingMessage,
             loggedUserObj,
-            jobsWithResults
+            jobsWithResults,
+            locationMarker
         } = this.state;
 
         const ResultViewContainer = (props) => {
@@ -271,7 +286,7 @@ class AllResultView extends React.Component {
                 }
                 <div className="all-result-view">
                     <div className="row map-container">
-                        <MapContainer height="100%" width="100%"/>
+                        <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
                     </div>
                     <div className="row chart-view">
                         {

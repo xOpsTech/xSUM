@@ -23,7 +23,10 @@ class MapContainer extends React.Component {
     }
 
     render() {
-        const {height, width} = this.props;
+        const {height, width, locationMarker} = this.props;
+        console.log(locationMarker)
+        var dataProvider = AppConstants.MAP_CONTENT_DATA;
+        dataProvider.images = locationMarker;
         const mapConfig = {
             type: 'map',
             theme: 'dark',
@@ -35,7 +38,7 @@ class MapContainer extends React.Component {
                 color: '#a791b4',
                 rollOverColor: '#9a7bca'
             },
-            dataProvider: AppConstants.MAP_CONTENT_DATA
+            dataProvider: dataProvider
         };
 
         return (
@@ -46,7 +49,8 @@ class MapContainer extends React.Component {
 
 MapContainer.propTypes = {
     height: PropTypes.string,
-    width: PropTypes.string
+    width: PropTypes.string,
+    locationMarker: PropTypes.object.array
 };
 
 export default MapContainer;
