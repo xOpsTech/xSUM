@@ -82,17 +82,26 @@ class AllResultView extends React.Component {
                     });
 
                     for (var j = 0; j < jobResult.length; j++) {
-                        locationMarkerArr.push({
-                            svgPath: AppConstants.TARGET_SVG,
-                            zoomLevel: 5,
-                            scale: 2,
-                            title: jobResult[j].locationTitle,
-                            latitude: jobResult[j].latitude,
-                            longitude: jobResult[j].longitude
+                        // Check Result ID exists
+                        var isLocationFound = locationMarkerArr.find(function(locationObj) {
+                            return (locationObj.latitude === jobResult[j].latitude)
+                                && (locationObj.longitude === jobResult[j].longitude);
                         });
+
+                        if (!isLocationFound) {
+                            locationMarkerArr.push({
+                                svgPath: AppConstants.TARGET_SVG,
+                                zoomLevel: 5,
+                                scale: 2,
+                                title: jobResult[j].locationTitle,
+                                latitude: jobResult[j].latitude,
+                                longitude: jobResult[j].longitude
+                            });
+                        }
+
                     }
 
-                    this.setState({jobsWithResults: resultsArr, locationMarker: locationMarkerArr});
+                    this.setState({jobsWithResults: resultsArr});
                 });
 
             }
@@ -285,9 +294,13 @@ class AllResultView extends React.Component {
                           </div>
                 }
                 <div className="all-result-view">
-                    <div className="row map-container">
-                        <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
-                    </div>
+                    {
+                        (locationMarker.length > 0)
+                            ? <div className="row map-container">
+                                  <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
+                              </div>
+                            : <MapContainer height="100%" width="100%" locationMarker={[]}/>
+                    }
                     <div className="row chart-view">
                         {
                             (jobsWithResults.length > 0)

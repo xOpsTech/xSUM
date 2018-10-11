@@ -53,7 +53,8 @@ class ResultView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            resultObj: null
+            resultObj: null,
+            locationMarker: []
         };
 
         return initialState;
@@ -63,6 +64,15 @@ class ResultView extends React.Component {
         var url = AppConstants.API_URL + AppConstants.GET_RESULT_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_RESULT});
         jobApi.getResult(url, {resultID}).then((data) => {
+            var locationMarkerArr = this.state.locationMarker;
+            locationMarkerArr.push({
+                svgPath: AppConstants.TARGET_SVG,
+                zoomLevel: 5,
+                scale: 2,
+                title: data[0].locationTitle,
+                latitude: data[0].latitude,
+                longitude: data[0].longitude
+            });
             this.setState({resultObj: data, isLoading: false, loadingMessage: ''});
         });
     }
@@ -76,7 +86,8 @@ class ResultView extends React.Component {
             isLoading,
             loadingMessage,
             loggedUserObj,
-            resultObj
+            resultObj,
+            locationMarker
         } = this.state;
 
         const ResultTile = (props) => {
@@ -91,19 +102,6 @@ class ResultView extends React.Component {
                 </div>
             );
         };
-
-        var locationMarker = [];
-
-        if (resultObj) {
-            locationMarker.push({
-                svgPath: AppConstants.TARGET_SVG,
-                zoomLevel: 5,
-                scale: 2,
-                title: resultObj[0].locationTitle,
-                latitude: resultObj[0].latitude,
-                longitude: resultObj[0].longitude
-            });
-        }
 
         return (
             <Fragment>

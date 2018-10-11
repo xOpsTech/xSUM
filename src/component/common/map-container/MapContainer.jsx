@@ -11,22 +11,14 @@ import Styles from './MapContainerStyles.less';
 class MapContainer extends React.Component {
     constructor(props) {
         super(props);
-
-        // Setting initial state objects
-        this.state  = this.getInitialState();
-    }
-
-    // Returns initial props
-    getInitialState() {
-        var initialState = {};
-        return initialState;
     }
 
     render() {
         const {height, width, locationMarker} = this.props;
-        console.log(locationMarker)
         var dataProvider = AppConstants.MAP_CONTENT_DATA;
-        dataProvider.images = locationMarker;
+
+        if (locationMarker.length > 0) dataProvider.images = locationMarker;
+
         const mapConfig = {
             type: 'map',
             theme: 'dark',
