@@ -13,7 +13,7 @@ import AllResultView from './component/all-result-view/AllResultView';
 
 export default (
     <Route path={'/'} component={Page}>
-        <IndexRoute component={SiteLoad}/>
+        <IndexRoute component={Login}/>
         <Route path={AppConstants.LOGIN_ROUTE} component={Login}/>
         <Route path={AppConstants.SIGN_UP_ROUTE} component={SignUp}/>
         <Route path={AppConstants.SITEADD_ROUTE} component={SiteAdd}/>

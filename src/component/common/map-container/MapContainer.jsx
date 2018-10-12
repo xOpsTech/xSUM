@@ -33,9 +33,19 @@ class MapContainer extends React.Component {
             dataProvider: dataProvider
         };
 
-        return (
-            <AmCharts.React style={{width, height}} options={mapConfig}/>
-        );
+        if (locationMarker.length === 0) {
+            return (
+                <div className="row map-container">
+                    <AmCharts.React style={{width, height}} options={mapConfig}/>
+                </div>
+            );
+        } else {
+            return (
+                <AmCharts.React style={{width, height}} options={mapConfig}/>
+            );
+        }
+
+
     }
 }
 
