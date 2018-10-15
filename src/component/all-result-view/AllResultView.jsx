@@ -242,23 +242,32 @@ class AllResultView extends React.Component {
             if (props.jobWithResult.result.length > 0) {
                 return (
                     <div className="row single-chart">
-                        <select className="form-control form-control-sm form-group chart-drop-down"
-                            value={props.jobWithResult.selectedChartIndex}
-                            onChange={(e) => this.chartDropDownClick(
-                                props.keyID,
-                                props.jobWithResult,
-                                e.target.value)
-                            }>
-                            {
-                                AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
-                                    return (
-                                        <option key={'chartType_' + i} value={i}>
-                                            {chartType.textValue}
-                                        </option>
-                                    );
-                                })
-                            }
-                        </select>
+                        <div className="row">
+                            <div className="col-sm-3">
+                                <h4 className="job-name-div">
+                                    Job Name : {props.jobWithResult.job.jobName}
+                                </h4>
+                            </div>
+                            <div className="col-sm-5">
+                                <select className="form-control form-control-sm form-group chart-drop-down"
+                                    value={props.jobWithResult.selectedChartIndex}
+                                    onChange={(e) => this.chartDropDownClick(
+                                        props.keyID,
+                                        props.jobWithResult,
+                                        e.target.value)
+                                    }>
+                                    {
+                                        AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
+                                            return (
+                                                <option key={'chartType_' + i} value={i}>
+                                                    {chartType.textValue}
+                                                </option>
+                                            );
+                                        })
+                                    }
+                                </select>
+                            </div>
+                        </div>
                         <div className="row">
                             <div className="col-sm-4">
                                 <div className="row">
