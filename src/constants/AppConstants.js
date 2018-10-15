@@ -1,4 +1,5 @@
 export const API_URL = 'http://xsum.xops.it';
+export const GIT_PROJECT_URL = 'https://github.com/xOpsTech/xSumFE';
 export const SITE_LOGIN_COOKIE = 'xSumCookie';
 export const LOGIN_COOKIE_EXPIRES = 30;
 
@@ -123,3 +124,26 @@ export const MAP_CONTENT_DATA = {
         }
     ]
 };
+
+export const LEFT_NAV_TABS = [
+    {
+        index: 0,
+        text: 'Dashboard',
+        route: ALL_RESULT_VIEW_ROUTE
+    },
+    {
+        index: 1,
+        text: 'Tests',
+        route: ALL_RESULT_VIEW_ROUTE
+    },
+    {
+        index: 2,
+        text: 'Alerts',
+        route: ALL_RESULT_VIEW_ROUTE
+    },
+    {
+        index: 3,
+        text: 'Management',
+        route: ALL_RESULT_VIEW_ROUTE
+    }
+];

@@ -17,7 +17,7 @@ class ErrorIconComponent extends React.Component {
         }
 
     }
-};
+}
 
 ErrorIconComponent.propTypes = {
     error: PropTypes.object

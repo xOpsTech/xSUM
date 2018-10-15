@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import LoginContainer from '../login-container/LoginContainer';
+import * as AppConstants from '../../../constants/AppConstants';
 
 /* eslint-disable no-unused-vars */
 import Styles from './NavContainerStyles.less';
@@ -10,6 +11,8 @@ import Styles from './NavContainerStyles.less';
 class NavContainer extends React.Component {
     constructor(props) {
         super(props);
+
+        this.navigateToSourceCode = this.navigateToSourceCode.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -22,10 +25,17 @@ class NavContainer extends React.Component {
         return initialState;
     }
 
+    navigateToSourceCode() {
+        window.location.href = AppConstants.GIT_PROJECT_URL;
+    }
+
     render() {
-        const {loggedUserObj, viewHistory, addJob, siteLoad} = this.props;
+        const {loggedUserObj, viewHistory, addJob, siteLoad, isFixedNav} = this.props;
         return (
-            <nav className="nav-container navbar navbar-expand-lg navbar-light bg-light">
+            <nav className={
+                    'nav-container navbar navbar-expand-lg navbar-light bg-light '
+                    + ((isFixedNav) ? 'fixed-nav-bar' : '')
+                }>
                 <a className="navbar-brand" href="#">
                     <img className="logo-nav-sm-img" src="./assets/img/logo.png"/>
                 </a>
@@ -57,7 +67,10 @@ class NavContainer extends React.Component {
                 }
 
                 <div className="get-involved-container">
-                    <img className="get-involve-icon" src="./assets/img/get-involve-img.png"/>
+                    <img
+                        className="get-involve-icon"
+                        src="./assets/img/get-involve-img.png"
+                        onClick={this.navigateToSourceCode}/>
                 </div>
             </nav>
         );
@@ -65,7 +78,8 @@ class NavContainer extends React.Component {
 }
 
 NavContainer.propTypes = {
-    loggedUserObj: PropTypes.object
+    loggedUserObj: PropTypes.object,
+    isFixedNav: PropTypes.boolean
 };
 
 export default NavContainer;

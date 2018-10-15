@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
 
+import LeftNav from '../common/left-nav/LeftNav';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import MapContainer from '../common/map-container/MapContainer';
@@ -285,7 +286,7 @@ class AllResultView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                                  loggedUserObj={loggedUserObj}/>
+                                  loggedUserObj={loggedUserObj} isFixedNav={true}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -293,6 +294,7 @@ class AllResultView extends React.Component {
                               </button>
                           </div>
                 }
+                <LeftNav selectedIndex={0}/>
                 <div className="all-result-view">
                     {
                         (locationMarker.length > 0)

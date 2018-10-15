@@ -50,18 +50,19 @@ class SignUp extends React.Component {
     }
 
     passwordCheck(passwordText, confirmPasswordText) {
+        var error;
 
         if (passwordText !== confirmPasswordText) {
-            var error = {
+            error = {
                 hasError: true,
                 name: MessageConstants.PASSWORD_CONFIRM_MATCH_ERROR
-            }
+            };
             this.handleChange({
                 password: {value: passwordText, error},
                 confirmPassword: {value: confirmPasswordText, error}
             });
         } else {
-            var error = {
+            error = {
                 hasError: UIHelper.isPasswordHasError(passwordText),
                 name: MessageConstants.INVALID_PASSWORD_ERROR
             };
