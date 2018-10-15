@@ -143,7 +143,8 @@ Api.prototype.insertJob = function(req, res) {
         isRecursiveCheck: jobObj.isRecursiveCheck,
         recursiveSelect: jobObj.recursiveSelect,
         result: [],
-        userEmail: jobObj.userEmail
+        userEmail: jobObj.userEmail,
+        jobName: jobObj.jobName
     };
 
     MongoDB.insertJobWithUserCheck(AppConstants.DB_JOB_LIST, jobInsertObj, res, executeScheduleJob);

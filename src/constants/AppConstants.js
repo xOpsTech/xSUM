@@ -28,7 +28,8 @@ export const DATA_MODAL = 'DATA_MODAL';
 export const RESULT_MODAL = 'RESULT_MODAL';
 
 // Constants for patterns
-export const URL_PATTERN       = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+export const NAME_PATTERN       = /[A-Za-z\s]+$/;
+export const URL_PATTERN        = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
 export const EMAIL_PATTERN      = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const PASSWORD_PATTERN   = /.{6,}/;
 export const EMPTY_TEXT_PATTERN = /^\s*$/;
@@ -44,6 +45,7 @@ export const SIGN_UP_ROUTE = '/sign-up';
 export const SITE_RESULT_ROUTE = '/resultView';
 export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
+export const ALERT_VIEW_ROUTE = '/alertView';
 
 // URL status
 export const URL_DONE_STATE = 'Done';
@@ -139,7 +141,7 @@ export const LEFT_NAV_TABS = [
     {
         index: 2,
         text: 'Alerts',
-        route: ALL_RESULT_VIEW_ROUTE
+        route: ALERT_VIEW_ROUTE
     },
     {
         index: 3,

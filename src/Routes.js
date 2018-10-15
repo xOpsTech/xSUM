@@ -10,6 +10,7 @@ import SiteLoad from './component/site-load/SiteLoad';
 import ResultView from './component/result-view/ResultView';
 import ResultChartView from './component/result-chart-view/ResultChartView';
 import AllResultView from './component/all-result-view/AllResultView';
+import AlertView from './component/alert-view/AlertView';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -21,5 +22,6 @@ export default (
         <Route path={AppConstants.SITE_RESULT_ROUTE} component={ResultView}/>
         <Route path={AppConstants.SITE_CHART_RESULT_ROUTE} component={ResultChartView}/>
         <Route path={AppConstants.ALL_RESULT_VIEW_ROUTE} component={AllResultView}/>
+        <Route path={AppConstants.ALERT_VIEW_ROUTE} component={AlertView}/>
     </Route>
 );

@@ -70,7 +70,8 @@ class SiteAdd extends React.Component {
             isRecursiveCheck: true,
             recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
             isModalVisible: false,
-            siteToResult: null
+            siteToResult: null,
+            jobName: {value: '', error: {}}
         };
 
         return initialState;
@@ -104,7 +105,7 @@ class SiteAdd extends React.Component {
     addJobClick(e) {
         e.preventDefault();
 
-        var {siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect} = this.state;
+        var {siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName} = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
             siteObject.value = 'http://' + siteObject.value;
@@ -115,7 +116,8 @@ class SiteAdd extends React.Component {
                 scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
                 isRecursiveCheck,
                 recursiveSelect,
-                userEmail: this.state.loggedUserObj.email
+                userEmail: this.state.loggedUserObj.email,
+                jobName: jobName.value
             };
 
             var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
@@ -233,7 +235,8 @@ class SiteAdd extends React.Component {
             loggedUserObj,
             isRecursiveCheck,
             isModalVisible,
-            siteToResult
+            siteToResult,
+            jobName
         } = this.state;
 
         return (
@@ -260,6 +263,29 @@ class SiteAdd extends React.Component {
                         name="site-add-form"
                         method="post">
                         <h1 className="site-add-title">Monitor Site 24/7</h1>
+                        <div className={
+                            'form-group has-feedback job-name-input ' +
+                            ((jobName.error.hasError !== undefined)
+                                ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
+                            }>
+                            <input
+                                value={jobName.value}
+                                onChange={(e) => {
+                                    this.handleChange(e, {
+                                        jobName: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.NAME_ERROR
+                                            }
+                                        }
+                                    });
+                                }}
+                                type="text"
+                                className="form-control"
+                                id="jobNameInput"
+                                placeholder="JOB NAME"/>
+                        </div>
                         <div className="form-group">
                             <div className={
                                     'input-group has-feedback ' +

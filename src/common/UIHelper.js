@@ -81,6 +81,10 @@ export function toTitleCase(str) {
 
 }
 
+export function isNameHasError(value) {
+    return !RegExp(AppConstants.NAME_PATTERN).test(value);
+}
+
 export function isUrlHasError(value) {
     return !RegExp(AppConstants.URL_PATTERN).test(value);
 }

@@ -19,20 +19,13 @@ class LeftNav extends React.Component {
 
     // Returns initial props
     getInitialState() {
-        var initialState = {
-            activeIndex: 0
-        };
+        var initialState = {};
 
         return initialState;
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({activeIndex: nextProps.selectedIndex});
-    }
-
     tabOnClick(e, selectedTab) {
         e.preventDefault();
-        this.setState({activeIndex: selectedTab.index});
 
         if (this.props.selectedIndex !== selectedTab.index) {
             UIHelper.redirectTo(selectedTab.route, {});
@@ -41,12 +34,12 @@ class LeftNav extends React.Component {
     }
 
     render() {
-        const {activeIndex} = this.state;
+        const {selectedIndex} = this.props;
 
         return (
             <div id="leftNavContainer" role="navigation" aria-label="left">
                 <Nav id="leftNav"
-                    activeKey={activeIndex}
+                    activeKey={selectedIndex}
                     onSelect={this.handleNavSelect}>
                     {
                         AppConstants.LEFT_NAV_TABS.map((tab, i) => {
@@ -68,6 +61,10 @@ class LeftNav extends React.Component {
         );
     }
 }
+
+LeftNav.defaultProps = {
+    selectedIndex: 0
+};
 
 LeftNav.propTypes = {
 };

@@ -1,3 +1,4 @@
+export const NAME_ERROR = 'Invalid Job Name';
 export const URL_ERROR = 'Url is invalid.';
 export const EMAIL_ERROR = 'Email address invalid.';
 export const INVALID_PASSWORD_ERROR = 'Password invalid - password must be at least 6 characters.';

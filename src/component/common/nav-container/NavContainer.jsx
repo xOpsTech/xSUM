@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import LoginContainer from '../login-container/LoginContainer';
 import * as AppConstants from '../../../constants/AppConstants';
+import * as UIHelper from '../../../common/UIHelper';
 
 /* eslint-disable no-unused-vars */
 import Styles from './NavContainerStyles.less';
@@ -13,6 +14,7 @@ class NavContainer extends React.Component {
         super(props);
 
         this.navigateToSourceCode = this.navigateToSourceCode.bind(this);
+        this.logoClick = this.logoClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -26,7 +28,19 @@ class NavContainer extends React.Component {
     }
 
     navigateToSourceCode() {
-        window.location.href = AppConstants.GIT_PROJECT_URL;
+        window.open(AppConstants.GIT_PROJECT_URL, '_blank');
+    }
+
+    logoClick(e) {
+        e.preventDefault();
+
+        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+
+        if (siteLoginCookie) {
+            UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE);
+        } else {
+            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+        }
     }
 
     render() {
@@ -36,7 +50,7 @@ class NavContainer extends React.Component {
                     'nav-container navbar navbar-expand-lg navbar-light bg-light '
                     + ((isFixedNav) ? 'fixed-nav-bar' : '')
                 }>
-                <a className="navbar-brand" href="#">
+                <a className="navbar-brand" onClick={this.logoClick}>
                     <img className="logo-nav-sm-img" src="./assets/img/logo.png"/>
                 </a>
                 {
@@ -76,6 +90,10 @@ class NavContainer extends React.Component {
         );
     }
 }
+
+NavContainer.defaultProps = {
+    isFixedNav: false
+};
 
 NavContainer.propTypes = {
     loggedUserObj: PropTypes.object,
