@@ -4,6 +4,7 @@ var AppConstants = require('../../constants/AppConstants');
 var path = require('path');
 var cmd = require('node-cmd');
 var crypto = require('crypto');
+var moment = require('moment');
 
 var jobTimers = {};
 
@@ -254,8 +255,9 @@ Api.prototype.getResult = function(req, res) {
 
 Api.prototype.getAllResultsForJob = function(req, res) {
     var jobObj = req.body;
+    var yesterDay = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
     InfluxDB.getAllData(
-        "SELECT * FROM pageLoadTime where jobid='" + jobObj.jobID+ "'"
+        "SELECT * FROM pageLoadTime where jobid='" + jobObj.jobID+ "' and time >= '" + yesterDay + "'"
     ).then((result) => {
         res.send(result);
     }).catch((error) => {

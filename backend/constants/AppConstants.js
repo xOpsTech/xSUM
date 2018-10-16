@@ -9,3 +9,4 @@ exports.EMAIL_NOT_EXISTS = 'Email does not exists';
 exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
 
 exports.INFLUXDB_IP = '35.225.198.211';
+exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
