@@ -243,12 +243,7 @@ class AllResultView extends React.Component {
                 return (
                     <div className="row single-chart">
                         <div className="row">
-                            <div className="col-sm-3">
-                                <h4 className="job-name-div">
-                                    Job Name : {props.jobWithResult.job.jobName}
-                                </h4>
-                            </div>
-                            <div className="col-sm-5">
+                            <div className="col-sm-4">
                                 <select className="form-control form-control-sm form-group chart-drop-down"
                                     value={props.jobWithResult.selectedChartIndex}
                                     onChange={(e) => this.chartDropDownClick(
@@ -266,6 +261,11 @@ class AllResultView extends React.Component {
                                         })
                                     }
                                 </select>
+                            </div>
+                            <div className="col-sm-3">
+                                <h4 className="job-name-div">
+                                    Job Name : {props.jobWithResult.job.jobName}
+                                </h4>
                             </div>
                         </div>
                         <div className="row">
