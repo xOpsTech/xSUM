@@ -225,4 +225,13 @@ MongoDB.prototype.fetchDataWithInflux = function(collectionName, query, response
 
 }
 
+MongoDB.prototype.getAllData = async function(collectionName, query) {
+    var dbObject = await connectDB();
+    var allresults = await getResult(dbObject, collectionName, query);
+
+    return new Promise((resolve) => {
+        resolve(allresults);
+    });
+}
+
 module.exports = new MongoDB();

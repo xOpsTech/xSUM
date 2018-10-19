@@ -20,6 +20,9 @@ export const USER_ADD_API = '/userAuth?action=registerUserData';
 export const USER_REMOVE_API = '/userAuth?action=removeUserData';
 export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
 
+export const SAVE_ALERT_API = '/alert?action=saveAlert';
+export const ALERTS_GET_API = '/alert?action=getAllAlerts';
+
 export const RESPONSE_SUCCESS = 'Success';
 
 // ModalTypes

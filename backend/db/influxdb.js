@@ -15,4 +15,14 @@ InfluxDB.prototype.removeData = function(query) {
     influx.query(query);
 }
 
+InfluxDB.prototype.getAllDataFor = async function(query) {
+    return new Promise((resolve) => {
+        influx.query(query).then((result) => {
+            resolve(result);
+        }).catch((error) => {
+            resolve(error);
+        })
+    });
+}
+
 module.exports = new InfluxDB();

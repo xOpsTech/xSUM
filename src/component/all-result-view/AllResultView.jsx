@@ -67,10 +67,8 @@ class AllResultView extends React.Component {
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         jobApi.getAllJobsFrom(urlToGetJobs, {userEmail: loggedUserObj.email}).then((data) => {
-
             for (var i = 0; i < data.length; i++) {
-                var currentJob = data[i];
-
+                var currentJob = Object.assign(data[i]);
                 jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}).then((jobResult) => {
                     var resultsArr = this.state.jobsWithResults;
                     var locationMarkerArr = this.state.locationMarker;
@@ -113,6 +111,15 @@ class AllResultView extends React.Component {
 
     getArrangedBarChartData(jobResult, selectedChartIndex) {
         var resultArray = [];
+
+        if (jobResult.length === 0) {
+            resultArray.push({
+                execution: moment().format(AppConstants.TIME_ONLY_FORMAT),
+                responseTime: 0,
+                color: '#eb00ff',
+                resultID: -1
+            });
+        }
 
         for (var i = 0; i < jobResult.length; i++) {
 
@@ -239,54 +246,53 @@ class AllResultView extends React.Component {
                 }
             };
 
-            if (props.jobWithResult.result.length > 0) {
-                return (
-                    <div className="row single-chart">
-                        <div className="row">
-                            <div className="col-sm-4">
-                                <select className="form-control form-control-sm form-group chart-drop-down"
-                                    value={props.jobWithResult.selectedChartIndex}
-                                    onChange={(e) => this.chartDropDownClick(
-                                        props.keyID,
-                                        props.jobWithResult,
-                                        e.target.value)
-                                    }>
-                                    {
-                                        AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
-                                            return (
-                                                <option key={'chartType_' + i} value={i}>
-                                                    {chartType.textValue}
-                                                </option>
-                                            );
-                                        })
-                                    }
-                                </select>
-                            </div>
-                            <div className="col-sm-3">
-                                <h4 className="job-name-div">
-                                    Job Name : {props.jobWithResult.job.jobName}
-                                </h4>
-                            </div>
+            return (
+                <div className="row single-chart">
+                    <div className="row">
+                        <div className="col-sm-4">
+                            {
+                                (props.jobWithResult.result.length > 0)
+                                    ? <select className="form-control form-control-sm form-group chart-drop-down"
+                                        value={props.jobWithResult.selectedChartIndex}
+                                        onChange={(e) => this.chartDropDownClick(
+                                            props.keyID,
+                                            props.jobWithResult,
+                                            e.target.value)
+                                        }>
+                                        {
+                                            AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
+                                                return (
+                                                    <option key={'chartType_' + i} value={i}>
+                                                        {chartType.textValue}
+                                                    </option>
+                                                );
+                                            })
+                                        }
+                                      </select>
+                                    : null
+                            }
                         </div>
-                        <div className="row">
-                            <div className="col-sm-4">
-                                <div className="row">
-                                    <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
-                                </div>
-                                <div className="row pie-chart-heading">
-                                    Last Test Average
-                                </div>
-                            </div>
-                            <div className="col-sm-8">
-                                <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
-                            </div>
+                        <div className="col-sm-3">
+                            <h4 className="job-name-div">
+                                Job Name : {props.jobWithResult.job.jobName}
+                            </h4>
                         </div>
                     </div>
-                );
-            } else {
-                return null;
-            }
-
+                    <div className="row">
+                        <div className="col-sm-4">
+                            <div className="row">
+                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+                            </div>
+                            <div className="row pie-chart-heading">
+                                Last Test Average
+                            </div>
+                        </div>
+                        <div className="col-sm-8">
+                            <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
+                        </div>
+                    </div>
+                </div>
+            );
         };
 
         return (

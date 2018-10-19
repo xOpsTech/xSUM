@@ -34,10 +34,11 @@ class LeftNav extends React.Component {
     }
 
     render() {
-        const {selectedIndex} = this.props;
+        const {selectedIndex, isFixedLeftNav} = this.props;
 
         return (
-            <div id="leftNavContainer" role="navigation" aria-label="left">
+            <div id="leftNavContainer" role="navigation" aria-label="left"
+                className={(isFixedLeftNav) ? 'fixed-top-nav-bar' : ''}>
                 <Nav id="leftNav"
                     activeKey={selectedIndex}
                     onSelect={this.handleNavSelect}>
@@ -63,7 +64,8 @@ class LeftNav extends React.Component {
 }
 
 LeftNav.defaultProps = {
-    selectedIndex: 0
+    selectedIndex: 0,
+    isFixedLeftNav: true
 };
 
 LeftNav.propTypes = {
