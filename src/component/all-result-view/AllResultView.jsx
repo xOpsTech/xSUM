@@ -69,22 +69,22 @@ class AllResultView extends React.Component {
         jobApi.getAllJobsFrom(urlToGetJobs, {userEmail: loggedUserObj.email}).then((data) => {
             for (var i = 0; i < data.length; i++) {
                 var currentJob = Object.assign(data[i]);
-                jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}).then((jobResult) => {
+                jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}, currentJob).then((jobResult) => {
                     var resultsArr = this.state.jobsWithResults;
                     var locationMarkerArr = this.state.locationMarker;
                     resultsArr.push({
-                        job: currentJob,
-                        result: jobResult,
+                        job: jobResult.jobData,
+                        result: jobResult.resposeObj,
                         selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                         selectedChartIndex: '0',
-                        barChartData: this.getArrangedBarChartData(jobResult, 0)
+                        barChartData: this.getArrangedBarChartData(jobResult.resposeObj, 0)
                     });
 
-                    for (var j = 0; j < jobResult.length; j++) {
+                    for (var j = 0; j < jobResult.resposeObj.length; j++) {
                         // Check Result ID exists
                         var isLocationFound = locationMarkerArr.find(function(locationObj) {
-                            return (locationObj.latitude === jobResult[j].latitude)
-                                && (locationObj.longitude === jobResult[j].longitude);
+                            return (locationObj.latitude === jobResult.resposeObj[j].latitude)
+                                && (locationObj.longitude === jobResult.resposeObj[j].longitude);
                         });
 
                         if (!isLocationFound) {
@@ -92,9 +92,9 @@ class AllResultView extends React.Component {
                                 svgPath: AppConstants.TARGET_SVG,
                                 zoomLevel: 5,
                                 scale: 2,
-                                title: jobResult[j].locationTitle,
-                                latitude: jobResult[j].latitude,
-                                longitude: jobResult[j].longitude
+                                title: jobResult.resposeObj[j].locationTitle,
+                                latitude: jobResult.resposeObj[j].latitude,
+                                longitude: jobResult.resposeObj[j].longitude
                             });
                         }
 

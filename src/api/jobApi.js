@@ -45,11 +45,24 @@ class jobApi {
         });
     }
 
-    static getResult(webserviceUrl, jobObj) {
+    static getResult(webserviceUrl, jobObj, jobData) {
         return fetchRequests.postRequest(webserviceUrl, jobObj).then((response) => {
 
-            if (response.ok) {
-                return response.json();
+            if (jobData) {
+                return new Promise((resolve) => {
+                    response.json().then((DataObject) => {
+                        var resultObj = {resposeObj: DataObject, jobData: jobData};
+                        resolve(resultObj);
+                    }).catch((error) => {
+                        resolve(error);
+                    })
+                });
+            } else {
+
+                if (response.ok) {
+                    return response.json();
+                }
+
             }
 
             return Promise.reject(response);
