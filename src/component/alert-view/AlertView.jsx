@@ -54,7 +54,8 @@ class AlertView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             alertsData: [],
-            selectedAlertData: null
+            selectedAlertData: null,
+            selectedAlertIndex: 0
         };
 
         return initialState;
@@ -110,7 +111,8 @@ class AlertView extends React.Component {
             isLoading,
             loadingMessage,
             alertsData,
-            selectedAlertData
+            selectedAlertData,
+            selectedAlertIndex
         } = this.state;
 
         const JobNameDropDown = (props) => {
@@ -126,9 +128,13 @@ class AlertView extends React.Component {
             } else {
                 return (
                     <select
+                        value={selectedAlertIndex}
                         className="form-control form-group alert-drop-down"
                         onChange={(e) => this.dropDownClick(
-                            {selectedAlertData: alertsData[e.target.value]})
+                            {
+                                selectedAlertData: alertsData[e.target.value],
+                                selectedAlertIndex: e.target.value
+                            })
                         }>
                         {
                             alertsData.map((alert, i) => {
