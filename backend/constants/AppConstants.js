@@ -13,5 +13,5 @@ exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
 exports.INFLUXDB_IP = '35.225.198.211';
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
-exports.EMAIL_USERNAME = 'xoa9.xops@gmail.com';
-exports.EMAIL_PASSWORD = 'xoa9.xops1!';
+exports.EMAIL_USERNAME = 'xsum.xops@gmail.com';
+exports.EMAIL_PASSWORD = 'xsum@9871az';
