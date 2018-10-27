@@ -229,47 +229,49 @@ function executeJob(collectionName, objectToInsert) {
             };
             MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
 
-            console.log("objectToInsert.jobId", objectToInsert.jobId)
-            console.log("curDateMilliSec", curDateMilliSec)
             // Send alert
             var jobResults = await InfluxDB.getAllDataFor(
                 "SELECT * FROM pageLoadTime where jobid='"
                 + objectToInsert.jobId + "' and curDateMilliSec = '" + curDateMilliSec + "'"
             );
-            console.log("jobResults", jobResults)
 
             var queryToGetJobAlert = {
                 'job.jobId': objectToInsert.jobId
             };
 
             var alertObjData = await MongoDB.getAllData(AppConstants.ALERT_LIST, queryToGetJobAlert);
-            console.log("alertObjData", alertObjData)
 
-            // for (var j = 0; j < jobResults.length; j++) {
-            //
-            //     if (jobResults[j].mean > alertObjData[0].warningThreshold) {
-            //
-            //         // Send warning alert
-            //         var emailBodyToSend = 'Hi ,<br><br>' +
-            //                                 'The job you have added for <b>' +
-            //                                 objectToInsert.siteObject.value +
-            //                                 '</b> is having high respnse time.<br><br>' +
-            //                                 'Regards,<br>xSUM admin';
-            //
-            //         Helpers.sendEmail(objectToInsert.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
-            //     } else if (jobResults[j].mean > alertObjData[0].criticalThreshold) {
-            //
-            //         // Send critical alert
-            //         var emailBodyToSend = 'Hi ,<br><br>' +
-            //                                 'The job you have added for <b>' +
-            //                                 objectToInsert.siteObject.value +
-            //                                 '</b> is having high respnse time.<br><br>' +
-            //                                 'Regards,<br>xSUM admin';
-            //
-            //         Helpers.sendEmail(objectToInsert.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
-            //     }
-            //
-            // }
+            if (alertObjData.length > 0) {
+
+                for (var j = 0; j < jobResults.length; j++) {
+
+                    if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
+
+                        // Send warning alert
+                        var emailBodyToSend = 'Hi ,<br><br>' +
+                                                'The job you have added for <b>' +
+                                                objectToInsert.siteObject.value +
+                                                '</b> is having high respnse time.<br><br>' +
+                                                'Regards,<br>xSUM admin';
+
+                        Helpers.sendEmail(objectToInsert.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
+                        break;
+                    } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
+
+                        // Send critical alert
+                        var emailBodyToSend = 'Hi ,<br><br>' +
+                                                'The job you have added for <b>' +
+                                                objectToInsert.siteObject.value +
+                                                '</b> is having high respnse time.<br><br>' +
+                                                'Regards,<br>xSUM admin';
+
+                        Helpers.sendEmail(objectToInsert.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
+                        break;
+                    }
+
+                }
+
+            }
 
         }
     );
