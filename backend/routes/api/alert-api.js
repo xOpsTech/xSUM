@@ -1,5 +1,4 @@
 var AppConstants = require('../../constants/AppConstants');
-var Helpers = require('../../common/Helpers');
 var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
 
@@ -34,13 +33,6 @@ AlertApi.prototype.saveAlert = function(req, res) {
         MongoDB.insertData(AppConstants.ALERT_LIST, alertObj, res);
     }
 
-    var emailBodyToSend = 'Hi ,<br><br>' +
-                            'The job you have added for <b>' +
-                            alertObj.job.siteObject.value +
-                            '</b> is having high respnse time.<br><br>' +
-                            'Regards,<br>xSUM admin';
-
-    Helpers.sendEmail(alertObj.email, 'Alert from xSUM', emailBodyToSend, res);
 }
 
 AlertApi.prototype.getAllAlerts = async function(req, res) {

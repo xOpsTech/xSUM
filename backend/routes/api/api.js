@@ -5,6 +5,7 @@ var path = require('path');
 var cmd = require('node-cmd');
 var crypto = require('crypto');
 var moment = require('moment');
+var Helpers = require('../../common/Helpers');
 
 var jobTimers = {};
 
@@ -209,21 +210,67 @@ function executeJob(collectionName, objectToInsert) {
     var locationLatitude = 36.7783;
     var locationLongitude = -119.4179;
 
+    var curDateMilliSec = new Date().getTime();
+
     //Send process request to sitespeed
     var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
         ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
-        + ',longitude=' + locationLongitude + '" ' + objectToInsert.siteObject.value;
+        + ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" '
+        + objectToInsert.siteObject.value;
     cmd.get(
         commandStr,
-        function(err, data, stderr) {
+        async function(err, data, stderr) {
             objectToInsert.result.push({resultID: resultID, executedDate: new Date()});
             var newValueObj = {
                 result: objectToInsert.result
             };
             MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
+
+            console.log("objectToInsert.jobId", objectToInsert.jobId)
+            console.log("curDateMilliSec", curDateMilliSec)
+            // Send alert
+            var jobResults = await InfluxDB.getAllDataFor(
+                "SELECT * FROM pageLoadTime where jobid='"
+                + objectToInsert.jobId + "' and curDateMilliSec = '" + curDateMilliSec + "'"
+            );
+            console.log("jobResults", jobResults)
+
+            var queryToGetJobAlert = {
+                'job.jobId': objectToInsert.jobId
+            };
+
+            var alertObjData = await MongoDB.getAllData(AppConstants.ALERT_LIST, queryToGetJobAlert);
+            console.log("alertObjData", alertObjData)
+
+            // for (var j = 0; j < jobResults.length; j++) {
+            //
+            //     if (jobResults[j].mean > alertObjData[0].warningThreshold) {
+            //
+            //         // Send warning alert
+            //         var emailBodyToSend = 'Hi ,<br><br>' +
+            //                                 'The job you have added for <b>' +
+            //                                 objectToInsert.siteObject.value +
+            //                                 '</b> is having high respnse time.<br><br>' +
+            //                                 'Regards,<br>xSUM admin';
+            //
+            //         Helpers.sendEmail(objectToInsert.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
+            //     } else if (jobResults[j].mean > alertObjData[0].criticalThreshold) {
+            //
+            //         // Send critical alert
+            //         var emailBodyToSend = 'Hi ,<br><br>' +
+            //                                 'The job you have added for <b>' +
+            //                                 objectToInsert.siteObject.value +
+            //                                 '</b> is having high respnse time.<br><br>' +
+            //                                 'Regards,<br>xSUM admin';
+            //
+            //         Helpers.sendEmail(objectToInsert.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
+            //     }
+            //
+            // }
+
         }
     );
 }
