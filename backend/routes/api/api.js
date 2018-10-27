@@ -245,7 +245,7 @@ function executeJob(collectionName, objectToInsert) {
 
                 for (var j = 0; j < jobResults.length; j++) {
 
-                    if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
+                    if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
 
                         // Send warning alert
                         var emailBodyToSend = 'Hi ,<br><br>' +
@@ -254,9 +254,9 @@ function executeJob(collectionName, objectToInsert) {
                                                 '</b> is having high respnse time.<br><br>' +
                                                 'Regards,<br>xSUM admin';
 
-                        Helpers.sendEmail(objectToInsert.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
+                        Helpers.sendEmail(objectToInsert.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
                         break;
-                    } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
+                    } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
 
                         // Send critical alert
                         var emailBodyToSend = 'Hi ,<br><br>' +
@@ -265,7 +265,7 @@ function executeJob(collectionName, objectToInsert) {
                                                 '</b> is having high respnse time.<br><br>' +
                                                 'Regards,<br>xSUM admin';
 
-                        Helpers.sendEmail(objectToInsert.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
+                        Helpers.sendEmail(objectToInsert.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
                         break;
                     }
 
