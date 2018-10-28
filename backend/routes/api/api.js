@@ -97,7 +97,7 @@ function executeResultGenerator(collectionName, objectToInsert) {
     var locationLongitude = -119.4179;
 
     //Send process request to sitespeed
-    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
+    var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --influxdb.tags "jobid=' + objectToInsert.ID + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
@@ -213,7 +213,7 @@ function executeJob(collectionName, objectToInsert) {
     var curDateMilliSec = new Date().getTime();
 
     //Send process request to sitespeed
-    var commandStr = 'sudo docker run sitespeedio/sitespeed.io:7.3.6' +
+    var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
         ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID
