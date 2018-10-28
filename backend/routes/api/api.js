@@ -11,6 +11,31 @@ var jobTimers = {};
 
 function Api(){};
 
+async function startCurrentJobs() {
+    var jobList = await MongoDB.getAllData(AppConstants.DB_JOB_LIST, {});
+
+    console.log('------------Start executing existing jobs------------');
+    for (var i = 0; i < jobList.length; i++) {
+
+        var jobToStart = jobList[i];
+
+        if (jobToStart.isRecursiveCheck) {
+            jobTimers[jobToStart.jobId] = setInterval(
+                function() {
+                    executeJob(AppConstants.DB_JOB_LIST, jobToStart)
+                },
+                jobToStart.recursiveSelect.value
+            );
+            console.log('Started executing: ', jobToStart);
+        }
+
+    }
+    console.log('------------Started executing existing jobs------------');
+
+}
+
+startCurrentJobs();
+
 Api.prototype.handleHTML = function(req, res) {
     res.sendFile(path.join(__dirname, '../../../', 'index.html'));
 }
