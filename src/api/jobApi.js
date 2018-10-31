@@ -34,6 +34,17 @@ class jobApi {
         });
     }
 
+    static updateJob(webserviceUrl, jobObj) {
+        return fetchRequests.postRequest(webserviceUrl, jobObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
+
     static startOrStopJob(webserviceUrl, jobObj) {
         return fetchRequests.postRequest(webserviceUrl, jobObj).then((response) => {
 

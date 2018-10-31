@@ -154,6 +154,9 @@ Api.prototype.handleJobs = function(req, res) {
         case "startorStopJob":
             new Api().startorStopJob(req, res);
             break;
+        case "updateJob":
+            new Api().updateJob(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -202,6 +205,29 @@ Api.prototype.removeJob = function(req, res) {
     clearInterval(jobTimers[jobObj.jobId]);
     MongoDB.deleteOneData(AppConstants.DB_JOB_LIST, queryToRemoveJob, res);
     InfluxDB.removeData("DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId+ "'");
+}
+
+Api.prototype.updateJob = function(req, res) {
+    var jobObj = req.body.job;
+    clearInterval(jobTimers[jobObj.jobId]);
+
+    var updateValueObj = {
+        jobName: jobObj.jobName,
+        siteObject: {value: jobObj.siteObject.value},
+        browser: jobObj.browser
+    };
+
+    MongoDB.updateData(AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
+
+    // Start the job
+    jobTimers[jobObj.jobId] = setInterval(
+        function() {
+            executeJob(AppConstants.DB_JOB_LIST, jobObj)
+        },
+        jobObj.recursiveSelect.value
+    );
+
+    res.send(jobObj);
 }
 
 Api.prototype.startorStopJob = function(req, res) {

@@ -13,6 +13,7 @@ export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
+export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
 export const GET_RESULT_API = '/handleResults?action=getResult';
 export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJob';
 
@@ -49,6 +50,7 @@ export const SITE_RESULT_ROUTE = '/resultView';
 export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
 export const ALERT_VIEW_ROUTE = '/alertView';
+export const TESTS_ROUTE = '/tests';
 
 // URL status
 export const URL_DONE_STATE = 'Done';
@@ -139,7 +141,7 @@ export const LEFT_NAV_TABS = [
     {
         index: 1,
         text: 'Tests',
-        route: ALL_RESULT_VIEW_ROUTE
+        route: TESTS_ROUTE
     },
     {
         index: 2,

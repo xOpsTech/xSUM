@@ -5,6 +5,7 @@ import moment from 'moment';
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
+import LeftNav from '../common/left-nav/LeftNav';
 import jobApi from '../../api/jobApi';
 import ModalContainer from '../common/modal-container/ModalContainer';
 
@@ -242,6 +243,7 @@ class SiteAdd extends React.Component {
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
+                <LeftNav selectedIndex={0} isFixedLeftNav={true}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
