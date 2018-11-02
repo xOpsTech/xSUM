@@ -23,6 +23,7 @@ export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
 
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';
+export const REMOVE_ALERT_API = '/alert?action=removeAlert';
 
 export const RESPONSE_SUCCESS = 'Success';
 
@@ -51,6 +52,7 @@ export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
 export const ALERT_VIEW_ROUTE = '/alertView';
 export const TESTS_ROUTE = '/tests';
+export const ALERT_LIST_VIEW_ROUTE = '/alertListView';
 
 // URL status
 export const URL_DONE_STATE = 'Done';
@@ -146,7 +148,7 @@ export const LEFT_NAV_TABS = [
     {
         index: 2,
         text: 'Alerts',
-        route: ALERT_VIEW_ROUTE
+        route: ALERT_LIST_VIEW_ROUTE
     },
     {
         index: 3,

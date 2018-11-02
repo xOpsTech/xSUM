@@ -22,6 +22,17 @@ class alertApi {
             return Promise.reject(response);
         });
     }
+
+    static removeAlert(webserviceUrl, alertObj) {
+        return fetchRequests.postRequest(webserviceUrl, alertObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
 }
 
 export default alertApi;

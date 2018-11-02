@@ -53,14 +53,8 @@ class Tests extends React.Component {
         var initialState = {
             isLoading: false,
             loadingMessage: '',
-            siteObject: {value:'', error: {}},
-            browser  : AppConstants.BROWSER_ARRAY[0].value,
             siteList : [],
-            loggedUserObj: null,
-            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
-            isModalVisible: false,
-            siteToResult: null,
-            jobName: {value: '', error: {}}
+            loggedUserObj: null
         };
 
         return initialState;
@@ -113,12 +107,7 @@ class Tests extends React.Component {
             isLoading,
             loadingMessage,
             siteList,
-            siteObject,
-            browser,
-            loggedUserObj,
-            isModalVisible,
-            siteToResult,
-            jobName
+            loggedUserObj
         } = this.state;
 
         return (
@@ -219,11 +208,6 @@ class Tests extends React.Component {
                                                             <select
                                                                 disabled
                                                                 className="form-control form-control-sm execution-time">
-                                                                {
-                                                                    //     onChange={(e) => this.dropDownClick(
-                                                                    //     {recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[e.target.value]})
-                                                                    // }>
-                                                                }
                                                                 {
                                                                     AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
                                                                         return <option key={'execution_' + i} value={i}>
