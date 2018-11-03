@@ -122,7 +122,7 @@ class Login extends React.Component {
             profilePicPath: basicProfile.getImageUrl()
         });
         UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
-        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
+        UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
     }
 
     googleResponseFail(response) {

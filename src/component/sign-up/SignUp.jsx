@@ -106,7 +106,7 @@ class SignUp extends React.Component {
                         email: response.user.email
                     });
                     UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
-                    UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
+                    UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
                 } else {
                     this.setState({regError: {hasError: true, name: response.message}});
                 }
