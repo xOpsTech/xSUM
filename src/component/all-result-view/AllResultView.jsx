@@ -25,6 +25,7 @@ class AllResultView extends React.Component {
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
         this.getArrangedBarChartData = this.getArrangedBarChartData.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
+        this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         // Setting initial state objects
         this.state  = this.getInitialState();
     }
@@ -46,6 +47,7 @@ class AllResultView extends React.Component {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
+        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
     }
 
     // Returns initial props
@@ -55,7 +57,8 @@ class AllResultView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             jobsWithResults: [],
-            locationMarker: []
+            locationMarker: [],
+            isLeftNavCollapse: false
         };
 
         return initialState;
@@ -162,13 +165,18 @@ class AllResultView extends React.Component {
         UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
     }
 
+    leftNavStateUpdate() {
+        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse})
+    }
+
     render() {
         const {
             isLoading,
             loadingMessage,
             loggedUserObj,
             jobsWithResults,
-            locationMarker
+            locationMarker,
+            isLeftNavCollapse
         } = this.state;
 
         const ResultViewContainer = (props) => {
@@ -301,7 +309,9 @@ class AllResultView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                                  loggedUserObj={loggedUserObj} isFixedNav={true}/>
+                                  loggedUserObj={loggedUserObj}
+                                  isFixedNav={true}
+                                  leftNavStateUpdate={this.leftNavStateUpdate}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -309,8 +319,10 @@ class AllResultView extends React.Component {
                               </button>
                           </div>
                 }
-                <LeftNav selectedIndex={0}/>
-                <div className="all-result-view">
+                <LeftNav
+                    selectedIndex={0}
+                    leftNavStateUpdate={this.leftNavStateUpdate}/>
+                <div className={'all-result-view ' + ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                     {
                         (locationMarker.length > 0)
                             ? <div className="row map-container">

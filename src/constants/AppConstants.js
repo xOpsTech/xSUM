@@ -39,8 +39,9 @@ export const EMAIL_PATTERN      = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\
 export const PASSWORD_PATTERN   = /.{6,}/;
 export const EMPTY_TEXT_PATTERN = /^\s*$/;
 
-export const URL_ID_COOKIE = 'urlId';
-export const STORAGE_ID    = 'STORAGE_ID';
+export const URL_ID_COOKIE          = 'urlId';
+export const STORAGE_ID             = 'STORAGE_ID';
+export const LEFTNAV_COLLAPSE_STATE = 'LEFTNAV_COLLAPSE';
 
 // Routes
 export const SITEADD_ROUTE = '/siteAdd';

@@ -62,6 +62,16 @@ export function getLocalStorageValue(key) {
     return localStorage.getItem(key);
 }
 
+export function getLeftState() {
+    var isNavCollapse = getLocalStorageValue(AppConstants.LEFTNAV_COLLAPSE_STATE);
+
+    if (isNavCollapse == 'true') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export function removeLocalStorageValue(key) {
     localStorage.removeItem(key);
 }

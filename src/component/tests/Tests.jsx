@@ -24,6 +24,8 @@ class Tests extends React.Component {
         this.updateJobClick = this.updateJobClick.bind(this);
         this.removeJobClick = this.removeJobClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
+        this.redirectToAddJob     = this.redirectToAddJob.bind(this);
+        this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -46,6 +48,7 @@ class Tests extends React.Component {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
+        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
     }
 
     // Returns initial props
@@ -54,7 +57,8 @@ class Tests extends React.Component {
             isLoading: false,
             loadingMessage: '',
             siteList : [],
-            loggedUserObj: null
+            loggedUserObj: null,
+            isLeftNavCollapse: false
         };
 
         return initialState;
@@ -102,18 +106,27 @@ class Tests extends React.Component {
 
     }
 
+    redirectToAddJob() {
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {});
+    }
+
+    leftNavStateUpdate() {
+        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse})
+    }
+
     render() {
         const {
             isLoading,
             loadingMessage,
             siteList,
-            loggedUserObj
+            loggedUserObj,
+            isLeftNavCollapse
         } = this.state;
 
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={1} isFixedLeftNav={true}/>
+                <LeftNav selectedIndex={1} isFixedLeftNav={true} leftNavStateUpdate={this.leftNavStateUpdate}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
@@ -125,10 +138,10 @@ class Tests extends React.Component {
                               </button>
                           </div>
                 }
-                <div className="site-edit-container">
+                <div>
                     {
                         (siteList.length > 0)
-                            ? <div className="tests-list">
+                            ? <div className={'table-container-div ' + ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
@@ -242,6 +255,18 @@ class Tests extends React.Component {
                             </div>
                             : null
                     }
+                    <div className="row add-test-section">
+                        <div className="col-sm-4"></div>
+                        <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
+                            <div className="row">
+                                Add a test
+                            </div>
+                            <div className="row">
+                                <i className="plus-icon glyphicon glyphicon-plus"></i>
+                            </div>
+                        </div>
+                        <div className="col-sm-4"></div>
+                    </div>
                 </div>
             </Fragment>
         );
