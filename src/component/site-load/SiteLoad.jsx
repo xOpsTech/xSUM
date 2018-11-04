@@ -2,9 +2,7 @@ import React, {Fragment} from 'react';
 import {Panel} from 'react-bootstrap';
 import moment from 'moment';
 
-import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import GoogleLoginButton from '../common/google-login-button/GoogleLoginButton';
-import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import ModalContainer from '../common/modal-container/ModalContainer';
 import LogoContainer from '../common/logo-container/LogoContainer';

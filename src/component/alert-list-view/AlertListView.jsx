@@ -25,7 +25,6 @@ class AlertListView extends React.Component {
         this.removeAlertClick = this.removeAlertClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
         this.redirectToAddAlert = this.redirectToAddAlert.bind(this);
-        this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -48,7 +47,6 @@ class AlertListView extends React.Component {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
-        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
     }
 
     // Returns initial props
@@ -57,8 +55,8 @@ class AlertListView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            alertsData: [],
-            isLeftNavCollapse: false
+
+            alertsData: []
         };
 
         return initialState;
@@ -126,23 +124,18 @@ class AlertListView extends React.Component {
         UIHelper.redirectTo(AppConstants.ALERT_VIEW_ROUTE, {});
     }
 
-    leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse})
-    }
-
     render() {
         const {
             isLoading,
             loadingMessage,
             alertsData,
             loggedUserObj,
-            isLeftNavCollapse
         } = this.state;
 
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={2} isFixedLeftNav={true} leftNavStateUpdate={this.leftNavStateUpdate}/>
+                <LeftNav selectedIndex={2} isFixedLeftNav={true}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
@@ -154,10 +147,10 @@ class AlertListView extends React.Component {
                               </button>
                           </div>
                 }
-                <div>
+                <div className="site-edit-container">
                     {
                         (alertsData.length > 0)
-                            ? <div className={'table-container-div ' + ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                            ? <div className="tests-list">
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>

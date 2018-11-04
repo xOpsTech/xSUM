@@ -60,7 +60,8 @@ class LoginContainer extends React.Component {
                 </div>
                 <div className="divider"></div>
                 <div className="logout-button-div">
-                    <button onClick={() => {
+                    <button
+                        onClick={() => {
                             UIHelper.deleteCookie(AppConstants.SITE_LOGIN_COOKIE);
                             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
                         }}

@@ -70,6 +70,7 @@ class LeftNav extends React.Component {
                                     <NavItem
                                         eventKey={tab.index}
                                         href="#"
+                                        key={i}
                                         id={tab.index}
                                         onClick={(e) => {
                                             this.tabOnClick(e, tab);
@@ -89,6 +90,8 @@ class LeftNav extends React.Component {
                         <span className="glyphicon glyphicon-triangle-right collapse-icon">
                         </span>
                     </button>
+                    <div className="left-nav-indicator">
+                    </div>
                 </div>
             );
         }

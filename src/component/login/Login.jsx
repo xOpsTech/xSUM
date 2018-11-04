@@ -81,7 +81,8 @@ class Login extends React.Component {
                         var userObject = JSON.stringify({
                             email: response.user.email
                         });
-                        UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
+                        UIHelper.setCookie(
+                            AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
                         UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
                     } else {
                         this.setState({loginError: {hasError: true, name: response.message}});

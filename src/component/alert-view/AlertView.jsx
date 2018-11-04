@@ -1,6 +1,4 @@
 import React, {Fragment} from 'react';
-import moment from 'moment';
-import AmCharts from '@amcharts/amcharts3-react';
 
 import LeftNav from '../common/left-nav/LeftNav';
 import NavContainer from '../common/nav-container/NavContainer';
@@ -85,7 +83,7 @@ class AlertView extends React.Component {
         selectedAlertData.email = loggedUserObj.email;
 
         var urlToSaveAlert = AppConstants.API_URL + AppConstants.SAVE_ALERT_API;
-        alertApi.saveAlert(urlToSaveAlert, selectedAlertData).then((data) => {
+        alertApi.saveAlert(urlToSaveAlert, selectedAlertData).then(() => {
             this.setState(
                 {
                     isLoading: false,
@@ -115,7 +113,7 @@ class AlertView extends React.Component {
             selectedAlertIndex
         } = this.state;
 
-        const JobNameDropDown = (props) => {
+        const JobNameDropDown = () => {
 
             if (alertsData.length === 0) {
                 return (

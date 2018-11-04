@@ -1,6 +1,5 @@
 import React, {Fragment} from 'react';
 import moment from 'moment';
-import AmCharts from '@amcharts/amcharts3-react';
 
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';

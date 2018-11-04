@@ -66,7 +66,7 @@ class jobApi {
                         resolve(resultObj);
                     }).catch((error) => {
                         resolve(error);
-                    })
+                    });
                 });
             } else {
 

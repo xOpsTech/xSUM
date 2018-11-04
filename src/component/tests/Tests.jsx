@@ -1,12 +1,9 @@
 import React, {Fragment} from 'react';
-import moment from 'moment';
 
-import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import LeftNav from '../common/left-nav/LeftNav';
 import jobApi from '../../api/jobApi';
-import ModalContainer from '../common/modal-container/ModalContainer';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as UIHelper from '../../common/UIHelper';
@@ -111,7 +108,7 @@ class Tests extends React.Component {
     }
 
     leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse})
+        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
     render() {
@@ -141,7 +138,9 @@ class Tests extends React.Component {
                 <div>
                     {
                         (siteList.length > 0)
-                            ? <div className={'table-container-div ' + ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                            ? <div className={
+                                'table-container-div ' +
+                                ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
@@ -210,10 +209,11 @@ class Tests extends React.Component {
                                                                 }}>
                                                                 {
                                                                     AppConstants.BROWSER_ARRAY.map((browser, i) => {
-                                                                        return <option key={'browser_' + i} value={browser.value}>
+                                                                        return <option key={'browser_' + i}
+                                                                                    value={browser.value}>
                                                                                     {browser.textValue}
                                                                                 </option>;
-                                                                        })
+                                                                    })
                                                                 }
                                                             </select>
                                                         </td>
@@ -222,10 +222,12 @@ class Tests extends React.Component {
                                                                 disabled
                                                                 className="form-control form-control-sm execution-time">
                                                                 {
-                                                                    AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
-                                                                        return <option key={'execution_' + i} value={i}>
-                                                                                    {execution.textValue}
-                                                                                </option>;
+                                                                    AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
+                                                                        (execution, i) => {
+                                                                            return <option key={'execution_' + i}
+                                                                                        value={i}>
+                                                                                        {execution.textValue}
+                                                                                    </option>;
                                                                         })
                                                                 }
                                                             </select>
@@ -243,7 +245,9 @@ class Tests extends React.Component {
                                                                 className="btn-danger form-control button-inline"
                                                                 onClick={(e) => this.removeJobClick(e, site.jobId)}
                                                                 title={'Remove job of ' + site.siteObject.value}>
-                                                                <span className="glyphicon glyphicon-remove button-icon"></span>
+                                                                <span
+                                                                    className="glyphicon glyphicon-remove button-icon">
+                                                                </span>
                                                             </button>
                                                         </td>
                                                     </tr>

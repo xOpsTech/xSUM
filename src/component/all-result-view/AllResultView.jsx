@@ -166,7 +166,7 @@ class AllResultView extends React.Component {
     }
 
     leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse})
+        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
     render() {
@@ -322,7 +322,9 @@ class AllResultView extends React.Component {
                 <LeftNav
                     selectedIndex={0}
                     leftNavStateUpdate={this.leftNavStateUpdate}/>
-                <div className={'all-result-view ' + ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                <div className={
+                        'all-result-view ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                     {
                         (locationMarker.length > 0)
                             ? <div className="row map-container">
@@ -334,8 +336,8 @@ class AllResultView extends React.Component {
                         {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
-                                      return <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>;
-                                  })
+                                    return <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>;
+                                })
                                 : null
                         }
                     </div>
