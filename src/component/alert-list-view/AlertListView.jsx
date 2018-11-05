@@ -1,12 +1,9 @@
 import React, {Fragment} from 'react';
-import moment from 'moment';
 
-import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import LeftNav from '../common/left-nav/LeftNav';
 import alertApi from '../../api/alertApi';
-import ModalContainer from '../common/modal-container/ModalContainer';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as UIHelper from '../../common/UIHelper';
@@ -25,6 +22,7 @@ class AlertListView extends React.Component {
         this.removeAlertClick = this.removeAlertClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
         this.redirectToAddAlert = this.redirectToAddAlert.bind(this);
+        this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -47,6 +45,7 @@ class AlertListView extends React.Component {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
+        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
     }
 
     // Returns initial props
@@ -55,7 +54,7 @@ class AlertListView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-
+            isLeftNavCollapse: false,
             alertsData: []
         };
 
@@ -86,7 +85,7 @@ class AlertListView extends React.Component {
         });
     }
 
-    updateAlertClick(e, alertToUpdate) {
+    updateAlertClick(e, alertToUpdate, index) {
 
         e.preventDefault();
 
@@ -96,26 +95,29 @@ class AlertListView extends React.Component {
 
         var urlToSaveAlert = AppConstants.API_URL + AppConstants.SAVE_ALERT_API;
         alertApi.saveAlert(urlToSaveAlert, alertToUpdate).then((data) => {
+            this.state.alertsData[index]._id = data._id;
             this.setState(
                 {
                     isLoading: false,
-                    loadingMessage: '',
+                    loadingMessage: ''
                 }
             );
         });
 
     }
 
-    removeAlertClick(e, alertIdToRemove) {
+    removeAlertClick(e, alertToRemove) {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_ALERT});
         var url = AppConstants.API_URL + AppConstants.REMOVE_ALERT_API;
-        jobApi.removeJob(url, {alertId: alertIdToRemove}).then(() => {
-            // let arrayAfterRemove = this.state.alertsData.filter((siteObject) => {
-            //     return siteObject.jobId !== jobIdToRemove;
-            // });
-            this.setState({isLoading: false, loadingMessage: ''});
+        alertApi.removeAlert(url, {alertId: alertToRemove._id}).then(() => {
+            let arrayAfterRemove = this.state.alertsData.filter((alertObj) => {
+                return alertObj._id !== alertToRemove._id;
+            });
+            delete alertToRemove._id;
+            arrayAfterRemove.push(alertToRemove);
+            this.setState({isLoading: false, loadingMessage: '', alertsData: arrayAfterRemove});
         });
 
     }
@@ -124,18 +126,23 @@ class AlertListView extends React.Component {
         UIHelper.redirectTo(AppConstants.ALERT_VIEW_ROUTE, {});
     }
 
+    leftNavStateUpdate() {
+        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+    }
+
     render() {
         const {
             isLoading,
             loadingMessage,
             alertsData,
             loggedUserObj,
+            isLeftNavCollapse
         } = this.state;
 
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={2} isFixedLeftNav={true}/>
+                <LeftNav selectedIndex={2} isFixedLeftNav={true} leftNavStateUpdate={this.leftNavStateUpdate}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer
@@ -150,7 +157,9 @@ class AlertListView extends React.Component {
                 <div className="site-edit-container">
                     {
                         (alertsData.length > 0)
-                            ? <div className="tests-list">
+                            ? <div className={
+                                'table-container-div ' +
+                                ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                                 <table className="table table-bordered">
                                     <thead>
                                         <tr>
@@ -209,7 +218,8 @@ class AlertListView extends React.Component {
                                                                 <input
                                                                     value={Math.round(alert.criticalThreshold)}
                                                                     onChange={(e) => {
-                                                                        alertsData[i].criticalThreshold = e.target.value;
+                                                                        alertsData[i].criticalThreshold
+                                                                            = e.target.value;
                                                                         this.handleChange(e, {
                                                                             alertsData: alertsData
                                                                         });
@@ -223,21 +233,36 @@ class AlertListView extends React.Component {
                                                         <td>
                                                             <button
                                                                 className="btn-primary form-control button-inline"
-                                                                onClick={(e) => this.updateAlertClick(e, alert)}
-                                                                title={(alert._id ? 'Update' : 'Add') + ' alert of ' + alert.job.siteObject.value}>
+                                                                onClick={(e) => this.updateAlertClick(e, alert, i)}
+                                                                title={
+                                                                    (alert._id ? 'Update' : 'Add')
+                                                                    + ' alert of ' + alert.job.siteObject.value
+                                                                }>
                                                                 <span
                                                                     className={
-                                                                        'glyphicon button-icon' + (alert._id ? ' glyphicon-edit' : ' glyphicon-plus')
+                                                                        'glyphicon button-icon' +
+                                                                        (
+                                                                            alert._id
+                                                                                ? ' glyphicon-edit'
+                                                                                : ' glyphicon-plus'
+                                                                        )
                                                                     }>
                                                                 </span>
                                                             </button>
                                                             {
                                                                 (alert._id)
                                                                     ? <button
-                                                                        className="btn-danger form-control button-inline"
-                                                                        onClick={(e) => this.removeAlertClick(e, alert._id)}
-                                                                        title={'Remove alert of ' + alert.job.siteObject.value}>
-                                                                        <span className="glyphicon glyphicon-remove button-icon"></span>
+                                                                        className="btn-danger
+                                                                            form-control button-inline"
+                                                                        onClick={(e) => this.removeAlertClick(e, alert)}
+                                                                        title={
+                                                                            'Remove alert of '
+                                                                            + alert.job.siteObject.value
+                                                                        }>
+                                                                        <span
+                                                                            className="glyphicon
+                                                                                glyphicon-remove button-icon">
+                                                                        </span>
                                                                      </button>
                                                                     : null
                                                             }
