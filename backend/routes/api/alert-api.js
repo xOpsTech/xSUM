@@ -1,6 +1,7 @@
 var AppConstants = require('../../constants/AppConstants');
 var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
+var {ObjectId} = require('mongodb');
 
 function AlertApi(){};
 
@@ -12,6 +13,9 @@ AlertApi.prototype.handleAlertData = function(req, res) {
             break;
         case "getAllAlerts":
             new AlertApi().getAllAlerts(req, res);
+            break;
+        case "removeAlert":
+            new AlertApi().removeAlert(req, res);
             break;
         default:
             res.send("no data");
@@ -79,6 +83,14 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
     }
 
     res.send({alertsData: alertsData});
+}
+
+AlertApi.prototype.removeAlert = function(req, res) {
+    var alertObj = req.body;
+    var queryToRemoveAlert = {
+        _id: ObjectId(alertObj.alertId)
+    };
+    MongoDB.deleteOneData(AppConstants.ALERT_LIST, queryToRemoveAlert, res);
 }
 
 module.exports = new AlertApi();
