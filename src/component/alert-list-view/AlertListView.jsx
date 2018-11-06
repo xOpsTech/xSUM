@@ -232,7 +232,10 @@ class AlertListView extends React.Component {
                                                         </td>
                                                         <td>
                                                             <button
-                                                                className="btn-primary form-control button-inline"
+                                                                className={
+                                                                    'btn-primary form-control ' +
+                                                                    (alert._id ? 'button-inline' : ' add-button')
+                                                                }
                                                                 onClick={(e) => this.updateAlertClick(e, alert, i)}
                                                                 title={
                                                                     (alert._id ? 'Update' : 'Add')
