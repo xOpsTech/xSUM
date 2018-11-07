@@ -65,7 +65,6 @@ export const TIME_ONLY_FORMAT = 'h:mm a';
 
 export const BROWSER_ARRAY = [
     {value: 'chrome', textValue: 'CHROME'},
-    {value: 'safari', textValue: 'SAFARI'},
     {value: 'firefox', textValue: 'FIREFOX'}
 ];
 

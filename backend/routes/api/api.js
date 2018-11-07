@@ -355,7 +355,7 @@ Api.prototype.getResult = function(req, res) {
 
 Api.prototype.getAllResultsForJob = function(req, res) {
     var jobObj = req.body;
-    var yesterDay = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+    var yesterDay = moment().subtract(6, 'hours').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
     InfluxDB.getAllData(
         "SELECT * FROM pageLoadTime where jobid='" + jobObj.jobID+ "' and time >= '" + yesterDay + "'"
     ).then((result) => {
