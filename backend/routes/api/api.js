@@ -278,7 +278,7 @@ function executeJob(collectionName, objectToInsert) {
             var newValueObj = {
                 result: objectToInsert.result
             };
-            MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
+            //MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
 
             // Send alert
             var jobResults = await InfluxDB.getAllDataFor(
