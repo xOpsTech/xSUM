@@ -20,12 +20,16 @@ async function startCurrentJobs() {
         var jobToStart = jobList[i];
 
         if (jobToStart.isRecursiveCheck) {
-            jobTimers[jobToStart.jobId] = setInterval(
-                function() {
-                    executeJob(AppConstants.DB_JOB_LIST, jobToStart)
-                },
-                jobToStart.recursiveSelect.value
-            );
+            (
+                function(i) {
+                    jobTimers[jobToStart.jobId] = setInterval(
+                        () => {
+                            executeJob(AppConstants.DB_JOB_LIST, jobList[i]);
+                        },
+                        jobToStart.recursiveSelect.value
+                    );
+                }
+            )(i);
             console.log('Started executing: ', jobToStart);
         }
 
