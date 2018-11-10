@@ -71,7 +71,9 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
                 meanAvg: meanAvg/1000,
                 warningThreshold: alertObjData[0].warningThreshold,
                 criticalThreshold: alertObjData[0].criticalThreshold,
-                _id: alertObjData[0]._id
+                _id: alertObjData[0]._id,
+                warningAlertCount: alertObjData[0].warningAlertCount,
+                criticalAlertCount: alertObjData[0].criticalAlertCount
             });
         } else {
             alertsData.push({
@@ -93,6 +95,90 @@ AlertApi.prototype.removeAlert = function(req, res) {
         _id: ObjectId(alertObj.alertId)
     };
     MongoDB.deleteOneData(AppConstants.ALERT_LIST, queryToRemoveAlert, res);
+}
+
+AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj) {
+    // Send alert
+    var jobResults = await InfluxDB.getAllDataFor(
+        "SELECT * FROM pageLoadTime where jobid='"
+        + insertedJobObj.jobId + "' and curDateMilliSec = '" + curDateMilliSec + "'"
+    );
+
+    var queryToGetJobAlert = {
+        'job.jobId': insertedJobObj.jobId
+    };
+
+    var alertObjData = await MongoDB.getAllData(AppConstants.ALERT_LIST, queryToGetJobAlert);
+
+    if (alertObjData.length > 0) {
+
+        for (var j = 0; j < jobResults.length; j++) {
+
+            if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
+
+                if (alertObjData[0].criticalAlertCount >= AppConstants.EMAIL_CRITICAL_ALERT_COUNT) {
+
+                    // Send warning alert
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                                            'The job you have added for <b>' +
+                                            insertedJobObj.siteObject.value +
+                                            '</b> is having high respnse time.<br><br>' +
+                                            'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Critical Alert from xSUM', emailBodyToSend);
+
+                    // Save alert with decreasing critical alert count to 0
+                    var objectToUpdate = {
+                        criticalAlertCount: 0
+                    };
+
+                    MongoDB.updateData(AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    break;
+                } else {
+
+                    // Increase critical count
+                    var objectToUpdate = {
+                        criticalAlertCount: alertObjData[0].criticalAlertCount + 1
+                    };
+
+                    MongoDB.updateData(AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                }
+
+            } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
+
+                if (alertObjData[0].warningAlertCount >= AppConstants.EMAIL_WARNING_ALERT_COUNT) {
+
+                    // Send critical alert
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                                            'The job you have added for <b>' +
+                                            insertedJobObj.siteObject.value +
+                                            '</b> is having high respnse time.<br><br>' +
+                                            'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Warning Alert from xSUM', emailBodyToSend);
+
+                    // Save alert with decreasing warning alert count to 0
+                    var objectToUpdate = {
+                        warningAlertCount: 0
+                    };
+
+                    MongoDB.updateData(AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    break;
+                } else {
+
+                    // Increase warning count
+                    var objectToUpdate = {
+                        warningAlertCount: alertObjData[0].warningAlertCount + 1
+                    };
+
+                    MongoDB.updateData(AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                }
+
+            }
+
+        }
+
+    }
 }
 
 module.exports = new AlertApi();
