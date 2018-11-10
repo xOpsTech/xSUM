@@ -34,6 +34,8 @@ AlertApi.prototype.saveAlert = function(req, res) {
         MongoDB.updateData(AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
         res.send(alertObj);
     } else {
+        alertObj.warningAlertCount = 0;
+        alertObj.criticalAlertCount = 0;
         MongoDB.insertData(AppConstants.ALERT_LIST, alertObj, res);
     }
 
