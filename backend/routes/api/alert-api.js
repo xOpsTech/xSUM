@@ -97,7 +97,7 @@ AlertApi.prototype.removeAlert = function(req, res) {
     MongoDB.deleteOneData(AppConstants.ALERT_LIST, queryToRemoveAlert, res);
 }
 
-AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj) {
+AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMilliSec) {
     // Send alert
     var jobResults = await InfluxDB.getAllDataFor(
         "SELECT * FROM pageLoadTime where jobid='"

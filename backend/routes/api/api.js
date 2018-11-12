@@ -284,7 +284,7 @@ function executeJob(collectionName, objectToInsert) {
                 result: objectToInsert.result
             };
             //MongoDB.updateData(collectionName, {jobId: objectToInsert.jobId}, newValueObj);
-            AlertApi.sendEmailAsAlert(objectToInsert);
+            AlertApi.sendEmailAsAlert(objectToInsert, curDateMilliSec);
         }
     );
 }
