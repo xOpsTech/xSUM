@@ -1,6 +1,7 @@
 var AppConstants = require('../../constants/AppConstants');
 var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
+var Helpers = require('../../common/Helpers');
 var {ObjectId} = require('mongodb');
 
 function AlertApi(){};
