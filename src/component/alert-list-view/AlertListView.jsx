@@ -254,9 +254,9 @@ class AlertListView extends React.Component {
                         <div className="row alert-list-wrap-div">
                             <AlertList/>
                             <div className="row add-test-section">
-                                <div className="col-sm-1 table-button">
+                                <div className="col-sm-2 table-button">
                                     <button
-                                        className="btn btn-primary form-control button-all-caps-text"
+                                        className="btn btn-primary form-control button-all-caps-text add-button"
                                         onClick={this.redirectToAddAlert}>
                                         Add Alert
                                     </button>

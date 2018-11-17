@@ -267,9 +267,9 @@ class Tests extends React.Component {
                                 : null
                             }
                             <div className="row add-test-section">
-                                <div className="col-sm-1 table-button">
+                                <div className="col-sm-2 table-button">
                                     <button
-                                        className="btn btn-primary form-control button-all-caps-text"
+                                        className="btn btn-primary form-control button-all-caps-text add-button"
                                         onClick={this.redirectToAddJob}>
                                         Add Test
                                     </button>
