@@ -138,7 +138,7 @@ class AlertListView extends React.Component {
 
             if (activeAlertCount > 0) {
                 return (
-                    <table className="table" id="alert-list">
+                    <table className="table table-borderless" id="alert-list">
                         <thead>
                             <tr>
                                 <th>Alert Name</th>
