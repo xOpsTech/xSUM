@@ -266,7 +266,7 @@ class SiteAdd extends React.Component {
                         method="post">
                         <h1 className="site-add-title">Monitor Site 24/7</h1>
                         <div className={
-                            'form-group has-feedback job-name-input ' +
+                            'form-group has-feedback ' +
                             ((jobName.error.hasError !== undefined)
                                 ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
                             }>

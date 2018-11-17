@@ -53,7 +53,7 @@ class AlertView extends React.Component {
             loadingMessage: '',
             alertsData: [],
             selectedAlertData: null,
-            selectedAlertIndex: 0
+            selectedAlertIndex: 0,
         };
 
         return initialState;
@@ -64,12 +64,35 @@ class AlertView extends React.Component {
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
         alertApi.getAllAlertsFrom(urlToGetAlerts, {userEmail: loggedUserObj.email}).then((data) => {
+
+            if (this.props.location.query.alertObj) {
+                var alertObj = JSON.parse(this.props.location.query.alertObj);
+
+                for (var i = 0; i < data.alertsData.length; i++) {
+
+                    if (alertObj.alertID === data.alertsData[i]._id) {
+                        this.setState(
+                            {
+                                selectedAlertData: data.alertsData[i]
+                            }
+                        );
+                    }
+
+                }
+
+            } else {
+                this.setState(
+                    {
+                        selectedAlertData: data.alertsData[0]
+                    }
+                );
+            }
+
             this.setState(
                 {
                     isLoading: false,
                     loadingMessage: '',
-                    alertsData: data.alertsData,
-                    selectedAlertData: data.alertsData[0]
+                    alertsData: data.alertsData
                 }
             );
         });
@@ -90,6 +113,7 @@ class AlertView extends React.Component {
                     loadingMessage: '',
                 }
             );
+            UIHelper.redirectTo(AppConstants.ALERT_LIST_VIEW_ROUTE, {});
         });
 
     }

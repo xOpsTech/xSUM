@@ -136,140 +136,147 @@ class Tests extends React.Component {
                           </div>
                 }
                 <div>
-                    {
-                        (siteList.length > 0)
-                            ? <div className={
-                                'table-container-div ' +
-                                ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                                <table className="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Job Name</th>
-                                            <th>Website URL</th>
-                                            <th>Browser</th>
-                                            <th>Test Frequency</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            siteList.map((site, i) => {
-                                                return (
-                                                    <tr className="table-row" key={'siteDetail' + i}>
-                                                        <td className="table-cell">
-                                                            <div className={
-                                                                'form-group has-feedback job-name-input ' //+
-                                                                // ((jobName.error.hasError !== undefined)
-                                                                //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
-                                                                }>
-                                                                <input
-                                                                    value={site.jobName}
-                                                                    onChange={(e) => {
-                                                                        siteList[i].jobName = e.target.value;
-                                                                        this.handleChange(e, {
-                                                                            siteList: siteList
-                                                                        });
-                                                                    }}
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="jobNameInput"
-                                                                    placeholder="JOB NAME"/>
-                                                            </div>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <div className={
-                                                                'form-group has-feedback job-name-input ' //+
-                                                                // ((jobName.error.hasError !== undefined)
-                                                                //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
-                                                                }>
-                                                                <input
-                                                                    value={site.siteObject.value}
-                                                                    onChange={(e) => {
-                                                                        siteList[i].siteObject.value = e.target.value;
-                                                                        this.handleChange(e, {
-                                                                            siteList: siteList
-                                                                        });
-                                                                    }}
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="urlObjectInput"
-                                                                    placeholder="ENTER WEBSITE URL"/>
-                                                            </div>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <select
-                                                                className="form-control form-control-sm browser-select"
-                                                                value={site.browser}
-                                                                onChange={(e) => {
-                                                                    siteList[i].browser = e.target.value;
-                                                                    this.dropDownClick({
-                                                                        siteList: siteList
-                                                                    });
-                                                                    //this.dropDownClick({browser: e.target.value})}
-                                                                }}>
-                                                                {
-                                                                    AppConstants.BROWSER_ARRAY.map((browser, i) => {
-                                                                        return <option key={'browser_' + i}
-                                                                                    value={browser.value}>
-                                                                                    {browser.textValue}
-                                                                                </option>;
-                                                                    })
-                                                                }
-                                                            </select>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <select
-                                                                disabled
-                                                                className="form-control form-control-sm execution-time">
-                                                                {
-                                                                    AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
-                                                                        (execution, i) => {
-                                                                            return <option key={'execution_' + i}
-                                                                                        value={i}>
-                                                                                        {execution.textValue}
-                                                                                    </option>;
-                                                                        })
-                                                                }
-                                                            </select>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className="btn-primary form-control button-inline"
-                                                                onClick={(e) => this.updateJobClick(e, site)}
-                                                                title={'Update job of ' + site.siteObject.value}>
-                                                                <span
-                                                                    className="glyphicon glyphicon-edit button-icon">
-                                                                </span>
-                                                            </button>
-                                                            <button
-                                                                className="btn-danger form-control button-inline"
-                                                                onClick={(e) => this.removeJobClick(e, site.jobId)}
-                                                                title={'Remove job of ' + site.siteObject.value}>
-                                                                <span
-                                                                    className="glyphicon glyphicon-remove button-icon">
-                                                                </span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            : null
-                    }
-                    <div className="row add-test-section">
-                        <div className="col-sm-4"></div>
-                        <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                            <div className="row">
-                                Add a test
-                            </div>
-                            <div className="row">
-                                <i className="plus-icon glyphicon glyphicon-plus"></i>
+                    <div className={
+                        'table-container-div ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                        <div className="row alert-list-wrap-div">
+                            {
+                                (siteList.length > 0)
+                                    ? <table className="table table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>Job Name</th>
+                                                <th>Website URL</th>
+                                                <th>Browser</th>
+                                                <th>Test Frequency</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                siteList.map((site, i) => {
+                                                    return (
+                                                        <tr className="table-row" key={'siteDetail' + i}>
+                                                            <td className="table-cell">
+                                                                <div className={
+                                                                    'form-group has-feedback ' //+
+                                                                    // ((jobName.error.hasError !== undefined)
+                                                                    //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
+                                                                    }>
+                                                                    <input
+                                                                        value={site.jobName}
+                                                                        onChange={(e) => {
+                                                                            siteList[i].jobName = e.target.value;
+                                                                            this.handleChange(e, {
+                                                                                siteList: siteList
+                                                                            });
+                                                                        }}
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="jobNameInput"
+                                                                        placeholder="JOB NAME"/>
+                                                                </div>
+                                                            </td>
+                                                            <td className="table-cell">
+                                                                <div className={
+                                                                    'form-group has-feedback ' //+
+                                                                    // ((jobName.error.hasError !== undefined)
+                                                                    //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
+                                                                    }>
+                                                                    <input
+                                                                        value={site.siteObject.value}
+                                                                        onChange={(e) => {
+                                                                            siteList[i].siteObject.value = e.target.value;
+                                                                            this.handleChange(e, {
+                                                                                siteList: siteList
+                                                                            });
+                                                                        }}
+                                                                        type="text"
+                                                                        className="form-control"
+                                                                        id="urlObjectInput"
+                                                                        placeholder="ENTER WEBSITE URL"/>
+                                                                </div>
+                                                            </td>
+                                                            <td className="table-cell">
+                                                                <div className="form-group">
+                                                                    <select
+                                                                        className="form-control form-control-sm"
+                                                                        value={site.browser}
+                                                                        onChange={(e) => {
+                                                                            siteList[i].browser = e.target.value;
+                                                                            this.dropDownClick({
+                                                                                siteList: siteList
+                                                                            });
+                                                                        }}>
+                                                                        {
+                                                                            AppConstants.BROWSER_ARRAY
+                                                                                .map((browser, i) => {
+                                                                                return <option key={'browser_' + i}
+                                                                                            value={browser.value}>
+                                                                                            {browser.textValue}
+                                                                                        </option>;
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </td>
+                                                            <td className="table-cell">
+                                                                <div className="form-group">
+                                                                    <select
+                                                                        disabled
+                                                                        className="form-control form-control-sm">
+                                                                        {
+                                                                            AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
+                                                                                (execution, i) => {
+                                                                                    return <option
+                                                                                                key={'execution_' + i}
+                                                                                                value={i}>
+                                                                                                {execution.textValue}
+                                                                                            </option>;
+                                                                                })
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <button
+                                                                    className="btn-primary form-control button-inline"
+                                                                    onClick={(e) => this.updateJobClick(e, site)}
+                                                                    title={'Update job of ' + site.siteObject.value}>
+                                                                    <span
+                                                                        className="glyphicon
+                                                                            glyphicon-edit button-icon">
+                                                                    </span>
+                                                                </button>
+                                                                <button
+                                                                    className="btn-danger form-control button-inline"
+                                                                    onClick={(e) => this.removeJobClick(e, site.jobId)}
+                                                                    title={'Remove job of ' + site.siteObject.value}>
+                                                                    <span
+                                                                        className="glyphicon glyphicon-remove
+                                                                            button-icon">
+                                                                    </span>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                : null
+                            }
+                            <div className="row add-test-section">
+                                <div className="col-sm-1 table-button">
+                                    <button
+                                        className="btn btn-primary form-control button-all-caps-text"
+                                        onClick={this.redirectToAddJob}>
+                                        Add Test
+                                    </button>
+                                </div>
+                                <div className="col-sm-11"></div>
                             </div>
                         </div>
-                        <div className="col-sm-4"></div>
                     </div>
                 </div>
             </Fragment>

@@ -83,8 +83,16 @@ body {
     border-radius: 4px;
 }
 
+.table {
+    margin-bottom: 0;
+}
+
 .table-bordered {
     border: 2px solid #fff;
+}
+
+.table-borderless>thead>tr>th, .table-borderless>tbody>tr>td {
+    border: none;
 }
 
 .table-bordered>thead>tr>th, .table-bordered>tbody>tr>td {
@@ -94,6 +102,10 @@ body {
 .btn[disabled].btn-primary, .btn-primary {
     background-image: @button-background-image;
     border-color: @button-border-color;
+}
+
+.table-button {
+    padding-left: 7px;
 }
 
 .btn-primary:hover {
@@ -110,10 +122,21 @@ body {
     color: #fff;
 }
 
-.input-group, .form-group > input.form-control, .form-group > input.form-control:focus, .input-group, select.form-control, select.form-control:focus {
-    -webkit-box-shadow: 1px 1px 20px 1px #ccc9c5;
-    -moz-box-shadow: 1px 1px 20px 1px #ccc9c5;
-    box-shadow: 1px 1px 20px 1px #ccc9c5;
+.input-group,
+.form-group > input.form-control,
+.form-group > input.form-control:focus,
+.input-group, select.form-control,
+select.form-control:focus {
+    box-shadow: inset 0 0 2px 2px #222029;
+    background-color: rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: inset 0 0 2px 2px #222029;
+    -moz-box-shadow: inset 0 0 2px 2px #222029;
+}
+
+select.form-control, select.form-control[disabled] {
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
 }
 
 @margin-left-right: 0px;

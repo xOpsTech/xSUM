@@ -86,24 +86,11 @@ class AlertListView extends React.Component {
     }
 
     updateAlertClick(e, alertToUpdate, index) {
-
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.SAVE_ALERT});
-        var {loggedUserObj} = this.state;
-        alertToUpdate.email = loggedUserObj.email;
-
-        var urlToSaveAlert = AppConstants.API_URL + AppConstants.SAVE_ALERT_API;
-        alertApi.saveAlert(urlToSaveAlert, alertToUpdate).then((data) => {
-            this.state.alertsData[index]._id = data._id;
-            this.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: ''
-                }
-            );
+        UIHelper.redirectTo(AppConstants.ALERT_VIEW_ROUTE, {
+            alertObj: JSON.stringify({alertID: alertToUpdate._id})
         });
-
     }
 
     removeAlertClick(e, alertToRemove) {
@@ -139,6 +126,112 @@ class AlertListView extends React.Component {
             isLeftNavCollapse
         } = this.state;
 
+        const AlertList = () => {
+            var activeAlertCount = 0;
+            alertsData.map((alert) => {
+
+                if (alert._id) {
+                    activeAlertCount++;
+                }
+
+            });
+
+            if (activeAlertCount > 0) {
+                return (
+                    <table className="table" id="alert-list">
+                        <thead>
+                            <tr>
+                                <th>Alert Name</th>
+                                <th>Warning Threshold</th>
+                                <th>Critical Threshold</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                alertsData.map((alert, i) => {
+
+                                    if (alert._id) {
+                                        return (
+                                            <tr className="table-row" key={'siteDetail' + i}>
+                                                <td className="table-cell">
+                                                    <div className="form-group has-feedback alert-label-div">
+                                                        <label className="alert-label">
+                                                            {alert.job.jobName}
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td className="table-cell">
+                                                    <div className="form-group has-feedback alert-label-div">
+                                                        <label className="alert-label">
+                                                            {Math.round(alert.warningThreshold)} seconds
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td className="table-cell">
+                                                    <div className="form-group has-feedback alert-label-div">
+                                                        <label className="alert-label">
+                                                            {Math.round(alert.criticalThreshold)} seconds
+                                                        </label>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        className={
+                                                            'btn-primary form-control ' +
+                                                            (alert._id ? 'button-inline' : ' add-button')
+                                                        }
+                                                        onClick={(e) => this.updateAlertClick(e, alert, i)}
+                                                        title={
+                                                            (alert._id ? 'Update' : 'Add')
+                                                            + ' alert of ' + alert.job.siteObject.value
+                                                        }>
+                                                        <span
+                                                            className={
+                                                                'glyphicon button-icon' +
+                                                                (
+                                                                    alert._id
+                                                                        ? ' glyphicon-edit'
+                                                                        : ' glyphicon-plus'
+                                                                )
+                                                            }>
+                                                        </span>
+                                                    </button>
+                                                    {
+                                                        (alert._id)
+                                                            ? <button
+                                                                className="btn-danger
+                                                                    form-control button-inline"
+                                                                onClick={(e) => this.removeAlertClick(e, alert)}
+                                                                title={
+                                                                    'Remove alert of '
+                                                                    + alert.job.siteObject.value
+                                                                }>
+                                                                <span
+                                                                    className="glyphicon
+                                                                        glyphicon-remove button-icon">
+                                                                </span>
+                                                             </button>
+                                                            : null
+                                                    }
+                                                </td>
+                                            </tr>
+                                        );
+                                    } else {
+                                        return null;
+                                    }
+
+                                })
+                            }
+                        </tbody>
+                    </table>
+                );
+            } else {
+                return null;
+            }
+
+        };
+
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -155,141 +248,22 @@ class AlertListView extends React.Component {
                           </div>
                 }
                 <div className="site-edit-container">
-                    {
-                        (alertsData.length > 0)
-                            ? <div className={
-                                'table-container-div ' +
-                                ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                                <table className="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Job Name</th>
-                                            <th>Response Timeout</th>
-                                            <th>Warning Threshold</th>
-                                            <th>Critical Threshold</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            alertsData.map((alert, i) => {
-                                                return (
-                                                    <tr className="table-row" key={'siteDetail' + i}>
-                                                        <td className="table-cell">
-                                                            <div className="form-group has-feedback job-name-input">
-                                                                <input
-                                                                    value={alert.job.jobName}
-                                                                    type="text"
-                                                                    className="form-control"
-                                                                    id="jobNameInput"
-                                                                    placeholder="JOB NAME"
-                                                                    disabled/>
-                                                            </div>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <div className="form-group has-feedback job-name-input">
-                                                                <input
-                                                                    value={Math.round(alert.meanAvg)}
-                                                                    type="number"
-                                                                    className="form-control"
-                                                                    id="urlObjectInput"
-                                                                    placeholder="ENTER WEBSITE URL"
-                                                                    disabled/>
-                                                            </div>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <div className="form-group has-feedback job-name-input">
-                                                                <input
-                                                                    value={Math.round(alert.warningThreshold)}
-                                                                    onChange={(e) => {
-                                                                        alertsData[i].warningThreshold = e.target.value;
-                                                                        this.handleChange(e, {
-                                                                            alertsData: alertsData
-                                                                        });
-                                                                    }}
-                                                                    type="number"
-                                                                    className="form-control"
-                                                                    id="urlObjectInput"
-                                                                    placeholder="ENTER WEBSITE URL"/>
-                                                            </div>
-                                                        </td>
-                                                        <td className="table-cell">
-                                                            <div className="form-group has-feedback job-name-input">
-                                                                <input
-                                                                    value={Math.round(alert.criticalThreshold)}
-                                                                    onChange={(e) => {
-                                                                        alertsData[i].criticalThreshold
-                                                                            = e.target.value;
-                                                                        this.handleChange(e, {
-                                                                            alertsData: alertsData
-                                                                        });
-                                                                    }}
-                                                                    type="number"
-                                                                    className="form-control"
-                                                                    id="urlObjectInput"
-                                                                    placeholder="ENTER WEBSITE URL"/>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                className={
-                                                                    'btn-primary form-control ' +
-                                                                    (alert._id ? 'button-inline' : ' add-button')
-                                                                }
-                                                                onClick={(e) => this.updateAlertClick(e, alert, i)}
-                                                                title={
-                                                                    (alert._id ? 'Update' : 'Add')
-                                                                    + ' alert of ' + alert.job.siteObject.value
-                                                                }>
-                                                                <span
-                                                                    className={
-                                                                        'glyphicon button-icon' +
-                                                                        (
-                                                                            alert._id
-                                                                                ? ' glyphicon-edit'
-                                                                                : ' glyphicon-plus'
-                                                                        )
-                                                                    }>
-                                                                </span>
-                                                            </button>
-                                                            {
-                                                                (alert._id)
-                                                                    ? <button
-                                                                        className="btn-danger
-                                                                            form-control button-inline"
-                                                                        onClick={(e) => this.removeAlertClick(e, alert)}
-                                                                        title={
-                                                                            'Remove alert of '
-                                                                            + alert.job.siteObject.value
-                                                                        }>
-                                                                        <span
-                                                                            className="glyphicon
-                                                                                glyphicon-remove button-icon">
-                                                                        </span>
-                                                                     </button>
-                                                                    : null
-                                                            }
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            : null
-                    }
-                    <div className="row add-test-section">
-                        <div className="col-sm-4"></div>
-                        <div className="col-sm-4 add-test-text" onClick={this.redirectToAddAlert}>
-                            <div className="row">
-                                Add a alert
-                            </div>
-                            <div className="row">
-                                <i className="plus-icon glyphicon glyphicon-plus"></i>
+                    <div className = {
+                        'table-container-div ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                        <div className="row alert-list-wrap-div">
+                            <AlertList/>
+                            <div className="row add-test-section">
+                                <div className="col-sm-1 table-button">
+                                    <button
+                                        className="btn btn-primary form-control button-all-caps-text"
+                                        onClick={this.redirectToAddAlert}>
+                                        Add Alert
+                                    </button>
+                                </div>
+                                <div className="col-sm-11"></div>
                             </div>
                         </div>
-                        <div className="col-sm-4"></div>
                     </div>
                 </div>
             </Fragment>
