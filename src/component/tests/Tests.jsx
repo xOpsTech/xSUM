@@ -81,12 +81,9 @@ class Tests extends React.Component {
     updateJobClick(e, jobToUpdate) {
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_A_JOB});
-        var url = AppConstants.API_URL + AppConstants.JOB_UPDATE_API;
-        jobApi.updateJob(url, {job: jobToUpdate}).then(() => {
-            this.setState({isLoading: false, loadingMessage: ''});
+        UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {
+            jobObj: JSON.stringify({jobID: jobToUpdate.jobId})
         });
-
     }
 
     removeJobClick(e, jobIdToRemove) {

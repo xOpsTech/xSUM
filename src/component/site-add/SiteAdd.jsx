@@ -72,7 +72,8 @@ class SiteAdd extends React.Component {
             recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
             isModalVisible: false,
             siteToResult: null,
-            jobName: {value: '', error: {}}
+            jobName: {value: '', error: {}},
+            selectedJobID: null
         };
 
         return initialState;
@@ -91,6 +92,44 @@ class SiteAdd extends React.Component {
         var url = AppConstants.API_URL + AppConstants.JOBS_GET_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
+
+            if (this.props.location.query.jobObj) {
+                var jobObj = JSON.parse(this.props.location.query.jobObj);
+
+                for (var i = 0; i < data.length; i++) {
+                    var currentJobObj = data[i];
+                    if (jobObj.jobId === currentJobObj.jobID) {
+                        var siteUrl = currentJobObj.siteObject.value.replace(/http:\/\//g,'');
+                        this.setState(
+                            {
+                                siteObject: {
+                                    value: siteUrl, // Remove http://
+                                    error: {
+                                        hasError: UIHelper.isUrlHasError(siteUrl),
+                                        name: MessageConstants.URL_ERROR
+                                    }
+                                },
+                                jobName: {
+                                    value: currentJobObj.jobName,
+                                    error: {
+                                        hasError: UIHelper.isNameHasError(currentJobObj.jobName),
+                                        name: MessageConstants.NAME_ERROR
+                                    }
+                                },
+                                browser: currentJobObj.browser,
+                                recursiveSelect: {
+                                    value: currentJobObj.recursiveSelect.value,
+                                    textValue: currentJobObj.recursiveSelect.textValue
+                                },
+                                selectedJobID: currentJobObj.jobId
+                            }
+                        );
+                    }
+
+                }
+
+            }
+
             this.setState({siteList: data, isLoading: false, loadingMessage: ''});
         });
     }
@@ -106,39 +145,65 @@ class SiteAdd extends React.Component {
     addJobClick(e) {
         e.preventDefault();
 
-        var {siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName} = this.state;
+        var {siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName, selectedJobID} = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
             siteObject.value = 'http://' + siteObject.value;
-            let jobObjectToInsert = {
-                jobId: UIHelper.getRandomHexaValue(),
-                siteObject,
-                browser,
-                scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
-                isRecursiveCheck,
-                recursiveSelect,
-                userEmail: this.state.loggedUserObj.email,
-                jobName: jobName.value
-            };
 
-            var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
-            this.setState({isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB});
-            jobApi.addJob(url, jobObjectToInsert).then((data) => {
 
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    this.state.siteList.push(data);
-                }
+            if (selectedJobID) {
 
-                this.setState({isLoading: false, loadingMessage: ''});
-            });
+                // Update existing job
+                this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_A_JOB});
+                var url = AppConstants.API_URL + AppConstants.JOB_UPDATE_API;
 
-            this.setState({
-                siteObject     : {value:'', error: {}},
-                recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
-                browser        : AppConstants.BROWSER_ARRAY[0].value
-            });
+                let jobToUpdate = {
+                    jobId: selectedJobID,
+                    siteObject,
+                    browser,
+                    scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
+                    isRecursiveCheck,
+                    recursiveSelect,
+                    userEmail: this.state.loggedUserObj.email,
+                    jobName: jobName.value
+                };
+
+                jobApi.updateJob(url, {job: jobToUpdate}).then(() => {
+                    this.setState({isLoading: false, loadingMessage: ''});
+                });
+            } else {
+
+                // Add a new job
+                let jobObjectToInsert = {
+                    jobId: UIHelper.getRandomHexaValue(),
+                    siteObject,
+                    browser,
+                    scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
+                    isRecursiveCheck,
+                    recursiveSelect,
+                    userEmail: this.state.loggedUserObj.email,
+                    jobName: jobName.value
+                };
+                var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
+                this.setState({isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB});
+                jobApi.addJob(url, jobObjectToInsert).then((data) => {
+
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        this.state.siteList.push(data);
+                    }
+
+                    this.setState({isLoading: false, loadingMessage: ''});
+                });
+
+                this.setState({
+                    siteObject     : {value:'', error: {}},
+                    recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
+                    browser        : AppConstants.BROWSER_ARRAY[0].value
+                });
+            }
+
         } else {
             this.setState({
                 siteObject: {

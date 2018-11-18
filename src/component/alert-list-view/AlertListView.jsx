@@ -155,21 +155,21 @@ class AlertListView extends React.Component {
                                         return (
                                             <tr className="table-row" key={'siteDetail' + i}>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback alert-label-div">
+                                                    <div className="form-group has-feedback label-div">
                                                         <label className="alert-label">
                                                             {alert.job.jobName}
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback alert-label-div">
+                                                    <div className="form-group has-feedback label-div">
                                                         <label className="alert-label">
                                                             {Math.round(alert.warningThreshold)} seconds
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback alert-label-div">
+                                                    <div className="form-group has-feedback label-div">
                                                         <label className="alert-label">
                                                             {Math.round(alert.criticalThreshold)} seconds
                                                         </label>
