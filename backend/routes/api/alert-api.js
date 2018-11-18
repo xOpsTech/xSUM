@@ -68,7 +68,7 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
 
         if (alertObjData.length > 0) {
             alertsData.push({
-                job: alertObjData[0].job,
+                job: jobData[i],
                 meanAvg: meanAvg/1000,
                 warningThreshold: alertObjData[0].warningThreshold,
                 criticalThreshold: alertObjData[0].criticalThreshold,
