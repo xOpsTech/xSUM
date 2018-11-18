@@ -155,84 +155,31 @@ class Tests extends React.Component {
                                                     return (
                                                         <tr className="table-row" key={'siteDetail' + i}>
                                                             <td className="table-cell">
-                                                                <div className={
-                                                                    'form-group has-feedback ' //+
-                                                                    // ((jobName.error.hasError !== undefined)
-                                                                    //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
-                                                                    }>
-                                                                    <input
-                                                                        value={site.jobName}
-                                                                        onChange={(e) => {
-                                                                            siteList[i].jobName = e.target.value;
-                                                                            this.handleChange(e, {
-                                                                                siteList: siteList
-                                                                            });
-                                                                        }}
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        id="jobNameInput"
-                                                                        placeholder="JOB NAME"/>
+                                                                <div className="form-group has-feedback label-div">
+                                                                    <label className="alert-label">
+                                                                        {site.jobName}
+                                                                    </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className={
-                                                                    'form-group has-feedback ' //+
-                                                                    // ((jobName.error.hasError !== undefined)
-                                                                    //     ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
-                                                                    }>
-                                                                    <input
-                                                                        value={site.siteObject.value}
-                                                                        onChange={(e) => {
-                                                                            siteList[i].siteObject.value = e.target.value;
-                                                                            this.handleChange(e, {
-                                                                                siteList: siteList
-                                                                            });
-                                                                        }}
-                                                                        type="text"
-                                                                        className="form-control"
-                                                                        id="urlObjectInput"
-                                                                        placeholder="ENTER WEBSITE URL"/>
+                                                                <div className="form-group has-feedback label-div">
+                                                                    <label className="alert-label">
+                                                                        {site.siteObject.value}
+                                                                    </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className="form-group">
-                                                                    <select
-                                                                        className="form-control form-control-sm"
-                                                                        value={site.browser}
-                                                                        onChange={(e) => {
-                                                                            siteList[i].browser = e.target.value;
-                                                                            this.dropDownClick({
-                                                                                siteList: siteList
-                                                                            });
-                                                                        }}>
-                                                                        {
-                                                                            AppConstants.BROWSER_ARRAY
-                                                                                .map((browser, i) => {
-                                                                                return <option key={'browser_' + i}
-                                                                                            value={browser.value}>
-                                                                                            {browser.textValue}
-                                                                                        </option>;
-                                                                            })
-                                                                        }
-                                                                    </select>
+                                                                <div className="form-group has-feedback label-div">
+                                                                    <label className="alert-label">
+                                                                        {site.browser}
+                                                                    </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className="form-group">
-                                                                    <select
-                                                                        disabled
-                                                                        className="form-control form-control-sm">
-                                                                        {
-                                                                            AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
-                                                                                (execution, i) => {
-                                                                                    return <option
-                                                                                                key={'execution_' + i}
-                                                                                                value={i}>
-                                                                                                {execution.textValue}
-                                                                                            </option>;
-                                                                                })
-                                                                        }
-                                                                    </select>
+                                                                <div className="form-group has-feedback label-div">
+                                                                    <label className="alert-label">
+                                                                        {site.recursiveSelect.textValue}
+                                                                    </label>
                                                                 </div>
                                                             </td>
                                                             <td>
