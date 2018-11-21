@@ -6,6 +6,7 @@ import LeftNav from '../common/left-nav/LeftNav';
 import alertApi from '../../api/alertApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -71,7 +72,7 @@ class AlertListView extends React.Component {
     }
 
     getAllAlerts(loggedUserObj) {
-        var urlToGetAlerts = AppConstants.API_URL + AppConstants.ALERTS_GET_API;
+        var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
         alertApi.getAllAlertsFrom(urlToGetAlerts, {userEmail: loggedUserObj.email}).then((data) => {
@@ -97,7 +98,7 @@ class AlertListView extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_ALERT});
-        var url = AppConstants.API_URL + AppConstants.REMOVE_ALERT_API;
+        var url = Config.API_URL + AppConstants.REMOVE_ALERT_API;
         alertApi.removeAlert(url, {alertId: alertToRemove._id}).then(() => {
             let arrayAfterRemove = this.state.alertsData.filter((alertObj) => {
                 return alertObj._id !== alertToRemove._id;
@@ -235,7 +236,10 @@ class AlertListView extends React.Component {
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={2} isFixedLeftNav={true} leftNavStateUpdate={this.leftNavStateUpdate}/>
+                <LeftNav
+                    selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX}
+                    isFixedLeftNav={true}
+                    leftNavStateUpdate={this.leftNavStateUpdate}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

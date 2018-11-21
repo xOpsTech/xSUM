@@ -11,6 +11,7 @@ import userApi from '../../api/userApi';
 
 import * as MessageConstants from '../../constants/MessageConstants';
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 
 /* eslint-disable no-unused-vars */
@@ -67,7 +68,7 @@ class Login extends React.Component {
 
                 this.setState({isLogin: true});
 
-                var url = AppConstants.API_URL + AppConstants.USER_CHECK_LOGIN_API;
+                var url = Config.API_URL + AppConstants.USER_CHECK_LOGIN_API;
 
                 var userData = {
                     email   : email.value,

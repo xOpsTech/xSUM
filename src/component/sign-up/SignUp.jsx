@@ -8,6 +8,7 @@ import NavContainer from '../common/nav-container/NavContainer';
 import ForgotPassword from '../common/forgot-password/ForgotPassword';
 
 import * as MessageConstants from '../../constants/MessageConstants';
+import * as Config from '../../config/config';
 import * as AppConstants from '../../constants/AppConstants';
 import * as UIHelper from '../../common/UIHelper';
 
@@ -91,7 +92,7 @@ class SignUp extends React.Component {
             this.setState({isSignup: true});
             this.setState({error: {}});
 
-            var url = AppConstants.API_URL + AppConstants.USER_ADD_API;
+            var url = Config.API_URL + AppConstants.USER_ADD_API;
 
             var userData = {
                 email   : email.value,

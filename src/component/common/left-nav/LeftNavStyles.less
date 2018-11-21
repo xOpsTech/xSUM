@@ -40,12 +40,13 @@
 	padding: 0;
 }
 
-.nav > li.active {
+.nav > li.active, .panel-body > li.active {
     background-color: #eb00ff;
 }
 
-.nav > li > a {
+.nav > li > a, .panel-body > li > a, div.sub-section-panel > div > div.panel-body > li > a {
     color: #fff;
+    text-decoration: none;
     &:hover, &:focus {
         background-color: #eb00ff;
     }
@@ -55,4 +56,40 @@
     background-color: #eb00ff;
     height: 350px;
     width: 5px;
+}
+
+.tab-with-sub-section {
+    width: 100%;
+    height: 40px;
+    text-align: left;
+    padding: 10px 15px;
+    background: none;
+    border: none;
+
+    &:hover {
+        background-color: #eb00ff;
+    }
+}
+
+.sub-section-panel {
+    background: none;
+    border: none;
+}
+
+ul.sub-nav {
+    padding-left: 20px;
+}
+
+div.sub-section-panel > div > div.panel-body {
+    padding: 0;
+}
+
+div.sub-section-panel > div > div.panel-body > li > a {
+    display: block;
+    padding: 10px 25px;
+    height: 40px;
+}
+
+.span-icon {
+    float: right;
 }

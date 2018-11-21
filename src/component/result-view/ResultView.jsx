@@ -7,6 +7,7 @@ import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -60,7 +61,7 @@ class ResultView extends React.Component {
     }
 
     getResult(resultID) {
-        var url = AppConstants.API_URL + AppConstants.GET_RESULT_API;
+        var url = Config.API_URL + AppConstants.GET_RESULT_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_RESULT});
         jobApi.getResult(url, {resultID}).then((data) => {
             var locationMarkerArr = this.state.locationMarker;

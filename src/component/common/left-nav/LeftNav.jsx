@@ -1,5 +1,5 @@
-import React from 'react';
-import {Nav, NavItem} from 'react-bootstrap';
+import React, {Fragment} from 'react';
+import {Nav, NavItem, Panel} from 'react-bootstrap';
 
 import * as AppConstants from '../../../constants/AppConstants';
 import * as UIHelper from '../../../common/UIHelper';
@@ -13,6 +13,7 @@ class LeftNav extends React.Component {
 
         this.tabOnClick = this.tabOnClick.bind(this);
         this.collapseButtonClick = this.collapseButtonClick.bind(this);
+        this.showHideSubSection = this.showHideSubSection.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -21,7 +22,8 @@ class LeftNav extends React.Component {
     // Returns initial props
     getInitialState() {
         var initialState = {
-            isNavCollapse: false
+            isNavCollapse: false,
+            isSubSectionExpand: false
         };
 
         return initialState;
@@ -29,6 +31,10 @@ class LeftNav extends React.Component {
 
     componentWillMount() {
         this.setState({isNavCollapse: UIHelper.getLeftState()});
+
+        if (this.props.isSubSectionExpand) {
+            this.setState({isSubSectionExpand: this.props.isSubSectionExpand});
+        }
     }
 
     tabOnClick(e, selectedTab) {
@@ -49,9 +55,15 @@ class LeftNav extends React.Component {
         this.props.leftNavStateUpdate && this.props.leftNavStateUpdate();
     }
 
+    showHideSubSection(e) {
+        e.preventDefault();
+
+        this.setState({isSubSectionExpand: !this.state.isSubSectionExpand});
+    }
+
     render() {
         const {selectedIndex, isFixedLeftNav} = this.props;
-        const {isNavCollapse} = this.state;
+        const {isNavCollapse, isSubSectionExpand} = this.state;
 
         if (!isNavCollapse) {
             return (
@@ -66,18 +78,64 @@ class LeftNav extends React.Component {
                         onSelect={this.handleNavSelect}>
                         {
                             AppConstants.LEFT_NAV_TABS.map((tab, i) => {
-                                return (
-                                    <NavItem
-                                        eventKey={tab.index}
-                                        href="#"
-                                        key={i}
-                                        id={tab.index}
-                                        onClick={(e) => {
-                                            this.tabOnClick(e, tab);
-                                        }}>
-                                        {tab.text}
-                                    </NavItem>
-                                );
+
+                                if (tab.subSections) {
+                                    return (
+                                        <Fragment>
+                                            <button className="tab-with-sub-section"
+                                                onClick={this.showHideSubSection}>
+                                                {tab.text}
+                                                <span className={
+                                                        'glyphicon ' +
+                                                        ((isSubSectionExpand)
+                                                            ? 'glyphicon-chevron-down '
+                                                            : 'glyphicon-chevron-right ') + 'button-icon span-icon'}>
+                                                </span>
+                                            </button>
+                                            <Panel expanded={isSubSectionExpand} className="sub-section-panel">
+                                                <Panel.Collapse>
+                                                    <Panel.Body>
+                                                        <Nav id={'subNav-' + tab.index}
+                                                            activeKey={selectedIndex}
+                                                            onSelect={this.handleNavSelect}
+                                                            className="sub-nav">
+                                                        {
+                                                            tab.subSections.map((subTag, j) => {
+                                                                return (
+                                                                    <NavItem
+                                                                        eventKey={subTag.index}
+                                                                        href="#"
+                                                                        key={j}
+                                                                        id={subTag.index}
+                                                                        onClick={(e) => {
+                                                                            this.tabOnClick(e, subTag);
+                                                                        }}>
+                                                                        {subTag.text}
+                                                                    </NavItem>
+                                                                );
+                                                            })
+                                                        }
+                                                        </Nav>
+                                                    </Panel.Body>
+                                                </Panel.Collapse>
+                                            </Panel>
+                                        </Fragment>
+                                    );
+                                } else {
+                                    return (
+                                        <NavItem
+                                            eventKey={tab.index}
+                                            href="#"
+                                            key={i}
+                                            id={tab.index}
+                                            onClick={(e) => {
+                                                this.tabOnClick(e, tab);
+                                            }}>
+                                            {tab.text}
+                                        </NavItem>
+                                    );
+                                }
+
                             })
                         }
                     </Nav>

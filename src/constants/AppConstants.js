@@ -54,6 +54,56 @@ export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
 export const ALERT_VIEW_ROUTE = '/alertView';
 export const TESTS_ROUTE = '/tests';
 export const ALERT_LIST_VIEW_ROUTE = '/alertListView';
+export const USER_MANAGMENT_ROUTE = '/userManagement';
+export const GRANT_ACCESS_ROUTE = '/grantAccess';
+export const TENANTS_ROUTE = '/tenants';
+
+export const ALL_RESULT_VIEW_INDEX = 0;
+export const TESTS_INDEX = 1;
+export const ALERT_LIST_VIEW_INDEX = 2;
+export const USER_MANAGMENT_INDEX = 3;
+export const GRANT_ACCESS_INDEX = 4;
+export const TENANTS_INDEX = 5;
+
+export const LEFT_NAV_TABS = [
+    {
+        index: ALL_RESULT_VIEW_INDEX,
+        text: 'Dashboard',
+        route: ALL_RESULT_VIEW_ROUTE
+    },
+    {
+        index: TESTS_INDEX,
+        text: 'Tests',
+        route: TESTS_ROUTE
+    },
+    {
+        index: ALERT_LIST_VIEW_INDEX,
+        text: 'Alerts',
+        route: ALERT_LIST_VIEW_ROUTE
+    },
+    {
+        index: -1,
+        text: 'Management',
+        route: '',
+        subSections: [
+            {
+                index: USER_MANAGMENT_INDEX,
+                text: 'User Management',
+                route: USER_MANAGMENT_ROUTE
+            },
+            {
+                index: GRANT_ACCESS_INDEX,
+                text: 'Grant Access',
+                route: GRANT_ACCESS_ROUTE
+            },
+            {
+                index: TENANTS_INDEX,
+                text: 'Tenants',
+                route: TENANTS_ROUTE
+            }
+        ]
+    }
+];
 
 // URL status
 export const URL_DONE_STATE = 'Done';
@@ -133,26 +183,3 @@ export const MAP_CONTENT_DATA = {
         }
     ]
 };
-
-export const LEFT_NAV_TABS = [
-    {
-        index: 0,
-        text: 'Dashboard',
-        route: ALL_RESULT_VIEW_ROUTE
-    },
-    {
-        index: 1,
-        text: 'Tests',
-        route: TESTS_ROUTE
-    },
-    {
-        index: 2,
-        text: 'Alerts',
-        route: ALERT_LIST_VIEW_ROUTE
-    },
-    {
-        index: 3,
-        text: 'Management',
-        route: ALL_RESULT_VIEW_ROUTE
-    }
-];

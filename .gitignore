@@ -61,3 +61,6 @@ typings/
 
 # next.js build output
 .next
+
+# remove adding changes for config symlink
+src/config/config.js

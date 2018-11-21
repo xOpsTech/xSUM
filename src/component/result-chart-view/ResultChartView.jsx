@@ -6,6 +6,7 @@ import NavContainer from '../common/nav-container/NavContainer';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -65,7 +66,7 @@ class ResultChartView extends React.Component {
     }
 
     getResults(jobID) {
-        var url = AppConstants.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
+        var url = Config.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_RESULT});
         jobApi.getResult(url, {jobID}).then((data) => {
             this.setupChartData(data);

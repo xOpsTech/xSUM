@@ -10,6 +10,7 @@ import jobApi from '../../api/jobApi';
 import ModalContainer from '../common/modal-container/ModalContainer';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -89,7 +90,7 @@ class SiteAdd extends React.Component {
     }
 
     getAllJobs(loggedUserObj) {
-        var url = AppConstants.API_URL + AppConstants.JOBS_GET_API;
+        var url = Config.API_URL + AppConstants.JOBS_GET_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
 
@@ -155,7 +156,7 @@ class SiteAdd extends React.Component {
 
                 // Update existing job
                 this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_A_JOB});
-                var url = AppConstants.API_URL + AppConstants.JOB_UPDATE_API;
+                var url = Config.API_URL + AppConstants.JOB_UPDATE_API;
 
                 let jobToUpdate = {
                     jobId: selectedJobID,
@@ -184,7 +185,7 @@ class SiteAdd extends React.Component {
                     userEmail: this.state.loggedUserObj.email,
                     jobName: jobName.value
                 };
-                var url = AppConstants.API_URL + AppConstants.JOB_INSERT_API;
+                var url = Config.API_URL + AppConstants.JOB_INSERT_API;
                 this.setState({isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB});
                 jobApi.addJob(url, jobObjectToInsert).then((data) => {
 
@@ -221,7 +222,7 @@ class SiteAdd extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.START_A_JOB});
-        var url = AppConstants.API_URL + AppConstants.JOB_START_API;
+        var url = Config.API_URL + AppConstants.JOB_START_API;
 
         var isStartValue = (jobToStartOrStop.recursiveSelect.isStart !== undefined
                                 && jobToStartOrStop.recursiveSelect.isStart);
@@ -236,7 +237,7 @@ class SiteAdd extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
-        var url = AppConstants.API_URL + AppConstants.JOB_REMOVE_API;
+        var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
         jobApi.removeJob(url, {jobId: jobIdToRemove}).then(() => {
             let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
                 return siteObject.jobId !== jobIdToRemove;
@@ -308,7 +309,7 @@ class SiteAdd extends React.Component {
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={0} isFixedLeftNav={true}/>
+                <LeftNav selectedIndex={AppConstants.TESTS_INDEX} isFixedLeftNav={true}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

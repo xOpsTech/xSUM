@@ -9,6 +9,7 @@ import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -65,8 +66,8 @@ class AllResultView extends React.Component {
     }
 
     getAllJobs(loggedUserObj) {
-        var urlToGetJobs = AppConstants.API_URL + AppConstants.JOBS_GET_API;
-        var urlForResultJob = AppConstants.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
+        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_API;
+        var urlForResultJob = Config.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         jobApi.getAllJobsFrom(urlToGetJobs, {userEmail: loggedUserObj.email}).then((data) => {
@@ -227,8 +228,8 @@ class AllResultView extends React.Component {
             const pieChartConfig = {
                 type: 'pie',
                 theme: 'light',
-                outlineAlpha: 1,
-                outlineColor: 'none',
+                outlineAlpha: 0.7,
+                outlineColor: '#343242',
                 labelsEnabled: false,
                 dataProvider: [
                     {
@@ -320,7 +321,7 @@ class AllResultView extends React.Component {
                           </div>
                 }
                 <LeftNav
-                    selectedIndex={0}
+                    selectedIndex={AppConstants.ALL_RESULT_VIEW_INDEX}
                     leftNavStateUpdate={this.leftNavStateUpdate}/>
                 <div className={
                         'all-result-view ' +

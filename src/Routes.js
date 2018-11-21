@@ -13,6 +13,9 @@ import AllResultView from './component/all-result-view/AllResultView';
 import AlertView from './component/alert-view/AlertView';
 import Tests from './component/tests/Tests';
 import AlertListView from './component/alert-list-view/AlertListView';
+import UserManagementView from './component/management/user-management/UserManagementView';
+import GrantAccessView from './component/management/grant-access/GrantAccessView';
+import TenantsView from './component/management/tenants/TenantsView';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -27,5 +30,8 @@ export default (
         <Route path={AppConstants.TESTS_ROUTE} component={Tests}/>
         <Route path={AppConstants.ALERT_VIEW_ROUTE} component={AlertView}/>
         <Route path={AppConstants.ALERT_LIST_VIEW_ROUTE} component={AlertListView}/>
+        <Route path={AppConstants.USER_MANAGMENT_ROUTE} component={UserManagementView}/>
+        <Route path={AppConstants.GRANT_ACCESS_ROUTE} component={GrantAccessView}/>
+        <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView}/>
     </Route>
 );

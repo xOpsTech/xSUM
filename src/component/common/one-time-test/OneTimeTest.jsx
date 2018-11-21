@@ -6,6 +6,7 @@ import ModalContainer from '../modal-container/ModalContainer';
 import urlApi from '../../../api/urlApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
+import * as Config from '../../../config/config';
 import * as MessageConstants from '../../../constants/MessageConstants';
 import * as UIHelper from '../../../common/UIHelper';
 
@@ -100,14 +101,14 @@ class OneTimeTest extends React.Component {
 
         // Check user logged in or not
         if (loggedUserObj) {
-            url = AppConstants.API_URL + AppConstants.URL_INSERT_LOGGED_USER_API;
+            url = Config.API_URL + AppConstants.URL_INSERT_LOGGED_USER_API;
             urlObj = {
                 hashID: randomHash,
                 urlValue: 'http://' + urlObject.value,
                 userEmail: loggedUserObj.email
             };
         } else {
-            url = AppConstants.API_URL + AppConstants.URL_INSERT_API;
+            url = Config.API_URL + AppConstants.URL_INSERT_API;
             urlObj = {hashID: randomHash, urlValue: 'http://' + urlObject.value};
         }
 
@@ -141,7 +142,7 @@ class OneTimeTest extends React.Component {
             let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
 
             if (storageID) {
-                var url = AppConstants.API_URL + AppConstants.URL_GET_API;
+                var url = Config.API_URL + AppConstants.URL_GET_API;
                 urlApi.getUrlData(url, {hashID: storageID}).then((data) => {
 
                     if (data[0].status === AppConstants.URL_DONE_STATE) {

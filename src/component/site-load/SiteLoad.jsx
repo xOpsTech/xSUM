@@ -10,6 +10,7 @@ import OneTimeTest from '../common/one-time-test/OneTimeTest';
 import urlApi from '../../api/urlApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as MessageConstants from '../../constants/MessageConstants';
 import * as UIHelper from '../../common/UIHelper';
 
@@ -61,7 +62,7 @@ class SiteAdd extends React.Component {
     }
 
     getLoggedUserUrlData(loggedUserObj) {
-        var url = AppConstants.API_URL + AppConstants.URL_GET_LOGGED_USER_URL_API;
+        var url = Config.API_URL + AppConstants.URL_GET_LOGGED_USER_URL_API;
         urlApi.getUrlData(url, {userEmail: loggedUserObj.email}).then((data) => {
             this.setState({oldUrlResults: data});
         });

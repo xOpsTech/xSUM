@@ -6,6 +6,7 @@ import LeftNav from '../common/left-nav/LeftNav';
 import jobApi from '../../api/jobApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -71,7 +72,7 @@ class Tests extends React.Component {
     }
 
     getAllJobs(loggedUserObj) {
-        var url = AppConstants.API_URL + AppConstants.JOBS_GET_API;
+        var url = Config.API_URL + AppConstants.JOBS_GET_API;
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
             this.setState({siteList: data, isLoading: false, loadingMessage: ''});
@@ -90,7 +91,7 @@ class Tests extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
-        var url = AppConstants.API_URL + AppConstants.JOB_REMOVE_API;
+        var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
         jobApi.removeJob(url, {jobId: jobIdToRemove}).then(() => {
             let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
                 return siteObject.jobId !== jobIdToRemove;
@@ -120,7 +121,10 @@ class Tests extends React.Component {
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={1} isFixedLeftNav={true} leftNavStateUpdate={this.leftNavStateUpdate}/>
+                <LeftNav
+                    selectedIndex={AppConstants.TESTS_INDEX}
+                    isFixedLeftNav={true}
+                    leftNavStateUpdate={this.leftNavStateUpdate}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

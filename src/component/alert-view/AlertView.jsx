@@ -6,6 +6,7 @@ import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import alertApi from '../../api/alertApi';
 
 import * as AppConstants from '../../constants/AppConstants';
+import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 import * as MessageConstants from '../../constants/MessageConstants';
 
@@ -60,7 +61,7 @@ class AlertView extends React.Component {
     }
 
     getAllAlerts(loggedUserObj) {
-        var urlToGetAlerts = AppConstants.API_URL + AppConstants.ALERTS_GET_API;
+        var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
         alertApi.getAllAlertsFrom(urlToGetAlerts, {userEmail: loggedUserObj.email}).then((data) => {
@@ -105,7 +106,7 @@ class AlertView extends React.Component {
         var {loggedUserObj, selectedAlertData} = this.state;
         selectedAlertData.email = loggedUserObj.email;
 
-        var urlToSaveAlert = AppConstants.API_URL + AppConstants.SAVE_ALERT_API;
+        var urlToSaveAlert = Config.API_URL + AppConstants.SAVE_ALERT_API;
         alertApi.saveAlert(urlToSaveAlert, selectedAlertData).then(() => {
             this.setState(
                 {
@@ -187,7 +188,7 @@ class AlertView extends React.Component {
                           </div>
                 }
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                <LeftNav selectedIndex={2} isFixedLeftNav={false}/>
+                <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
                 <div className="alert-view">
                     <div className="row">
                         <div className="col-sm-9">
