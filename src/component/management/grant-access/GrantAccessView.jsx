@@ -27,7 +27,7 @@ class GrantAccessView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'User Management - xSum';
+        document.title = 'Grant Access - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

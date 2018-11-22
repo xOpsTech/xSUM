@@ -43,7 +43,7 @@ class SignUp extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Create Account - xSum';
+        document.title = 'Create Account - ' + AppConstants.PRODUCT_NAME;
     }
 
     handleChange(stateObj) {

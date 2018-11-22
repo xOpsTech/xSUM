@@ -27,7 +27,7 @@ class TenantsView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'User Management - xSum';
+        document.title = 'Tenants - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

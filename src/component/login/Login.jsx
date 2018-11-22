@@ -45,7 +45,7 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Login - xSum';
+        document.title = 'Login - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'block';
     }
 

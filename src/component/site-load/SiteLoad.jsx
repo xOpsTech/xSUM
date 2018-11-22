@@ -44,7 +44,7 @@ class SiteAdd extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Site Load - xSum';
+        document.title = 'Site Load - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'block';
     }
 

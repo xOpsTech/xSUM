@@ -28,7 +28,7 @@ class UserManagementView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'User Management - xSum';
+        document.title = 'User Management - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

@@ -30,7 +30,7 @@ class AlertListView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Tests - xSum';
+        document.title = 'Alerts - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

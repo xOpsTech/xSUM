@@ -28,7 +28,7 @@ class AlertView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Alert View - xSum';
+        document.title = 'Alert View - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

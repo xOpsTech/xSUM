@@ -41,7 +41,7 @@ class SiteAdd extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Site Add - xSum';
+        document.title = 'Site Add - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 

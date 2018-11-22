@@ -1,3 +1,4 @@
+export const PRODUCT_NAME = 'xSUM';
 export const GIT_PROJECT_URL = 'https://github.com/xOpsTech/xSumFE';
 export const SITE_LOGIN_COOKIE = 'xSumCookie';
 export const LOGIN_COOKIE_EXPIRES = 30;
