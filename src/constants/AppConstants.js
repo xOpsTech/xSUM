@@ -20,6 +20,7 @@ export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJo
 export const USER_ADD_API = '/userAuth?action=registerUserData';
 export const USER_REMOVE_API = '/userAuth?action=removeUserData';
 export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
+export const GET_USER_LIST_API = '/userAuth?action=getUserList';
 
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';

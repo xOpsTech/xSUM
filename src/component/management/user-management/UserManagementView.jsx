@@ -3,7 +3,7 @@ import React, {Fragment} from 'react';
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
-import alertApi from '../../../api/alertApi';
+import userApi from '../../../api/userApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
 import * as Config from '../../../config/config';
@@ -53,14 +53,26 @@ class UserManagementView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            isLeftNavCollapse: false
+            isLeftNavCollapse: false,
+            userList: []
         };
 
         return initialState;
     }
 
     getAllUsers(loggedUserObj) {
+        var urlToGetUsers = Config.API_URL + AppConstants.GET_USER_LIST_API;
 
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USERS});
+        userApi.getUserList(urlToGetUsers, {userEmail: loggedUserObj.email}).then((data) => {
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    userList: data.userData
+                }
+            );
+        });
     }
 
     updateUserClick(e, userToUpdate, index) {
@@ -75,7 +87,13 @@ class UserManagementView extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_USER});
-        var url = Config.API_URL + AppConstants.REMOVE_ALERT_API;
+        var url = Config.API_URL + AppConstants.USER_REMOVE_API;
+        userApi.removeUser(url, {userId: userToRemove._id}).then(() => {
+            let arrayAfterRemove = this.state.userList.filter((userObj) => {
+                return userObj._id !== userToRemove._id;
+            });
+            this.setState({isLoading: false, loadingMessage: '', userList: arrayAfterRemove});
+        });
     }
 
     redirectToAddUser() {
@@ -91,8 +109,76 @@ class UserManagementView extends React.Component {
             isLoading,
             loadingMessage,
             loggedUserObj,
-            isLeftNavCollapse
+            isLeftNavCollapse,
+            userList
         } = this.state;
+
+        const UserList = () => {
+            return (
+                <table className="table table-borderless" id="user-list">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>User Email Address</th>
+                            <th>User Role</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            userList.map((user, i) => {
+                                return (
+                                    <tr className="table-row" key={'userDetail' + i}>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {user._id}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {user.email}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {user.role}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn-primary form-control button-inline"
+                                                onClick={(e) => this.updateUserClick(e, user, i)}
+                                                title={'Update user details of ' + user.email}>
+                                                <span className="glyphicon button-icon glyphicon-edit">
+                                                </span>
+                                            </button>
+                                            {
+                                                (user.email !== loggedUserObj.email)
+                                                    ? <button
+                                                        className="btn-danger form-control button-inline"
+                                                        onClick={(e) => this.removeUserClick(e, user)}
+                                                        title={'Remove user of ' + user.email}>
+                                                        <span className="glyphicon glyphicon-remove button-icon">
+                                                        </span>
+                                                      </button>
+                                                    : null
+                                            }
+
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        }
+                    </tbody>
+                </table>
+            );
+        };
 
         return (
             <Fragment>
@@ -113,6 +199,25 @@ class UserManagementView extends React.Component {
                               </button>
                           </div>
                 }
+                <div className="site-edit-container">
+                    <div className = {
+                        'table-container-div ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                        <div className="row alert-list-wrap-div">
+                            <UserList/>
+                            <div className="row add-test-section">
+                                <div className="col-sm-2 table-button">
+                                    <button
+                                        className="btn btn-primary form-control button-all-caps-text add-button"
+                                        onClick={this.redirectToAddUser}>
+                                        Add User
+                                    </button>
+                                </div>
+                                <div className="col-sm-11"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </Fragment>
         );
     }

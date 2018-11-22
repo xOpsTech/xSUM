@@ -23,6 +23,7 @@ export const SAVE_ALERT = 'Saving alert data...';
 export const FETCHING_ALERT = 'Fetching alerts...';
 export const REMOVING_ALERT = 'Removing alert data...';
 export const REMOVING_USER = 'Removing user data...';
+export const FETCHING_USERS = 'Fetching users...';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +

@@ -23,6 +23,28 @@ class userApi {
         });
     }
 
+    static getUserList(webserviceUrl, userObj) {
+        return fetchRequests.postRequest(webserviceUrl, userObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
+
+    static removeUser(webserviceUrl, userObj) {
+        return fetchRequests.postRequest(webserviceUrl, userObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
+
 }
 
 export default userApi;
