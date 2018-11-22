@@ -64,3 +64,4 @@ typings/
 
 # remove adding changes for config symlink
 src/config/config.js
+backend/config/config.js

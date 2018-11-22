@@ -1,8 +1,9 @@
 var MongoClient = require('mongodb').MongoClient;
 var InfluxDB = require('./influxdb');
 var AppConstants = require('../constants/AppConstants');
+var config = require('../config/config');
 var dbName = 'xsum';
-var url = 'mongodb://10.128.0.21:27017/' + dbName;
+var url = 'mongodb://' + config.MONGODB_IP + ':27017/' + dbName;
 const bcrypt = require('bcryptjs');
 
 function MongoDB(){};

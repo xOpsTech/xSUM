@@ -1,6 +1,7 @@
 var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
 var AppConstants = require('../../constants/AppConstants');
+var config = require('../../config/config');
 var path = require('path');
 var cmd = require('node-cmd');
 var crypto = require('crypto');
@@ -128,7 +129,7 @@ function executeResultGenerator(collectionName, objectToInsert) {
 
     //Send process request to sitespeed
     var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
-        ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --influxdb.tags "jobid=' + objectToInsert.ID + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
         + ',longitude=' + locationLongitude + '" ' + objectToInsert.url;
@@ -270,7 +271,7 @@ function executeJob(collectionName, objectToInsert) {
 
     //Send process request to sitespeed
     var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
-        ' --influxdb.host ' + AppConstants.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
+        ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database xsum' +
         ' --browser ' + objectToInsert.browser +
         ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude

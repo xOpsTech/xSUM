@@ -3,7 +3,7 @@ var express = require('express'),
     apiRouter = require('./routes/router')
     config = require('./config/config');
 
-var port = config.port;
+var port = config.PORT;
 var app = express();
 
 app.use('/assets', express.static('../assets'));

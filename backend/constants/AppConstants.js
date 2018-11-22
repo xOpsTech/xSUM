@@ -10,7 +10,6 @@ exports.USER_EXISTS = 'User already exists. Try with another email address';
 exports.EMAIL_NOT_EXISTS = 'Email does not exists';
 exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
 
-exports.INFLUXDB_IP = '108.59.80.158';
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 exports.EMAIL_USERNAME = 'xsum.xops@gmail.com';
