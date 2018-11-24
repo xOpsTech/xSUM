@@ -3,6 +3,8 @@ import React, {Fragment} from 'react';
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
+import userApi from '../../../api/userApi';
+import tenantApi from '../../../api/tenantApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
 import * as Config from '../../../config/config';
@@ -17,8 +19,8 @@ class TenantsView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.updateUserClick = this.updateUserClick.bind(this);
-        this.removeUserClick = this.removeUserClick.bind(this);
+        this.updateTenantClick = this.updateTenantClick.bind(this);
+        this.removeTenantClick = this.removeTenantClick.bind(this);
         this.redirectToAddUser = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
 
@@ -38,7 +40,7 @@ class TenantsView extends React.Component {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
 
-            this.getAllUsers(loggedUserObject);
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -52,29 +54,65 @@ class TenantsView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             loggedUserObj: null,
-            isLeftNavCollapse: false
+            isLeftNavCollapse: false,
+            tenantList: []
         };
 
         return initialState;
     }
 
-    getAllUsers(loggedUserObj) {
+    getLoggedUserData(loggedUserObj) {
+        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
+        var {mailSend} = this.state;
 
-    }
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
+        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
 
-    updateUserClick(e, userToUpdate, index) {
-        e.preventDefault();
+            if (data.user.settingEmail) {
+                mailSend.email.value = data.user.settingEmail;
+            }
 
-        UIHelper.redirectTo(AppConstants.USER_VIEW_ROUTE, {
-            userObj: JSON.stringify({userID: userToUpdate._id})
+            loggedUserObj.id = data.user._id;
+
+            this.setState (
+                {
+                    mailSend,
+                    isLoading: false,
+                    loadingMessage: '',
+                    loggedUserObj
+                }
+            );
+
+            this.getAllTenantsData(data.user._id);
         });
     }
 
-    removeUserClick(e, userToRemove) {
+    getAllTenantsData(userID) {
+        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
+
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    tenantList: data
+                }
+            );
+
+        });
+    }
+
+    updateTenantClick(e, tenantToUpdate, index) {
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_USER});
-        var url = Config.API_URL + AppConstants.REMOVE_ALERT_API;
+        UIHelper.redirectTo(AppConstants.USER_VIEW_ROUTE, {
+            tenantObj: JSON.stringify({tenantID: tenantToUpdate._id})
+        });
+    }
+
+    removeTenantClick(e, tenantToRemove) {
+        e.preventDefault();
     }
 
     redirectToAddUser() {
@@ -90,8 +128,81 @@ class TenantsView extends React.Component {
             isLoading,
             loadingMessage,
             loggedUserObj,
-            isLeftNavCollapse
+            isLeftNavCollapse,
+            tenantList
         } = this.state;
+
+        const TenantList = () => {
+            return (
+                <table className="table table-borderless" id="tenant-list">
+                    <thead>
+                        <tr>
+                            <th>Tenant ID</th>
+                            <th>Tenant Name</th>
+                            <th>Tenant Email</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            tenantList.map((tenant, i) => {
+                                return (
+                                    <tr className="table-row" key={'userDetail' + i}>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {tenant._id}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {
+                                                        (tenant.name === '')
+                                                            ? 'Please add a name for tanent'
+                                                            : tenant.name
+                                                    }
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {
+                                                        (tenant.email === '')
+                                                            ? 'Please add a email for tanent'
+                                                            : tenant.email
+                                                    }
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <Fragment>
+                                                <button
+                                                    className="btn-primary form-control button-inline"
+                                                    onClick={(e) => this.updateTenantClick(e, tenant, i)}
+                                                    title={'Update tenant details of ' + tenant.name}>
+                                                    <span className="glyphicon button-icon glyphicon-edit">
+                                                    </span>
+                                                </button>
+                                                <button
+                                                    className="btn-danger form-control button-inline"
+                                                    onClick={(e) => this.removeTenantClick(e, tenant)}
+                                                    title={'Remove tenant of ' + tenant.name}>
+                                                    <span className="glyphicon glyphicon-remove button-icon">
+                                                    </span>
+                                                </button>
+                                            </Fragment>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        }
+                    </tbody>
+                </table>
+            );
+        };
 
         return (
             <Fragment>
@@ -104,7 +215,8 @@ class TenantsView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}/>
+                              loggedUserObj={loggedUserObj}
+                              isFixedNav={true}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -112,6 +224,25 @@ class TenantsView extends React.Component {
                               </button>
                           </div>
                 }
+                <div className="site-edit-container">
+                    <div className = {
+                        'table-container-div ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                        <div className="row alert-list-wrap-div">
+                            <TenantList/>
+                            <div className="row add-test-section">
+                                <div className="col-sm-2 table-button">
+                                    <button
+                                        className="btn btn-primary form-control button-all-caps-text add-button"
+                                        onClick={this.redirectToAddUser}>
+                                        Add Tenant
+                                    </button>
+                                </div>
+                                <div className="col-sm-11"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </Fragment>
         );
     }

@@ -45,6 +45,28 @@ class userApi {
         });
     }
 
+    static getUser(webserviceUrl, userObj) {
+        return fetchRequests.postRequest(webserviceUrl, userObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
+
+    static updateUser(webserviceUrl, userObj) {
+        return fetchRequests.postRequest(webserviceUrl, userObj).then((response) => {
+
+            if (response.ok) {
+                return response.json();
+            }
+
+            return Promise.reject(response);
+        });
+    }
+
 }
 
 export default userApi;

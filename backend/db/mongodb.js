@@ -40,6 +40,20 @@ function getResult(db, collectionName, query) {
     });
 }
 
+function insertDataInto(db, collectionName, objectToInsert) {
+    return new Promise((resolve) => {
+        var dbo = db.db(dbName);
+        dbo.collection(collectionName).insertOne(objectToInsert, (error, result) => {
+            console.log("one row added for " + collectionName);
+            if (error) {
+                resolve(error);
+            }
+
+            resolve(result);
+        });
+    });
+}
+
 function insertDataTo(db, collectionName, objectToInsert, callBackFunction) {
     return new Promise((resolve) => {
         var dbo = db.db(dbName);
@@ -76,11 +90,17 @@ MongoDB.prototype.checkUserExists = async function(collectionName, query, typedP
     if (userData.length > 0) {
         var storedPassword = userData[0].password;
 
-        if (bcrypt.compareSync(typedPassword, storedPassword)) {
-            response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userData[0].email}});
+        if (userData[0].isActive) {
+            if (bcrypt.compareSync(typedPassword, storedPassword)) {
+                response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userData[0].email}});
+            } else {
+                response.send({message: AppConstants.EMAIL_AND_PASSWORD_NOT_MATCH});
+            }
         } else {
-            response.send({message: AppConstants.EMAIL_AND_PASSWORD_NOT_MATCH});
+            response.send({message: AppConstants.USER_INACTIVE});
         }
+
+
     } else {
         response.send({message: AppConstants.EMAIL_NOT_EXISTS});
     }
@@ -103,18 +123,6 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
         response.send(err);
     });
 
-}
-
-MongoDB.prototype.insertUser = async function(collectionName, queryObj, objectToInsert, response) {
-    var dbObject = await connectDB();
-    var userData = await getResult(dbObject, collectionName, queryObj);
-
-    if (userData.length > 0) {
-        response.send({message: AppConstants.USER_EXISTS});
-    } else {
-        var insertMessage = await insertDataTo(dbObject, collectionName, objectToInsert);
-        response.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: objectToInsert.email}});
-    }
 }
 
 MongoDB.prototype.insertJobWithUserCheck = function(collectionName, objectToInsert, response, callBackFunction) {
@@ -232,6 +240,15 @@ MongoDB.prototype.getAllData = async function(collectionName, query) {
 
     return new Promise((resolve) => {
         resolve(allresults);
+    });
+}
+
+MongoDB.prototype.insertData = async function(collectionName, objectToInsert) {
+    var dbObject = await connectDB();
+    var insertedObject = await insertDataInto(dbObject, collectionName, objectToInsert);
+
+    return new Promise((resolve) => {
+        resolve(objectToInsert);
     });
 }
 

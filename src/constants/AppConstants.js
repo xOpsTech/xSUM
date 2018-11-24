@@ -19,12 +19,19 @@ export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJo
 
 export const USER_ADD_API = '/userAuth?action=registerUserData';
 export const USER_REMOVE_API = '/userAuth?action=removeUserData';
-export const USER_CHECK_LOGIN_API = '/userAuth?action=getUserData';
+export const USER_CHECK_LOGIN_API = '/userAuth?action=checkLoginData';
 export const GET_USER_LIST_API = '/userAuth?action=getUserList';
+export const GET_USER_ROLES_API = '/userAuth?action=getUserRolesList';
+export const ADD_USER_API = '/userAuth?action=addInActiveUserData';
+export const UPDATE_USER_API = '/userAuth?action=updateUserData';
+export const GET_USER_DATA_API = '/userAuth?action=getUserData';
+export const ADD_EMAIL_SETTING_DATA_API = '/userAuth?action=addEmailSettingsUserData';
 
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';
 export const REMOVE_ALERT_API = '/alert?action=removeAlert';
+
+export const GET_TENANT_DATA_API = '/tenant?action=getAllTenantsData';
 
 export const RESPONSE_SUCCESS = 'Success';
 
@@ -58,6 +65,8 @@ export const ALERT_LIST_VIEW_ROUTE = '/alertListView';
 export const USER_MANAGMENT_ROUTE = '/userManagement';
 export const GRANT_ACCESS_ROUTE = '/grantAccess';
 export const TENANTS_ROUTE = '/tenants';
+export const SETTINGS_ROUTE = '/user-settings';
+export const ADD_USER_ROUTE = '/add-user';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -65,6 +74,7 @@ export const ALERT_LIST_VIEW_INDEX = 2;
 export const USER_MANAGMENT_INDEX = 3;
 export const GRANT_ACCESS_INDEX = 4;
 export const TENANTS_INDEX = 5;
+export const SETTINGS_INDEX = 6;
 
 export const LEFT_NAV_TABS = [
     {
@@ -92,15 +102,20 @@ export const LEFT_NAV_TABS = [
                 text: 'User Management',
                 route: USER_MANAGMENT_ROUTE
             },
-            {
-                index: GRANT_ACCESS_INDEX,
-                text: 'Grant Access',
-                route: GRANT_ACCESS_ROUTE
-            },
+            // {
+            //     index: GRANT_ACCESS_INDEX,
+            //     text: 'Grant Access',
+            //     route: GRANT_ACCESS_ROUTE
+            // },
             {
                 index: TENANTS_INDEX,
                 text: 'Tenants',
                 route: TENANTS_ROUTE
+            },
+            {
+                index: SETTINGS_INDEX,
+                text: 'Settings',
+                route: SETTINGS_ROUTE
             }
         ]
     }

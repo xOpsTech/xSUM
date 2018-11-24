@@ -16,6 +16,8 @@ import AlertListView from './component/alert-list-view/AlertListView';
 import UserManagementView from './component/management/user-management/UserManagementView';
 import GrantAccessView from './component/management/grant-access/GrantAccessView';
 import TenantsView from './component/management/tenants/TenantsView';
+import SettingsView from './component/management/settings/SettingsView';
+import AddUserView from './component/management/add-user/AddUserView';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -33,5 +35,7 @@ export default (
         <Route path={AppConstants.USER_MANAGMENT_ROUTE} component={UserManagementView}/>
         <Route path={AppConstants.GRANT_ACCESS_ROUTE} component={GrantAccessView}/>
         <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView}/>
+        <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView}/>
+        <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView}/>
     </Route>
 );

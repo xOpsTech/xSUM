@@ -78,7 +78,7 @@ class UserManagementView extends React.Component {
     updateUserClick(e, userToUpdate, index) {
         e.preventDefault();
 
-        UIHelper.redirectTo(AppConstants.USER_VIEW_ROUTE, {
+        UIHelper.redirectTo(AppConstants.ADD_USER_ROUTE, {
             userObj: JSON.stringify({userID: userToUpdate._id})
         });
     }
@@ -97,7 +97,7 @@ class UserManagementView extends React.Component {
     }
 
     redirectToAddUser() {
-        UIHelper.redirectTo(AppConstants.USER_VIEW_ROUTE, {});
+        UIHelper.redirectTo(AppConstants.ADD_USER_ROUTE, {});
     }
 
     leftNavStateUpdate() {
@@ -146,30 +146,33 @@ class UserManagementView extends React.Component {
                                         <td className="table-cell">
                                             <div className="form-group has-feedback label-div">
                                                 <label className="alert-label">
-                                                    {user.role}
+                                                    {UIHelper.toTitleCase(user.role)}
                                                 </label>
                                             </div>
                                         </td>
                                         <td>
-                                            <button
-                                                className="btn-primary form-control button-inline"
-                                                onClick={(e) => this.updateUserClick(e, user, i)}
-                                                title={'Update user details of ' + user.email}>
-                                                <span className="glyphicon button-icon glyphicon-edit">
-                                                </span>
-                                            </button>
                                             {
                                                 (user.email !== loggedUserObj.email)
-                                                    ? <button
-                                                        className="btn-danger form-control button-inline"
-                                                        onClick={(e) => this.removeUserClick(e, user)}
-                                                        title={'Remove user of ' + user.email}>
-                                                        <span className="glyphicon glyphicon-remove button-icon">
-                                                        </span>
-                                                      </button>
-                                                    : null
+                                                    ? <Fragment>
+                                                        <button
+                                                            className="btn-primary form-control button-inline"
+                                                            onClick={(e) => this.updateUserClick(e, user, i)}
+                                                            title={'Update user details of ' + user.email}>
+                                                            <span className="glyphicon button-icon glyphicon-edit">
+                                                            </span>
+                                                        </button>
+                                                        <button
+                                                            className="btn-danger form-control button-inline"
+                                                            onClick={(e) => this.removeUserClick(e, user)}
+                                                            title={'Remove user of ' + user.email}>
+                                                            <span className="glyphicon glyphicon-remove button-icon">
+                                                            </span>
+                                                          </button>
+                                                      </Fragment>
+                                                    : <div className="form-group has-feedback">
+                                                          Current user
+                                                      </div>
                                             }
-
                                         </td>
                                     </tr>
                                 );
@@ -191,7 +194,8 @@ class UserManagementView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}/>
+                              loggedUserObj={loggedUserObj}
+                              isFixedNav={true}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">

@@ -2,6 +2,7 @@ exports.DB_URL_LIST = 'urlList';
 exports.DB_JOB_LIST = 'jobList';
 exports.USER_LIST   = 'userList';
 exports.ALERT_LIST   = 'alertList';
+exports.TENANT_LIST   = 'tenantList';
 
 exports.RESPONSE_SUCCESS = 'Success';
 exports.RESPONSE_ERROR = 'Error';
@@ -9,6 +10,7 @@ exports.RESPONSE_ERROR = 'Error';
 exports.USER_EXISTS = 'User already exists. Try with another email address';
 exports.EMAIL_NOT_EXISTS = 'Email does not exists';
 exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
+exports.USER_INACTIVE = 'User account is not activated';
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 

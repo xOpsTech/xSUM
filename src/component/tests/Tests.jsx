@@ -128,7 +128,8 @@ class Tests extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}/>
+                              loggedUserObj={loggedUserObj}
+                              isFixedNav={true}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
