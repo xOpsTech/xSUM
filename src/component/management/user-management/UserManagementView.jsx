@@ -4,6 +4,7 @@ import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
 import userApi from '../../../api/userApi';
+import tenantApi from '../../../api/tenantApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
 import * as Config from '../../../config/config';
@@ -39,6 +40,7 @@ class UserManagementView extends React.Component {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
 
+            this.getLoggedUserData(loggedUserObject);
             this.getAllUsers(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
@@ -54,10 +56,48 @@ class UserManagementView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             isLeftNavCollapse: false,
+            tenantList: [],
+            selectedTenant: {userList: []},
             userList: []
         };
 
         return initialState;
+    }
+
+    getLoggedUserData(loggedUserObj) {
+        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
+
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
+        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
+
+            loggedUserObj.id = data.user._id;
+
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    loggedUserObj
+                }
+            );
+
+            this.getAllTenantsWithUsers(data.user._id);
+        });
+    }
+
+    getAllTenantsWithUsers(userID) {
+        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    selectedTenant: data[0],
+                    tenantList: data
+                }
+            );
+
+        });
     }
 
     getAllUsers(loggedUserObj) {
@@ -110,7 +150,8 @@ class UserManagementView extends React.Component {
             loadingMessage,
             loggedUserObj,
             isLeftNavCollapse,
-            userList
+            selectedTenant,
+            tenantList
         } = this.state;
 
         const UserList = () => {
@@ -126,7 +167,7 @@ class UserManagementView extends React.Component {
                     </thead>
                     <tbody>
                         {
-                            userList.map((user, i) => {
+                            selectedTenant.userList.map((user, i) => {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
@@ -208,6 +249,46 @@ class UserManagementView extends React.Component {
                         'table-container-div ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
+                            <div className="row tenant-select">
+                                <div className="col-sm-2 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Select Tenent : </label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-2 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Tenant ID</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-3">
+                                    <div className="form-group">
+                                        <select className="form-control form-control-sm form-group">
+                                            onChange={(e) => this.dropDownClick(
+                                                  {selectedTenant: tenantList[e.target.value]})
+                                            }>
+                                            {
+                                                tenantList.map((tenant, i) => {
+                                                    return <option key={'tenant_' + i} value={i}>
+                                                                {tenant._id}
+                                                           </option>;
+                                                })
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="col-sm-2 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Tenant Name</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-3">
+                                    <div className="form-group has-feedback label-div">
+                                        <label className="alert-label">
+                                            {(selectedTenant.name) ? selectedTenant.name : '-'}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                             <UserList/>
                             <div className="row add-test-section">
                                 <div className="col-sm-2 table-button">

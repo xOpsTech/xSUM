@@ -63,20 +63,13 @@ class TenantsView extends React.Component {
 
     getLoggedUserData(loggedUserObj) {
         var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
-        var {mailSend} = this.state;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
         userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
-
-            if (data.user.settingEmail) {
-                mailSend.email.value = data.user.settingEmail;
-            }
-
             loggedUserObj.id = data.user._id;
 
             this.setState (
                 {
-                    mailSend,
                     isLoading: false,
                     loadingMessage: '',
                     loggedUserObj

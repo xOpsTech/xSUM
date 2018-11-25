@@ -57,12 +57,11 @@ class SettingsView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             isLeftNavCollapse: false,
-            mailSend: {
+            tenantList: [],
+            selectedTenant: {
                 email: {value: '', error: {}},
                 password: {value: '', error: {}}
-            },
-            tenantList: [],
-            selectedTenant: {}
+            }
         };
 
         return initialState;
@@ -70,20 +69,14 @@ class SettingsView extends React.Component {
 
     getLoggedUserData(loggedUserObj) {
         var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
-        var {mailSend} = this.state;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
         userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
-
-            if (data.user.settingEmail) {
-                mailSend.email.value = data.user.settingEmail;
-            }
 
             loggedUserObj.id = data.user._id;
 
             this.setState (
                 {
-                    mailSend,
                     isLoading: false,
                     loadingMessage: '',
                     loggedUserObj
@@ -99,12 +92,21 @@ class SettingsView extends React.Component {
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
 
+            var tenantList = [];
+
+            for (var i = 0; i < data.length; i++) {
+                var tenant = data[i];
+                tenant.email = {value: data[i].email, error: {}};
+                tenant.password = {value: '', error: {}};
+                tenantList.push(tenant);
+            }
+
             this.setState (
                 {
                     isLoading: false,
                     loadingMessage: '',
-                    tenantList: data,
-                    selectedTenant: data[0]
+                    tenantList: tenantList,
+                    selectedTenant: tenantList[0]
                 }
             );
 
@@ -119,24 +121,24 @@ class SettingsView extends React.Component {
     updateMailClick(e) {
         e.preventDefault();
 
-        //this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_USER});
-        var {mailSend, loggedUserObj} = this.state;
+        this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_TENANT});
+        var {selectedTenant, loggedUserObj} = this.state;
 
-        var userSettingToInsert = {
-            id: loggedUserObj.id,
-            settingEmail: mailSend.email.value,
-            settingPassword: mailSend.password.value
+        var emailSettingToInsert = {
+            id: selectedTenant._id,
+            email: selectedTenant.email.value,
+            password: selectedTenant.password.value
         };
 
-        var urlToUpdateUser = Config.API_URL + AppConstants.ADD_EMAIL_SETTING_DATA_API;
-        // userApi.updateUser(urlToUpdateUser, userSettingToInsert).then((response) => {
-        //     this.setState(
-        //         {
-        //             isLoading: false,
-        //             loadingMessage: '',
-        //         }
-        //     );
-        // });
+        var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
+        tenantApi.saveTenant(urlToUpdateTenant, emailSettingToInsert).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+        });
     }
 
     redirectToAddUser() {
@@ -157,7 +159,6 @@ class SettingsView extends React.Component {
             loadingMessage,
             loggedUserObj,
             isLeftNavCollapse,
-            mailSend,
             tenantList,
             selectedTenant
         } = this.state;
@@ -197,28 +198,26 @@ class SettingsView extends React.Component {
                             <div className="col-sm-9">
                                 <div className={
                                     'form-group has-feedback ' +
-                                    ((mailSend.email.error.hasError !== undefined)
-                                        ? ((mailSend.email.error.hasError) ? 'has-error' : 'has-success') : '')
+                                    ((selectedTenant.email.error.hasError !== undefined)
+                                        ? ((selectedTenant.email.error.hasError) ? 'has-error' : 'has-success') : '')
                                     }>
                                     <input
-                                        value={mailSend.email.value}
+                                        value={selectedTenant.email.value}
                                         onChange={(e) => {
-                                            mailSend.email =  {
+                                            selectedTenant.email =  {
                                                 value: e.target.value,
                                                 error: {
                                                     hasError: UIHelper.isEmailHasError(e.target.value),
                                                     name: MessageConstants.EMAIL_ERROR
                                                 }
                                             }
-                                            this.handleChange(e, {
-                                                mailSend
-                                            });
+                                            this.handleChange(e, {selectedTenant});
                                         }}
                                         type="text"
                                         className="form-control"
                                         id="userEmailInput"
                                         placeholder="EMAIL"/>
-                                    <ErrorMessageComponent error={mailSend.email.error}/>
+                                    <ErrorMessageComponent error={selectedTenant.email.error}/>
                                 </div>
                             </div>
                         </div>
@@ -232,12 +231,12 @@ class SettingsView extends React.Component {
                             <div className="col-sm-9">
                                 <div className="form-group">
                                     <input
-                                        value={mailSend.password.value}
+                                        value={selectedTenant.password.value}
                                         onChange={(e) => {
-                                            mailSend.password = {
+                                            selectedTenant.password = {
                                                 value: e.target.value
                                             }
-                                            this.handleChange(e, {mailSend});
+                                            this.handleChange(e, {selectedTenant});
                                         }}
                                         type="password"
                                         className="form-control"
@@ -267,6 +266,21 @@ class SettingsView extends React.Component {
                                             })
                                         }
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-sm-3 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Tenant Name</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-9">
+                                <div className="form-group has-feedback label-div">
+                                    <label className="alert-label">
+                                        {(selectedTenant.name) ? selectedTenant.name : '-'}
+                                    </label>
                                 </div>
                             </div>
                         </div>

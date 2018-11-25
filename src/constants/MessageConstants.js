@@ -29,6 +29,7 @@ export const FETCHING_USER_ROLES = 'Fetching user roles...';
 export const ADD_USER = 'Adding a user...';
 export const UPDATE_USER = 'Updating a user...';
 export const FETCHING_TENANTS = 'Fetching tenants...';
+export const UPDATE_TENANT = 'Updating tenant...';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +

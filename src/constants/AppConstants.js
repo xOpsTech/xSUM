@@ -32,6 +32,8 @@ export const ALERTS_GET_API = '/alert?action=getAllAlerts';
 export const REMOVE_ALERT_API = '/alert?action=removeAlert';
 
 export const GET_TENANT_DATA_API = '/tenant?action=getAllTenantsData';
+export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailData';
+export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
 
 export const RESPONSE_SUCCESS = 'Success';
 
