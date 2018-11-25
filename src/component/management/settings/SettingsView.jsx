@@ -279,7 +279,11 @@ class SettingsView extends React.Component {
                             <div className="col-sm-9">
                                 <div className="form-group has-feedback label-div">
                                     <label className="alert-label">
-                                        {(selectedTenant.name) ? selectedTenant.name : '-'}
+                                        {
+                                            (selectedTenant.name)
+                                                ? selectedTenant.name
+                                                : AppConstants.NOT_AVAILABLE_TENANT_NAME
+                                        }
                                     </label>
                                 </div>
                             </div>

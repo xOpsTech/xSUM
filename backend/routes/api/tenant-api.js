@@ -61,13 +61,13 @@ TenantApi.prototype.getAllTenantsWithUsers = async function(req, res) {
     var userData = await MongoDB.getAllData(AppConstants.USER_LIST, {});
     var matchedTenants = [];
 
-    for (var i = 0; i < tenantData.length; i++) {
+    for (let tenant of tenantData) {
 
-        for (var j = 0; j < tenantData[i].users.length; j++) {
+        for (let user of tenant.users) {
 
-            if (tenantData[i].users[j].userID == userObj.userID) {
-                delete tenantData[i].password;
-                matchedTenants.push(tenantData[i]);
+            if (user.userID == userObj.userID) {
+                delete tenant.password;
+                matchedTenants.push(tenant);
                 break;
             }
 
@@ -75,21 +75,23 @@ TenantApi.prototype.getAllTenantsWithUsers = async function(req, res) {
 
     }
 
-    for (var i = 0; i < matchedTenants.length; i++) {
-
+    for (let tenant of matchedTenants) {
         var userList = [];
 
-        for (var j = 0; j < matchedTenants[i].users.length; j++) {
+        for (let user of tenant.users) {
 
             // Get other user list
-            var foundUser = userData.find(function(user) {
-                return user.userID == matchedTenants[i].users[j]._id;
-            });
+            for (let dbUser of userData) {
 
-            userList.push(foundUser);
+                if (JSON.stringify(user.userID) == JSON.stringify(dbUser._id)) {
+                    delete dbUser.password;
+                    userList.push(dbUser);
+                }
+
+            }
         }
 
-        matchedTenants[i].userList = userList;
+        tenant.userList = userList;
     }
 
     res.send(matchedTenants);

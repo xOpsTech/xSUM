@@ -5,6 +5,7 @@ import ErrorMessageComponent from '../../common/error-message-component/ErrorMes
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
 import userApi from '../../../api/userApi';
+import tenantApi from '../../../api/tenantApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
 import * as Config from '../../../config/config';
@@ -24,6 +25,7 @@ class AddUserView extends React.Component {
         this.getAllUserRoles = this.getAllUserRoles.bind(this);
         this.addUserClick = this.addUserClick.bind(this);
         this.updateUserClick = this.updateUserClick.bind(this);
+        this.dropDownClick = this.dropDownClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -42,6 +44,7 @@ class AddUserView extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
 
             this.getAllUserRoles(loggedUserObject);
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -63,7 +66,9 @@ class AddUserView extends React.Component {
                 role: {value: ''}
             },
             userList: [],
-            userSaveError: {}
+            userSaveError: {},
+            tenantList: [],
+            selectedTenant: {userList: []},
         };
 
         return initialState;
@@ -103,7 +108,15 @@ class AddUserView extends React.Component {
                                 userObj: {
                                     id: data.userData[i]._id,
                                     email: {value: data.userData[i].email, error: {}},
-                                    role: {value: data.userData[i].role}
+                                    role: {
+                                        value:
+                                            UIHelper.getRoleForUserFromTenant(
+                                                userObj.tenantID,
+                                                data.userData[i],
+                                                false
+                                            )
+                                    },
+                                    tenants: data.userData[i].tenants
                                 }
                             }
                         );
@@ -123,6 +136,66 @@ class AddUserView extends React.Component {
         });
     }
 
+    getLoggedUserData(loggedUserObj) {
+        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
+
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
+        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
+
+            loggedUserObj.id = data.user._id;
+
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    loggedUserObj
+                }
+            );
+
+            this.getAllTenantsData(data.user._id);
+        });
+    }
+
+    getAllTenantsData(userID) {
+        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
+            var tenantList = [];
+            var selectedTenant = this.state.selectedTenant;
+
+            for (var i = 0; i < data.length; i++) {
+                var tenant = data[i];
+                tenant.email = {value: data[i].email, error: {}};
+                tenant.password = {value: '', error: {}};
+                tenantList.push(tenant);
+
+                if (this.props.location.query.userObj) {
+                    var userObj = JSON.parse(this.props.location.query.userObj);
+
+                    if (userObj.tenantID === tenant._id) {
+                        selectedTenant = tenant;
+                    }
+
+                }
+
+            }
+
+            if (selectedTenant) {
+                selectedTenant = tenantList[0];
+            }
+
+            this.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    tenantList: tenantList,
+                    selectedTenant: selectedTenant
+                }
+            );
+
+        });
+    }
+
     handleChange(e, stateObj) {
         e.preventDefault();
         this.setState(stateObj);
@@ -131,64 +204,72 @@ class AddUserView extends React.Component {
     addUserClick(e) {
         e.preventDefault();
 
-        // this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
-        // var {userObj} = this.state;
-        //
-        // var userToInsert = {
-        //     email: userObj.email.value,
-        //     role: userObj.role.value
-        // };
-        //
-        // var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
-        // userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
-        //     this.setState(
-        //         {
-        //             isLoading: false,
-        //             loadingMessage: '',
-        //         }
-        //     );
-        //
-        //     if (response.message === AppConstants.RESPONSE_SUCCESS) {
-        //         UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
-        //     } else {
-        //         this.setState({userSaveError: {hasError: true, name: response.message}});
-        //     }
-        //
-        // });
+        this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
+        var {userObj, selectedTenant, loggedUserObj} = this.state;
+
+        var userToInsert = {
+            userID: loggedUserObj.id,
+            email: userObj.email.value,
+            role: userObj.role.value,
+            tenantID: selectedTenant._id
+        };
+
+        var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
+        userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+
+            if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
+            } else {
+                this.setState({userSaveError: {hasError: true, name: response.message}});
+            }
+
+        });
     }
 
     updateUserClick(e) {
         e.preventDefault();
 
-        // this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_USER});
-        // var {userObj} = this.state;
-        //
-        // var userToInsert = {
-        //     id: userObj.id,
-        //     email: userObj.email.value,
-        //     role: userObj.role.value
-        // };
-        //
-        // var urlToUpdateUser = Config.API_URL + AppConstants.UPDATE_USER_API;
-        // userApi.registerUser(urlToUpdateUser, userToInsert).then((response) => {
-        //     this.setState(
-        //         {
-        //             isLoading: false,
-        //             loadingMessage: '',
-        //         }
-        //     );
-        //
-        //     if (response.message === AppConstants.RESPONSE_SUCCESS) {
-        //         UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
-        //     } else {
-        //         this.setState({userSaveError: {hasError: true, name: response.message}});
-        //     }
-        //
-        // });
+        this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_USER});
+        var {userObj, selectedTenant} = this.state;
+
+        var userToUpdate = {
+            id: userObj.id,
+            email: userObj.email.value,
+            role: userObj.role.value,
+            tenantID: selectedTenant._id,
+            tenants: userObj.tenants
+        };
+
+        var urlToUpdateUser = Config.API_URL + AppConstants.UPDATE_USER_API;
+        userApi.registerUser(urlToUpdateUser, userToUpdate).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+
+            if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
+            } else {
+                this.setState({userSaveError: {hasError: true, name: response.message}});
+            }
+
+        });
     }
 
     leftNavStateUpdate() {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+    }
+
+    dropDownClick(stateObject) {
+        this.setState(stateObject);
     }
 
     render() {
@@ -199,7 +280,9 @@ class AddUserView extends React.Component {
             isLeftNavCollapse,
             userObj,
             userRoles,
-            userSaveError
+            userSaveError,
+            tenantList,
+            selectedTenant
         } = this.state;
 
         return (
@@ -289,6 +372,45 @@ class AddUserView extends React.Component {
                                 </select>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="col-sm-3 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Tenant ID</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-9">
+                                <div className="form-group">
+                                    <select className="form-control form-control-sm form-group">
+                                        onChange={(e) => this.dropDownClick(
+                                              {selectedTenant: tenantList[e.target.value]})
+                                        }>
+                                        {
+                                            tenantList.map((tenant, i) => {
+                                                return <option key={'tenant_' + i} value={i}>
+                                                            {tenant._id}
+                                                       </option>;
+                                            })
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-sm-3 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Tenant Name</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-9">
+                                <div className="form-group has-feedback label-div">
+                                    <label className="alert-label">
+                                        {(selectedTenant.name) ? selectedTenant.name : '-'}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                         <ErrorMessageComponent error={userSaveError}/>
                         <div className="row">
                             <div className="col-sm-4 alert-label-column">

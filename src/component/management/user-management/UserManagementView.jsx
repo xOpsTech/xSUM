@@ -23,6 +23,7 @@ class UserManagementView extends React.Component {
         this.removeUserClick = this.removeUserClick.bind(this);
         this.redirectToAddUser = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
+        this.getAllTenantsWithUsers = this.getAllTenantsWithUsers.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -115,24 +116,25 @@ class UserManagementView extends React.Component {
         });
     }
 
-    updateUserClick(e, userToUpdate, index) {
+    updateUserClick(e, userToUpdate) {
         e.preventDefault();
 
+        const {selectedTenant} = this.state;
+
         UIHelper.redirectTo(AppConstants.ADD_USER_ROUTE, {
-            userObj: JSON.stringify({userID: userToUpdate._id})
+            userObj: JSON.stringify({userID: userToUpdate._id, tenantID: selectedTenant._id})
         });
     }
 
     removeUserClick(e, userToRemove) {
         e.preventDefault();
 
+        const {selectedTenant, tenantList, loggedUserObj} = this.state;
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_USER});
         var url = Config.API_URL + AppConstants.USER_REMOVE_API;
-        userApi.removeUser(url, {userId: userToRemove._id}).then(() => {
-            let arrayAfterRemove = this.state.userList.filter((userObj) => {
-                return userObj._id !== userToRemove._id;
-            });
-            this.setState({isLoading: false, loadingMessage: '', userList: arrayAfterRemove});
+        userApi.removeUser(url, {userID: userToRemove._id, tenantID: selectedTenant._id}).then(() => {
+            this.setState({isLoading: false, loadingMessage: ''});
+            this.getAllTenantsWithUsers(loggedUserObj.id);
         });
     }
 
@@ -187,7 +189,7 @@ class UserManagementView extends React.Component {
                                         <td className="table-cell">
                                             <div className="form-group has-feedback label-div">
                                                 <label className="alert-label">
-                                                    {UIHelper.toTitleCase(user.role)}
+                                                    {UIHelper.getRoleForUserFromTenant(selectedTenant._id, user, true)}
                                                 </label>
                                             </div>
                                         </td>
@@ -197,7 +199,7 @@ class UserManagementView extends React.Component {
                                                     ? <Fragment>
                                                         <button
                                                             className="btn-primary form-control button-inline"
-                                                            onClick={(e) => this.updateUserClick(e, user, i)}
+                                                            onClick={(e) => this.updateUserClick(e, user)}
                                                             title={'Update user details of ' + user.email}>
                                                             <span className="glyphicon button-icon glyphicon-edit">
                                                             </span>
@@ -284,7 +286,11 @@ class UserManagementView extends React.Component {
                                 <div className="col-sm-3">
                                     <div className="form-group has-feedback label-div">
                                         <label className="alert-label">
-                                            {(selectedTenant.name) ? selectedTenant.name : '-'}
+                                            {
+                                                (selectedTenant.name)
+                                                    ? selectedTenant.name
+                                                    : AppConstants.NOT_AVAILABLE_TENANT_NAME
+                                            }
                                         </label>
                                     </div>
                                 </div>

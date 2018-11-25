@@ -78,6 +78,9 @@ export const GRANT_ACCESS_INDEX = 4;
 export const TENANTS_INDEX = 5;
 export const SETTINGS_INDEX = 6;
 
+export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
+export const NOT_AVAILABLE_EMAIL = 'N/A';
+
 export const LEFT_NAV_TABS = [
     {
         index: ALL_RESULT_VIEW_INDEX,

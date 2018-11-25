@@ -153,7 +153,7 @@ class TenantsView extends React.Component {
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.name === '')
-                                                            ? 'Please add a name for tanent'
+                                                            ? AppConstants.NOT_AVAILABLE_TENANT_NAME
                                                             : tenant.name
                                                     }
                                                 </label>
@@ -164,7 +164,7 @@ class TenantsView extends React.Component {
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.email === '')
-                                                            ? 'Please add a email for tanent'
+                                                            ? AppConstants.NOT_AVAILABLE_EMAIL
                                                             : tenant.email
                                                     }
                                                 </label>

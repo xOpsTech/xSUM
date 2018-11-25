@@ -114,3 +114,17 @@ export function getRandomHexaValue() {
 export function replaceCharacter(stringToReplace, replace, replaceFrom) {
     return stringToReplace.replace(new RegExp(replace, 'g'), replaceFrom);
 }
+
+export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
+    var role;
+
+    for (let tenant of userObject.tenants) {
+
+        if (tenant.tenantID === tenantID) {
+            role = tenant.role;
+        }
+
+    }
+
+    return (isTitle) ? toTitleCase(role) : role;
+}
