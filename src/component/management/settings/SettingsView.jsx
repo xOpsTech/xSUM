@@ -60,7 +60,8 @@ class SettingsView extends React.Component {
             tenantList: [],
             selectedTenant: {
                 email: {value: '', error: {}},
-                password: {value: '', error: {}}
+                password: {value: '', error: {}},
+                name: {value: '', error: {}}
             }
         };
 
@@ -98,6 +99,7 @@ class SettingsView extends React.Component {
                 var tenant = data[i];
                 tenant.email = {value: data[i].email, error: {}};
                 tenant.password = {value: '', error: {}};
+                tenant.name = {value: data[i].name, error: {}};
                 tenantList.push(tenant);
             }
 
@@ -127,7 +129,8 @@ class SettingsView extends React.Component {
         var emailSettingToInsert = {
             id: selectedTenant._id,
             email: selectedTenant.email.value,
-            password: selectedTenant.password.value
+            password: selectedTenant.password.value,
+            name: selectedTenant.name.value
         };
 
         var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
@@ -278,13 +281,17 @@ class SettingsView extends React.Component {
                             </div>
                             <div className="col-sm-9">
                                 <div className="form-group has-feedback label-div">
-                                    <label className="alert-label">
-                                        {
-                                            (selectedTenant.name)
-                                                ? selectedTenant.name
-                                                : AppConstants.NOT_AVAILABLE_TENANT_NAME
-                                        }
-                                    </label>
+                                    <input
+                                        value={selectedTenant.name.value}
+                                        onChange={(e) => {
+                                            selectedTenant.name = {
+                                                value: e.target.value
+                                            }
+                                            this.handleChange(e, {selectedTenant});
+                                        }}
+                                        className="form-control"
+                                        id="tenantNameInput"
+                                        placeholder="Tenant Name"/>
                                 </div>
                             </div>
                         </div>

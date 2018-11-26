@@ -118,7 +118,8 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
     var queryObj = {_id: ObjectId(tenantObj.id)};
     var tenantUpdateObj = {
         email: tenantObj.email,
-        password: tenantObj.password
+        password: tenantObj.password,
+        name: tenantObj.name
     };
     MongoDB.updateData(AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});
