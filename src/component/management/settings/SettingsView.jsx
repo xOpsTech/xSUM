@@ -304,7 +304,7 @@ class SettingsView extends React.Component {
                                     <button
                                         className="btn btn-primary form-control button-all-caps-text"
                                         onClick={(e) => this.updateMailClick(e)}>
-                                        Update Email Details
+                                        Save Tenant Details
                                     </button>
                                 </div>
                             </div>
