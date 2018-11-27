@@ -63,6 +63,7 @@ class AddUserView extends React.Component {
             userObj: {
                 id: '',
                 email: {value: '', error: {}},
+                password: {value: '', error: {}},
                 role: {value: ''}
             },
             userList: [],
@@ -204,32 +205,54 @@ class AddUserView extends React.Component {
     addUserClick(e) {
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
         var {userObj, selectedTenant, loggedUserObj} = this.state;
 
-        var userToInsert = {
-            userID: loggedUserObj.id,
-            email: userObj.email.value,
-            role: userObj.role.value,
-            tenantID: selectedTenant._id
-        };
+        if (selectedTenant.email.value !== '') {
 
-        var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
-        userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
-            this.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                }
-            );
+            var undefinedCheck = !(userObj.email.error.hasError === undefined);
+            var errorCheck = !(userObj.email.error.hasError);
 
-            if (response.message === AppConstants.RESPONSE_SUCCESS) {
-                UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
+            if (undefinedCheck && errorCheck) {
+                this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
+                var userToInsert = {
+                    userID: loggedUserObj.id,
+                    email: userObj.email.value,
+                    password: userObj.password.value,
+                    role: userObj.role.value,
+                    tenantID: selectedTenant._id,
+                    siteURL: Config.API_URL
+                };
+
+                var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
+                userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
+                    this.setState(
+                        {
+                            isLoading: false,
+                            loadingMessage: '',
+                        }
+                    );
+
+                    if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                        UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
+                    } else {
+                        this.setState({userSaveError: {hasError: true, name: response.message}});
+                    }
+
+                });
             } else {
-                this.setState({userSaveError: {hasError: true, name: response.message}});
+
+                if(userObj.email.error.hasError === undefined) {
+                    userObj.email.error.hasError = true;
+                    userObj.email.error.name = MessageConstants.EMAIL_ERROR;
+                    this.setState({userObj});
+                }
+
             }
 
-        });
+        } else {
+            this.setState({userSaveError: {hasError: true, name: MessageConstants.ADD_USER_TENANT_EMAIL_CONFIG_MESSAGE}});
+        }
+
     }
 
     updateUserClick(e) {
@@ -347,6 +370,42 @@ class AddUserView extends React.Component {
                                 </div>
                             </div>
                         </div>
+
+                        {
+                            (userObj.id)
+                                ? null
+                                : <div className="row">
+                                    <div className="col-sm-3 alert-label-column">
+                                        <div className="form-group label-text">
+                                            <label className="control-label">User's Password</label>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-9">
+                                        <div className={
+                                            'form-group has-feedback ' +
+                                            ((userObj.password.error.hasError !== undefined)
+                                                ? ((userObj.password.error.hasError) ? 'has-error' : 'has-success') : '')
+                                            }>
+                                            <input
+                                                value={userObj.password.value}
+                                                onChange={(e) => {
+                                                    userObj.password =  {
+                                                        value: e.target.value,
+                                                        error: {}
+                                                    }
+                                                    this.handleChange(e, {
+                                                        userObj
+                                                    });
+                                                }}
+                                                type="password"
+                                                className="form-control"
+                                                id="userPasswordInput"
+                                                placeholder="PASSWORD"/>
+                                            <ErrorMessageComponent error={userObj.password.error}/>
+                                        </div>
+                                    </div>
+                                  </div>
+                        }
 
                         <div className="row">
                             <div className="col-sm-3 alert-label-column">

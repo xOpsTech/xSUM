@@ -37,3 +37,4 @@ export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
 
 export const SEARCH_URL_WARNING_MESSAGE = 'Warning!! Are you sure you want to continue the last search?';
 export const SITE_RESULT_MESSAGE = 'Results for ';
+export const ADD_USER_TENANT_EMAIL_CONFIG_MESSAGE = 'Please add a mail address for your tenant to add a user.';

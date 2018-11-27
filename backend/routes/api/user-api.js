@@ -1,6 +1,7 @@
 var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
 var AppConstants = require('../../constants/AppConstants');
+var Helpers = require('../../common/Helpers');
 var crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 var {ObjectId} = require('mongodb');
@@ -80,14 +81,19 @@ UserApi.prototype.registerUserData = async function(req, res) {
 UserApi.prototype.addInActiveUserData = async function(req, res) {
     var userObj = req.body;
 
+    var activationCode = crypto.randomBytes(30).toString('hex');
+    var userPasswordBeforEncript = userObj.password;
+    userObj.password = await hashPassword(userObj.password);
+
     var userInsertObj = {
         email: userObj.email,
-        password: '',
+        password: userObj.password,
         isActive: false,
         tenants: [{
             tenantID: userObj.tenantID,
             role: userObj.role,
-        }]
+        }],
+        activationCode: activationCode
     };
 
     var queryObj = {email: userObj.email};
@@ -109,6 +115,26 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
 
         var queryToUpdateTenant = {_id: ObjectId(userObj.tenantID)};
         MongoDB.updateData(AppConstants.TENANT_LIST, queryToUpdateTenant, tenantUpdateObj);
+
+        var activateURL = userObj.siteURL + '/userAuth?action=activateUser&userID='
+                          + userInsertObj._id + '&activationCode=' + activationCode;
+
+        // Send warning alert
+        var emailBodyToSend = 'Hi ,<br><br>' +
+                                'Your email address is registered in XSUM Site <br>' +
+                                'Please click <a href="' + activateURL +
+                                '">XSUM Site</a> to activate your account <br>' +
+                                'Your password is <b>' + userPasswordBeforEncript + '<b> <br>'
+                                'Regards,<br>xSUM admin';
+
+        Helpers.sendEmailFrom(
+            tenantData[0].email,
+            tenantData[0].password,
+            userObj.email,
+            'Activate your account for XSUM',
+            emailBodyToSend
+        );
+
         res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userInsertObj.email}});
     }
 }
@@ -250,6 +276,57 @@ function hashPassword(password) {
             resolve(hash);
         });
     });
+}
+
+UserApi.prototype.handleUserGetData = function(req, res) {
+    var action = req.query.action;
+    switch (action) {
+        case "activateUser":
+            new UserApi().activateUser(req, res);
+            break;
+        default:
+            res.send("no data");
+    }
+}
+
+UserApi.prototype.activateUser = async function(req, res) {
+    var paramObj = req.query;
+
+    var checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
+
+    if (checkForHexRegExp.test(paramObj.userID)) {
+        var queryObj = {_id: ObjectId(paramObj.userID)};
+        var userDataToActivate = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+
+        if (userDataToActivate.length > 0) {
+
+            if (userDataToActivate[0].activationCode === paramObj.activationCode) {
+
+                // Activate user
+                var userUpdateObj = {
+                    isActive: true,
+                    activationCode: ''
+                };
+                var queryObj = {_id: ObjectId(paramObj.userID)};
+                MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+                res.send("User is activated successful");
+            } else {
+
+                if (userDataToActivate[0].activationCode === '' && userDataToActivate[0].isActive) {
+                    res.send("User is already activated");
+                } else {
+                    res.send("Can't activate user for given activation code");
+                }
+
+            }
+
+        } else {
+           res.send("Can't find user for given user id");
+        }
+    } else {
+        res.send("User id is invalid");
+    }
+
 }
 
 module.exports = new UserApi();
