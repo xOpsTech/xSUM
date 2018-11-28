@@ -5,6 +5,8 @@ var Helpers = require('../../common/Helpers');
 var crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 var {ObjectId} = require('mongodb');
+const AccessControl = require('accesscontrol');
+const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
 
 var TenantApi = require('./tenant-api');
 
@@ -194,6 +196,13 @@ UserApi.prototype.getUserData = async function(req, res) {
     var queryObjToGetUsers = {email: userObj.email};
     var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObjToGetUsers);
     delete userData[0].password;
+    userData[0].permissions = {
+        canCreate: accessControl.can(userData[0].tenants[0].role).createAny(AppConstants.ANY_RESOURCE).granted,
+        canRead: accessControl.can(userData[0].tenants[0].role).readAny(AppConstants.ANY_RESOURCE).granted,
+        canUpdate: accessControl.can(userData[0].tenants[0].role).updateAny(AppConstants.ANY_RESOURCE).granted,
+        canDelete: accessControl.can(userData[0].tenants[0].role).deleteAny(AppConstants.ANY_RESOURCE).granted
+    };
+
     res.send(
         {
             message: AppConstants.RESPONSE_SUCCESS,

@@ -39,6 +39,7 @@ class AlertView extends React.Component {
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
+
             this.getAllAlerts(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
@@ -87,6 +88,12 @@ class AlertView extends React.Component {
                         selectedAlertData: data.alertsData[0]
                     }
                 );
+
+                UIHelper.getUserData(loggedUserObj, this, (user, context) => {
+                    if (!user.permissions.canCreate) {
+                        UIHelper.redirectTo(AppConstants.ALERT_LIST_VIEW_ROUTE);
+                    }
+                });
             }
 
             this.setState(

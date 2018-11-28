@@ -42,6 +42,7 @@ class Tests extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
 
             this.getAllJobs(loggedUserObject);
+            UIHelper.getUserData(loggedUserObject, this);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -215,16 +216,21 @@ class Tests extends React.Component {
                                     </table>
                                 : null
                             }
-                            <div className="row add-test-section">
-                                <div className="col-sm-2 table-button">
-                                    <button
-                                        className="btn btn-primary form-control button-all-caps-text add-button"
-                                        onClick={this.redirectToAddJob}>
-                                        Add Test
-                                    </button>
-                                </div>
-                                <div className="col-sm-11"></div>
-                            </div>
+                            {
+                                (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
+                                    ? <div className="row add-test-section">
+                                        <div className="col-sm-2 table-button">
+                                            <button
+                                                className="btn btn-primary form-control button-all-caps-text add-button"
+                                                onClick={this.redirectToAddJob}>
+                                                Add Test
+                                            </button>
+                                        </div>
+                                        <div className="col-sm-11"></div>
+                                      </div>
+                                    : null
+                            }
+
                         </div>
                     </div>
                 </div>

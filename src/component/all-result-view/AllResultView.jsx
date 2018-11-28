@@ -44,6 +44,7 @@ class AllResultView extends React.Component {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
             this.getAllJobs(loggedUserObject);
+            UIHelper.getUserData(loggedUserObject, this);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -342,18 +343,23 @@ class AllResultView extends React.Component {
                                 : null
                         }
                     </div>
-                    <div className="row add-test-section">
-                        <div className="col-sm-4"></div>
-                        <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                            <div className="row">
-                                Add a test
-                            </div>
-                            <div className="row">
-                                <i className="plus-icon glyphicon glyphicon-plus"></i>
-                            </div>
-                        </div>
-                        <div className="col-sm-4"></div>
-                    </div>
+                    {
+                        (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
+                            ? <div className="row add-test-section">
+                                <div className="col-sm-4"></div>
+                                <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
+                                    <div className="row">
+                                        Add a test
+                                    </div>
+                                    <div className="row">
+                                        <i className="plus-icon glyphicon glyphicon-plus"></i>
+                                    </div>
+                                </div>
+                                <div className="col-sm-4"></div>
+                              </div>
+                            : null
+                    }
+
                 </div>
             </Fragment>
         );

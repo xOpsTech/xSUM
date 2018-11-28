@@ -66,30 +66,14 @@ class UserManagementView extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
-
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
-        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
-
-            loggedUserObj.id = data.user._id;
-
-            this.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    loggedUserObj
-                }
-            );
-
-            this.getAllTenantsWithUsers(data.user._id);
-        });
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsWithUsers);
     }
 
-    getAllTenantsWithUsers(userID) {
+    getAllTenantsWithUsers(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
-            this.setState (
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
+            context.setState (
                 {
                     isLoading: false,
                     loadingMessage: '',

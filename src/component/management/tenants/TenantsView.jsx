@@ -62,30 +62,15 @@ class TenantsView extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
-
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
-        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
-            loggedUserObj.id = data.user._id;
-
-            this.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    loggedUserObj
-                }
-            );
-
-            this.getAllTenantsData(data.user._id);
-        });
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
     }
 
-    getAllTenantsData(userID) {
+    getAllTenantsData(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
 
-            this.setState (
+            context.setState (
                 {
                     isLoading: false,
                     loadingMessage: '',

@@ -26,16 +26,21 @@ exports.CREATE_ROLE = 'create';
 exports.VIEW_ROLE = 'view';
 
 // Resources
-exports.JOB_RESOURCE = 'job';
+exports.ANY_RESOURCE = 'any-resource';
 
 exports.ACCESS_LIST = [
-    { role: this.ADMIN_ROLE, resource: this.JOB_RESOURCE, action: 'create:any', attributes: '*, !views' },
-    { role: this.ADMIN_ROLE, resource: this.JOB_RESOURCE, action: 'read:any', attributes: '*' },
-    { role: this.ADMIN_ROLE, resource: this.JOB_RESOURCE, action: 'update:any', attributes: '*, !views' },
-    { role: this.ADMIN_ROLE, resource: this.JOB_RESOURCE, action: 'delete:any', attributes: '*' },
+    { role: this.ADMIN_ROLE, resource: this.ANY_RESOURCE, action: 'create:any', attributes: '*' },
+    { role: this.ADMIN_ROLE, resource: this.ANY_RESOURCE, action: 'read:any', attributes: '*' },
+    { role: this.ADMIN_ROLE, resource: this.ANY_RESOURCE, action: 'update:any', attributes: '*' },
+    { role: this.ADMIN_ROLE, resource: this.ANY_RESOURCE, action: 'delete:any', attributes: '*' },
 
-    { role: this.CREATE_ROLE, resource: this.JOB_RESOURCE, action: 'create:own', attributes: '*, !rating, !views' },
-    { role: this.CREATE_ROLE, resource: this.JOB_RESOURCE, action: 'read:any', attributes: '*' },
-    { role: this.CREATE_ROLE, resource: this.JOB_RESOURCE, action: 'update:own', attributes: '*, !rating, !views' },
-    { role: this.CREATE_ROLE, resource: this.JOB_RESOURCE, action: 'delete:own', attributes: '*' }
+    { role: this.CREATE_ROLE, resource: this.ANY_RESOURCE, action: 'create:any', attributes: '*, !views' },
+    { role: this.CREATE_ROLE, resource: this.ANY_RESOURCE, action: 'read:any', attributes: '*' },
+    { role: this.CREATE_ROLE, resource: this.ANY_RESOURCE, action: 'update:any', attributes: '!views' },
+    { role: this.CREATE_ROLE, resource: this.ANY_RESOURCE, action: 'delete:any', attributes: '!views' },
+
+    { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'create:any', attributes: '!views' },
+    { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'read:any', attributes: '*' },
+    { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'update:any', attributes: '!views' },
+    { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'delete:any', attributes: '!views' },
 ];

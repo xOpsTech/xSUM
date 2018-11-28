@@ -138,31 +138,15 @@ class AddUserView extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
-
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
-        userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
-
-            loggedUserObj.id = data.user._id;
-
-            this.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    loggedUserObj
-                }
-            );
-
-            this.getAllTenantsData(data.user._id);
-        });
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
     }
 
-    getAllTenantsData(userID) {
+    getAllTenantsData(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID}).then((data) => {
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
             var tenantList = [];
-            var selectedTenant = this.state.selectedTenant;
+            var selectedTenant = context.state.selectedTenant;
 
             for (var i = 0; i < data.length; i++) {
                 var tenant = data[i];
@@ -170,8 +154,8 @@ class AddUserView extends React.Component {
                 tenant.password = {value: '', error: {}};
                 tenantList.push(tenant);
 
-                if (this.props.location.query.userObj) {
-                    var userObj = JSON.parse(this.props.location.query.userObj);
+                if (context.props.location.query.userObj) {
+                    var userObj = JSON.parse(context.props.location.query.userObj);
 
                     if (userObj.tenantID === tenant._id) {
                         selectedTenant = tenant;
@@ -185,7 +169,7 @@ class AddUserView extends React.Component {
                 selectedTenant = tenantList[0];
             }
 
-            this.setState (
+            context.setState (
                 {
                     isLoading: false,
                     loadingMessage: '',

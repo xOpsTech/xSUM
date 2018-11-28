@@ -2,7 +2,11 @@ import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
 import {randomBytes} from 'crypto';
 
+import userApi from '../api/userApi';
+
+import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
+import * as MessageConstants from '../constants/MessageConstants';
 
 // Redirect to login page
 export function redirectTo(route, data) {
@@ -127,4 +131,24 @@ export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
     }
 
     return (isTitle) ? toTitleCase(role) : role;
+}
+
+export function getUserData(loggedUserObj, context, callBackFunction) {
+    var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
+
+    context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
+    userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
+
+        loggedUserObj = data.user;
+
+        context.setState (
+            {
+                isLoading: false,
+                loadingMessage: '',
+                loggedUserObj
+            }
+        );
+
+        callBackFunction && callBackFunction(data.user, context);
+    });
 }
