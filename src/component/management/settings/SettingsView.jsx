@@ -280,19 +280,25 @@ class SettingsView extends React.Component {
                             </div>
                         </div>
 
-                        <div className="row">
-                            <div className="col-sm-4 alert-label-column">
-                            </div>
-                            <div className="col-sm-4 alert-label-column">
-                                <div className="form-group">
-                                    <button
-                                        className="btn btn-primary form-control button-all-caps-text"
-                                        onClick={(e) => this.updateMailClick(e)}>
-                                        Save Tenant Details
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        {
+                            (loggedUserObj.permissions && loggedUserObj.permissions.canUpdate)
+                                ? <div className="row">
+                                    <div className="col-sm-4 alert-label-column">
+                                    </div>
+                                    <div className="col-sm-4 alert-label-column">
+                                        <div className="form-group">
+                                            <button
+                                                className="btn btn-primary form-control button-all-caps-text"
+                                                onClick={(e) => this.updateMailClick(e)}>
+                                                Save Tenant Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                 </div>
+                                : null
+                        }
+
+
                     </form>
                 </div>
             </Fragment>

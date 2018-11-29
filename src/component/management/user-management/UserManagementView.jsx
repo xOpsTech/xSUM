@@ -66,7 +66,15 @@ class UserManagementView extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsWithUsers);
+        UIHelper.getUserData(loggedUserObj, this, (user, context) => {
+
+            if (!user.permissions.canCreate || !user.permissions.canUpdate) {
+                UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE);
+            } else {
+                context.getAllTenantsWithUsers(user, context);
+            }
+
+        });
     }
 
     getAllTenantsWithUsers(user, context) {

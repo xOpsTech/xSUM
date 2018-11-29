@@ -189,24 +189,47 @@ class Tests extends React.Component {
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <button
-                                                                    className="btn-primary form-control button-inline"
-                                                                    onClick={(e) => this.updateJobClick(e, site)}
-                                                                    title={'Update job of ' + site.siteObject.value}>
-                                                                    <span
-                                                                        className="glyphicon
-                                                                            glyphicon-edit button-icon">
-                                                                    </span>
-                                                                </button>
-                                                                <button
-                                                                    className="btn-danger form-control button-inline"
-                                                                    onClick={(e) => this.removeJobClick(e, site.jobId)}
-                                                                    title={'Remove job of ' + site.siteObject.value}>
-                                                                    <span
-                                                                        className="glyphicon glyphicon-remove
-                                                                            button-icon">
-                                                                    </span>
-                                                                </button>
+                                                                {
+                                                                    (loggedUserObj.permissions
+                                                                        && loggedUserObj.permissions.canCreate)
+                                                                        ? <button
+                                                                            className="btn-primary
+                                                                                form-control button-inline"
+                                                                            onClick={
+                                                                                (e) =>
+                                                                                    this.updateJobClick(e, site)
+                                                                            }
+                                                                            title={
+                                                                                'Update job of ' + site.siteObject.value
+                                                                            }>
+                                                                            <span
+                                                                                className="glyphicon
+                                                                                    glyphicon-edit button-icon">
+                                                                            </span>
+                                                                          </button>
+                                                                        : null
+                                                                }
+
+                                                                {
+                                                                    (loggedUserObj.permissions
+                                                                        && loggedUserObj.permissions.canUpdate)
+                                                                        ? <button
+                                                                            className="btn-danger
+                                                                                form-control button-inline"
+                                                                            onClick={
+                                                                                (e) =>
+                                                                                    this.removeJobClick(e, site.jobId)
+                                                                            }
+                                                                            title={
+                                                                                'Remove job of ' + site.siteObject.value
+                                                                            }>
+                                                                            <span
+                                                                                className="glyphicon glyphicon-remove
+                                                                                    button-icon">
+                                                                            </span>
+                                                                          </button>
+                                                                        : null
+                                                                }
                                                             </td>
                                                         </tr>
                                                     );

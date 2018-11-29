@@ -178,29 +178,36 @@ class AlertListView extends React.Component {
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <button
-                                                        className={
-                                                            'btn-primary form-control ' +
-                                                            (alert._id ? 'button-inline' : ' add-button')
-                                                        }
-                                                        onClick={(e) => this.updateAlertClick(e, alert, i)}
-                                                        title={
-                                                            (alert._id ? 'Update' : 'Add')
-                                                            + ' alert of ' + alert.job.siteObject.value
-                                                        }>
-                                                        <span
-                                                            className={
-                                                                'glyphicon button-icon' +
-                                                                (
-                                                                    alert._id
-                                                                        ? ' glyphicon-edit'
-                                                                        : ' glyphicon-plus'
-                                                                )
-                                                            }>
-                                                        </span>
-                                                    </button>
                                                     {
-                                                        (alert._id)
+                                                        (loggedUserObj.permissions
+                                                            && loggedUserObj.permissions.canCreate)
+                                                            ? <button
+                                                                className={
+                                                                    'btn-primary form-control ' +
+                                                                    (alert._id ? 'button-inline' : ' add-button')
+                                                                }
+                                                                onClick={(e) => this.updateAlertClick(e, alert, i)}
+                                                                title={
+                                                                    (alert._id ? 'Update' : 'Add')
+                                                                    + ' alert of ' + alert.job.siteObject.value
+                                                                }>
+                                                                <span
+                                                                    className={
+                                                                        'glyphicon button-icon' +
+                                                                        (
+                                                                            alert._id
+                                                                                ? ' glyphicon-edit'
+                                                                                : ' glyphicon-plus'
+                                                                        )
+                                                                    }>
+                                                                </span>
+                                                              </button>
+                                                            : null
+                                                    }
+
+                                                    {
+                                                        (alert._id && (loggedUserObj.permissions
+                                                            && loggedUserObj.permissions.canCreate))
                                                             ? <button
                                                                 className="btn-danger
                                                                     form-control button-inline"
@@ -213,7 +220,7 @@ class AlertListView extends React.Component {
                                                                     className="glyphicon
                                                                         glyphicon-remove button-icon">
                                                                 </span>
-                                                             </button>
+                                                              </button>
                                                             : null
                                                     }
                                                 </td>

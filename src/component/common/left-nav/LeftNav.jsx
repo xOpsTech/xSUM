@@ -23,7 +23,8 @@ class LeftNav extends React.Component {
     getInitialState() {
         var initialState = {
             isNavCollapse: false,
-            isSubSectionExpand: false
+            isSubSectionExpand: false,
+            loggedUserObj: null
         };
 
         return initialState;
@@ -31,6 +32,12 @@ class LeftNav extends React.Component {
 
     componentWillMount() {
         this.setState({isNavCollapse: UIHelper.getLeftState()});
+        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+
+        if (siteLoginCookie) {
+            var loggedUserObject = JSON.parse(siteLoginCookie);
+            UIHelper.getUserData(loggedUserObject, this);
+        }
 
         if (this.props.isSubSectionExpand) {
             this.setState({isSubSectionExpand: this.props.isSubSectionExpand});
@@ -63,7 +70,7 @@ class LeftNav extends React.Component {
 
     render() {
         const {selectedIndex, isFixedLeftNav} = this.props;
-        const {isNavCollapse, isSubSectionExpand} = this.state;
+        const {isNavCollapse, isSubSectionExpand, loggedUserObj} = this.state;
 
         if (!isNavCollapse) {
             return (
@@ -101,18 +108,43 @@ class LeftNav extends React.Component {
                                                             className="sub-nav">
                                                         {
                                                             tab.subSections.map((subTag, j) => {
-                                                                return (
-                                                                    <NavItem
-                                                                        eventKey={subTag.index}
-                                                                        href="#"
-                                                                        key={j}
-                                                                        id={subTag.index}
-                                                                        onClick={(e) => {
-                                                                            this.tabOnClick(e, subTag);
-                                                                        }}>
-                                                                        {subTag.text}
-                                                                    </NavItem>
-                                                                );
+
+                                                                if (subTag.index === AppConstants.USER_MANAGMENT_INDEX) {
+
+                                                                    if (loggedUserObj && loggedUserObj.permissions
+                                                                        && loggedUserObj.permissions.canCreate
+                                                                        && loggedUserObj.permissions.canUpdate) {
+                                                                        return (
+                                                                            <NavItem
+                                                                                eventKey={subTag.index}
+                                                                                href="#"
+                                                                                key={j}
+                                                                                id={subTag.index}
+                                                                                onClick={(e) => {
+                                                                                    this.tabOnClick(e, subTag);
+                                                                                }}>
+                                                                                {subTag.text}
+                                                                            </NavItem>
+                                                                        );
+                                                                    } else {
+                                                                        return null;
+                                                                    }
+
+                                                                } else {
+                                                                    return (
+                                                                        <NavItem
+                                                                            eventKey={subTag.index}
+                                                                            href="#"
+                                                                            key={j}
+                                                                            id={subTag.index}
+                                                                            onClick={(e) => {
+                                                                                this.tabOnClick(e, subTag);
+                                                                            }}>
+                                                                            {subTag.text}
+                                                                        </NavItem>
+                                                                    );
+                                                                }
+
                                                             })
                                                         }
                                                         </Nav>
