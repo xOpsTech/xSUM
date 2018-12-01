@@ -126,7 +126,7 @@ class UserManagementView extends React.Component {
         var url = Config.API_URL + AppConstants.USER_REMOVE_API;
         userApi.removeUser(url, {userID: userToRemove._id, tenantID: selectedTenant._id}).then(() => {
             this.setState({isLoading: false, loadingMessage: ''});
-            this.getAllTenantsWithUsers(loggedUserObj.id);
+            this.getAllTenantsWithUsers(loggedUserObj, this);
         });
     }
 
