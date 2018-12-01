@@ -114,7 +114,7 @@ export const LEFT_NAV_TABS = [
             // },
             {
                 index: TENANTS_INDEX,
-                text: 'Tenants',
+                text: 'Accounts',
                 route: TENANTS_ROUTE
             },
             {

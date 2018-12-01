@@ -87,33 +87,33 @@ class LeftNav extends React.Component {
                             AppConstants.LEFT_NAV_TABS.map((tab, i) => {
 
                                 if (tab.subSections) {
-                                    return (
-                                        <Fragment>
-                                            <button className="tab-with-sub-section"
-                                                onClick={this.showHideSubSection}>
-                                                {tab.text}
-                                                <span className={
-                                                        'glyphicon ' +
-                                                        ((isSubSectionExpand)
-                                                            ? 'glyphicon-chevron-down '
-                                                            : 'glyphicon-chevron-right ') + 'button-icon span-icon'}>
-                                                </span>
-                                            </button>
-                                            <Panel expanded={isSubSectionExpand} className="sub-section-panel">
-                                                <Panel.Collapse>
-                                                    <Panel.Body>
-                                                        <Nav id={'subNav-' + tab.index}
-                                                            activeKey={selectedIndex}
-                                                            onSelect={this.handleNavSelect}
-                                                            className="sub-nav">
-                                                        {
-                                                            tab.subSections.map((subTag, j) => {
 
-                                                                if (subTag.index === AppConstants.USER_MANAGMENT_INDEX) {
-
-                                                                    if (loggedUserObj && loggedUserObj.permissions
-                                                                        && loggedUserObj.permissions.canCreate
-                                                                        && loggedUserObj.permissions.canUpdate) {
+                                    if ((tab.index === -1
+                                        && loggedUserObj
+                                        && loggedUserObj.permissions
+                                        && loggedUserObj.permissions.canCreate
+                                        && loggedUserObj.permissions.canUpdate) || (tab.index !== -1)) {
+                                            return (
+                                                <Fragment>
+                                                    <button className="tab-with-sub-section"
+                                                        onClick={this.showHideSubSection}>
+                                                        {tab.text}
+                                                        <span className={
+                                                                'glyphicon ' +
+                                                                ((isSubSectionExpand)
+                                                                    ? 'glyphicon-chevron-down '
+                                                                    : 'glyphicon-chevron-right ') + 'button-icon span-icon'}>
+                                                        </span>
+                                                    </button>
+                                                    <Panel expanded={isSubSectionExpand} className="sub-section-panel">
+                                                        <Panel.Collapse>
+                                                            <Panel.Body>
+                                                                <Nav id={'subNav-' + tab.index}
+                                                                    activeKey={selectedIndex}
+                                                                    onSelect={this.handleNavSelect}
+                                                                    className="sub-nav">
+                                                                {
+                                                                    tab.subSections.map((subTag, j) => {
                                                                         return (
                                                                             <NavItem
                                                                                 eventKey={subTag.index}
@@ -126,33 +126,18 @@ class LeftNav extends React.Component {
                                                                                 {subTag.text}
                                                                             </NavItem>
                                                                         );
-                                                                    } else {
-                                                                        return null;
-                                                                    }
-
-                                                                } else {
-                                                                    return (
-                                                                        <NavItem
-                                                                            eventKey={subTag.index}
-                                                                            href="#"
-                                                                            key={j}
-                                                                            id={subTag.index}
-                                                                            onClick={(e) => {
-                                                                                this.tabOnClick(e, subTag);
-                                                                            }}>
-                                                                            {subTag.text}
-                                                                        </NavItem>
-                                                                    );
+                                                                    })
                                                                 }
+                                                                </Nav>
+                                                            </Panel.Body>
+                                                        </Panel.Collapse>
+                                                    </Panel>
+                                                </Fragment>
+                                            );
+                                    } else {
+                                        return null;
+                                    }
 
-                                                            })
-                                                        }
-                                                        </Nav>
-                                                    </Panel.Body>
-                                                </Panel.Collapse>
-                                            </Panel>
-                                        </Fragment>
-                                    );
                                 } else {
                                     return (
                                         <NavItem

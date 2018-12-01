@@ -161,7 +161,8 @@ class SettingsView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}/>
+                              loggedUserObj={loggedUserObj}
+                              isFixedNav={true}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -169,137 +170,158 @@ class SettingsView extends React.Component {
                               </button>
                           </div>
                 }
-                <div className="site-add-container">
-                    <form
-                        name="site-add-form"
-                        method="post">
-                        <h1 className="site-add-title">
-                            Settings
-                        </h1>
-                        <div className="row">
-                            <div className="col-sm-3 alert-label-column">
-                                <div className="form-group label-text">
-                                    <label className="control-label">User's Email</label>
+                <div className="site-edit-container">
+                    <div className = {
+                        'table-container-div ' +
+                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                        <div className="row alert-list-wrap-div">
+                            <h1 className="site-add-title">
+                                Settings
+                            </h1>
+                        </div>
+
+                        <div className="row alert-list-wrap-div settings-section">
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column section-head">
+                                    <h4 className="site-add-title">
+                                        Account Settings
+                                    </h4>
                                 </div>
                             </div>
-                            <div className="col-sm-9">
-                                <div className={
-                                    'form-group has-feedback ' +
-                                    ((selectedTenant.email.error.hasError !== undefined)
-                                        ? ((selectedTenant.email.error.hasError) ? 'has-error' : 'has-success') : '')
-                                    }>
-                                    <input
-                                        value={selectedTenant.email.value}
-                                        onChange={(e) => {
-                                            selectedTenant.email =  {
-                                                value: e.target.value,
-                                                error: {
-                                                    hasError: UIHelper.isEmailHasError(e.target.value),
-                                                    name: MessageConstants.EMAIL_ERROR
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Account ID</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group">
+                                        <select className="form-control form-control-sm form-group">
+                                            onChange={(e) => this.dropDownClick(
+                                                  {selectedTenant: tenantList[e.target.value]})
+                                            }>
+                                            {
+                                                tenantList.map((tenant, i) => {
+                                                    return <option key={'tenant_' + i} value={i}>
+                                                                {tenant._id}
+                                                           </option>;
+                                                })
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Account Name</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group has-feedback label-div">
+                                        <input
+                                            value={selectedTenant.name.value}
+                                            onChange={(e) => {
+                                                selectedTenant.name = {
+                                                    value: e.target.value
                                                 }
-                                            }
-                                            this.handleChange(e, {selectedTenant});
-                                        }}
-                                        type="text"
-                                        className="form-control"
-                                        id="userEmailInput"
-                                        placeholder="EMAIL"/>
-                                    <ErrorMessageComponent error={selectedTenant.email.error}/>
+                                                this.handleChange(e, {selectedTenant});
+                                            }}
+                                            className="form-control"
+                                            id="tenantNameInput"
+                                            placeholder="Account Name"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="row">
-                            <div className="col-sm-3 alert-label-column">
-                                <div className="form-group label-text">
-                                    <label className="control-label">Email Password</label>
+                        <div className="row alert-list-wrap-div settings-section">
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column section-head">
+                                    <h4 className="site-add-title">
+                                        Email Settings
+                                    </h4>
                                 </div>
                             </div>
-                            <div className="col-sm-9">
-                                <div className="form-group">
-                                    <input
-                                        value={selectedTenant.password.value}
-                                        onChange={(e) => {
-                                            selectedTenant.password = {
-                                                value: e.target.value
-                                            }
-                                            this.handleChange(e, {selectedTenant});
-                                        }}
-                                        type="password"
-                                        className="form-control"
-                                        id="passwordInput"
-                                        placeholder="Password"/>
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Account's Email</label>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-sm-3 alert-label-column">
-                                <div className="form-group label-text">
-                                    <label className="control-label">Tenant ID</label>
-                                </div>
-                            </div>
-                            <div className="col-sm-9">
-                                <div className="form-group">
-                                    <select className="form-control form-control-sm form-group">
-                                        onChange={(e) => this.dropDownClick(
-                                              {selectedTenant: tenantList[e.target.value]})
+                                <div className="col-sm-9">
+                                    <div className={
+                                        'form-group has-feedback ' +
+                                        ((selectedTenant.email.error.hasError !== undefined)
+                                            ? ((selectedTenant.email.error.hasError) ? 'has-error' : 'has-success') : '')
                                         }>
-                                        {
-                                            tenantList.map((tenant, i) => {
-                                                return <option key={'tenant_' + i} value={i}>
-                                                            {tenant._id}
-                                                       </option>;
-                                            })
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-sm-3 alert-label-column">
-                                <div className="form-group label-text">
-                                    <label className="control-label">Tenant Name</label>
-                                </div>
-                            </div>
-                            <div className="col-sm-9">
-                                <div className="form-group has-feedback label-div">
-                                    <input
-                                        value={selectedTenant.name.value}
-                                        onChange={(e) => {
-                                            selectedTenant.name = {
-                                                value: e.target.value
-                                            }
-                                            this.handleChange(e, {selectedTenant});
-                                        }}
-                                        className="form-control"
-                                        id="tenantNameInput"
-                                        placeholder="Tenant Name"/>
-                                </div>
-                            </div>
-                        </div>
-
-                        {
-                            (loggedUserObj.permissions && loggedUserObj.permissions.canUpdate)
-                                ? <div className="row">
-                                    <div className="col-sm-4 alert-label-column">
+                                        <input
+                                            value={selectedTenant.email.value}
+                                            onChange={(e) => {
+                                                selectedTenant.email =  {
+                                                    value: e.target.value,
+                                                    error: {
+                                                        hasError: UIHelper.isEmailHasError(e.target.value),
+                                                        name: MessageConstants.EMAIL_ERROR
+                                                    }
+                                                }
+                                                this.handleChange(e, {selectedTenant});
+                                            }}
+                                            type="text"
+                                            className="form-control"
+                                            id="userEmailInput"
+                                            placeholder="EMAIL"/>
+                                        <ErrorMessageComponent error={selectedTenant.email.error}/>
                                     </div>
-                                    <div className="col-sm-4 alert-label-column">
-                                        <div className="form-group">
-                                            <button
-                                                className="btn btn-primary form-control button-all-caps-text"
-                                                onClick={(e) => this.updateMailClick(e)}>
-                                                Save Tenant Details
-                                            </button>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Email Password</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group">
+                                        <input
+                                            value={selectedTenant.password.value}
+                                            onChange={(e) => {
+                                                selectedTenant.password = {
+                                                    value: e.target.value
+                                                }
+                                                this.handleChange(e, {selectedTenant});
+                                            }}
+                                            type="password"
+                                            className="form-control"
+                                            id="passwordInput"
+                                            placeholder="Password"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="row alert-list-wrap-div">
+                            {
+                                (loggedUserObj.permissions && loggedUserObj.permissions.canUpdate)
+                                    ? <div className="row">
+                                        <div className="col-sm-4 alert-label-column">
                                         </div>
-                                    </div>
-                                 </div>
-                                : null
-                        }
-
-
-                    </form>
+                                        <div className="col-sm-3 alert-label-column">
+                                            <div className="form-group">
+                                                <button
+                                                    className="btn btn-primary form-control button-all-caps-text"
+                                                    onClick={(e) => this.updateMailClick(e)}>
+                                                    Save Settings
+                                                </button>
+                                            </div>
+                                        </div>
+                                     </div>
+                                    : null
+                            }
+                        </div>
+                    </div>
                 </div>
             </Fragment>
         );

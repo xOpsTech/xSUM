@@ -23,7 +23,7 @@ exports.EMAIL_CRITICAL_ALERT_COUNT = 1;
 // User roles
 exports.ADMIN_ROLE = 'admin';
 exports.CREATE_ROLE = 'create';
-exports.VIEW_ROLE = 'view';
+exports.VIEW_ROLE = 'read-only';
 
 // Resources
 exports.ANY_RESOURCE = 'any-resource';

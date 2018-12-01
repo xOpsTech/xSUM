@@ -36,6 +36,7 @@ function getResult(db, collectionName, query) {
             }
 
             resolve(result);
+            db.close();
         });
     });
 }
@@ -50,18 +51,7 @@ function insertDataInto(db, collectionName, objectToInsert) {
             }
 
             resolve(result);
-        });
-    });
-}
-
-function insertDataTo(db, collectionName, objectToInsert, callBackFunction) {
-    return new Promise((resolve) => {
-        var dbo = db.db(dbName);
-        dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
-            if (err) resolve(err);
-            console.log("one row added for " + collectionName);
-            callBackFunction && callBackFunction(collectionName, objectToInsert);
-            resolve(res);
+            db.close();
         });
     });
 }
@@ -113,6 +103,7 @@ MongoDB.prototype.insertData = function(collectionName, objectToInsert, response
 
         dbo.collection(collectionName).insertOne(objectToInsert, (err, res) => {
             if (err) throw err;
+            db.close();
 
             console.log("one row added for " + collectionName);
             response.send(objectToInsert);
@@ -130,7 +121,7 @@ MongoDB.prototype.insertJobWithUserCheck = function(collectionName, objectToInse
         var dbo = db.db(dbName);
 
         dbo.collection(collectionName).find({userEmail: objectToInsert.userEmail}).toArray((error, result) => {
-
+            db.close();
             if (error) response.send(error);
 
             if (result.length < 5) {

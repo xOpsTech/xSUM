@@ -153,7 +153,6 @@ class UserManagementView extends React.Component {
                 <table className="table table-borderless" id="user-list">
                     <thead>
                         <tr>
-                            <th>User ID</th>
                             <th>User Email Address</th>
                             <th>User Role</th>
                             <th></th>
@@ -164,13 +163,6 @@ class UserManagementView extends React.Component {
                             selectedTenant.userList.map((user, i) => {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
-                                        <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
-                                                    {user._id}
-                                                </label>
-                                            </div>
-                                        </td>
                                         <td className="table-cell">
                                             <div className="form-group has-feedback label-div">
                                                 <label className="alert-label">
@@ -246,12 +238,12 @@ class UserManagementView extends React.Component {
                             <div className="row tenant-select">
                                 <div className="col-sm-2 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Select Tenent : </label>
+                                        <label className="control-label">Select Account : </label>
                                     </div>
                                 </div>
                                 <div className="col-sm-2 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Tenant ID</label>
+                                        <label className="control-label">Account Name</label>
                                     </div>
                                 </div>
                                 <div className="col-sm-3">
@@ -263,27 +255,11 @@ class UserManagementView extends React.Component {
                                             {
                                                 tenantList.map((tenant, i) => {
                                                     return <option key={'tenant_' + i} value={i}>
-                                                                {tenant._id}
+                                                                {tenant.name}
                                                            </option>;
                                                 })
                                             }
                                         </select>
-                                    </div>
-                                </div>
-                                <div className="col-sm-2 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Tenant Name</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-3">
-                                    <div className="form-group has-feedback label-div">
-                                        <label className="alert-label">
-                                            {
-                                                (selectedTenant.name)
-                                                    ? selectedTenant.name
-                                                    : AppConstants.NOT_AVAILABLE_TENANT_NAME
-                                            }
-                                        </label>
                                     </div>
                                 </div>
                             </div>

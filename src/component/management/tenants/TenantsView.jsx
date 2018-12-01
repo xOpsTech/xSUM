@@ -115,9 +115,8 @@ class TenantsView extends React.Component {
                 <table className="table table-borderless" id="tenant-list">
                     <thead>
                         <tr>
-                            <th>Tenant ID</th>
-                            <th>Tenant Name</th>
-                            <th>Tenant Email</th>
+                            <th>Account Name</th>
+                            <th>Account Email</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -126,13 +125,6 @@ class TenantsView extends React.Component {
                             tenantList.map((tenant, i) => {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
-                                        <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
-                                                    {tenant._id}
-                                                </label>
-                                            </div>
-                                        </td>
                                         <td className="table-cell">
                                             <div className="form-group has-feedback label-div">
                                                 <label className="alert-label">
@@ -160,14 +152,14 @@ class TenantsView extends React.Component {
                                                 <button
                                                     className="btn-primary form-control button-inline"
                                                     onClick={(e) => this.updateTenantClick(e, tenant, i)}
-                                                    title={'Update tenant details of ' + tenant.name}>
+                                                    title={'Update account details of ' + tenant.name}>
                                                     <span className="glyphicon button-icon glyphicon-edit">
                                                     </span>
                                                 </button>
                                                 <button
                                                     className="btn-danger form-control button-inline"
                                                     onClick={(e) => this.removeTenantClick(e, tenant)}
-                                                    title={'Remove tenant of ' + tenant.name}>
+                                                    title={'Remove account of ' + tenant.name}>
                                                     <span className="glyphicon glyphicon-remove button-icon">
                                                     </span>
                                                 </button>
@@ -213,7 +205,7 @@ class TenantsView extends React.Component {
                                     <button
                                         className="btn btn-primary form-control button-all-caps-text add-button"
                                         onClick={this.redirectToAddUser}>
-                                        Add Tenant
+                                        Add Account
                                     </button>
                                 </div>
                                 <div className="col-sm-11"></div>
