@@ -123,12 +123,23 @@ class Login extends React.Component {
             email: basicProfile.getEmail(),
             profilePicPath: basicProfile.getImageUrl()
         });
-        UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
-        UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
+
+        var url = Config.API_URL + AppConstants.USER_ADD_API;
+
+        var userData = {
+            email: basicProfile.getEmail()
+        };
+        this.setState({isLogin: true});
+
+        userApi.registerUser(url, userData).then((response) => {
+            this.setState({isLogin: false});
+            UIHelper.setCookie(AppConstants.SITE_LOGIN_COOKIE, userObject, AppConstants.LOGIN_COOKIE_EXPIRES);
+            UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
+        });
     }
 
     googleResponseFail(response) {
-        alert('Error', response);
+        alert('You didn\'t select a valid account', response);
     }
 
     render() {

@@ -50,7 +50,11 @@ UserApi.prototype.handleUserData = function(req, res) {
 UserApi.prototype.registerUserData = async function(req, res) {
     var userObj = req.body;
 
-    userObj.password = await hashPassword(userObj.password);
+    if (userObj.password) {
+        userObj.password = await hashPassword(userObj.password);
+    } else {
+        userObj.password = '';
+    }
 
     var userInsertObj = {
         email: userObj.email,
