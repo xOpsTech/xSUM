@@ -18,6 +18,7 @@ import GrantAccessView from './component/management/grant-access/GrantAccessView
 import TenantsView from './component/management/tenants/TenantsView';
 import SettingsView from './component/management/settings/SettingsView';
 import AddUserView from './component/management/add-user/AddUserView';
+import ProfileView from './component/management/profile/ProfileView';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -37,5 +38,6 @@ export default (
         <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView}/>
         <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView}/>
         <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView}/>
+        <Route path={AppConstants.USER_PROFILE_ROUTE} component={ProfileView}/>
     </Route>
 );

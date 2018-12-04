@@ -191,7 +191,7 @@ class AddUserView extends React.Component {
 
         var {userObj, selectedTenant, loggedUserObj} = this.state;
 
-        if (selectedTenant.email.value !== '') {
+        if (loggedUserObj.isEmailPasswordSet) {
 
             var undefinedCheck = !(userObj.email.error.hasError === undefined);
             var errorCheck = !(userObj.email.error.hasError);
@@ -204,7 +204,8 @@ class AddUserView extends React.Component {
                     password: userObj.password.value,
                     role: userObj.role.value,
                     tenantID: selectedTenant._id,
-                    siteURL: Config.API_URL
+                    siteURL: Config.API_URL,
+                    loggedUserEmail: loggedUserObj.email
                 };
 
                 var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;

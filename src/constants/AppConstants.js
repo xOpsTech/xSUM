@@ -26,6 +26,7 @@ export const ADD_USER_API = '/userAuth?action=addInActiveUserData';
 export const UPDATE_USER_API = '/userAuth?action=updateUserData';
 export const GET_USER_DATA_API = '/userAuth?action=getUserData';
 export const ADD_EMAIL_SETTING_DATA_API = '/userAuth?action=addEmailSettingsUserData';
+export const SET_EMAIL_PASSWORD_API = '/userAuth?action=setEmailPasswordData';
 
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';
@@ -69,6 +70,7 @@ export const GRANT_ACCESS_ROUTE = '/grantAccess';
 export const TENANTS_ROUTE = '/tenants';
 export const SETTINGS_ROUTE = '/user-settings';
 export const ADD_USER_ROUTE = '/add-user';
+export const USER_PROFILE_ROUTE = '/user-profile';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -77,6 +79,7 @@ export const USER_MANAGMENT_INDEX = 3;
 export const GRANT_ACCESS_INDEX = 4;
 export const TENANTS_INDEX = 5;
 export const SETTINGS_INDEX = 6;
+export const USER_PROFILE_INDEX = 7;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
@@ -121,6 +124,11 @@ export const LEFT_NAV_TABS = [
                 index: SETTINGS_INDEX,
                 text: 'Settings',
                 route: SETTINGS_ROUTE
+            },
+            {
+                index: USER_PROFILE_INDEX,
+                text: 'Profile',
+                route: USER_PROFILE_ROUTE
             }
         ]
     }

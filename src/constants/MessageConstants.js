@@ -30,6 +30,7 @@ export const ADD_USER = 'Adding a user...';
 export const UPDATE_USER = 'Updating a user...';
 export const FETCHING_TENANTS = 'Fetching tenants...';
 export const UPDATE_TENANT = 'Updating tenant...';
+export const UPDATE_PROFILE = 'Updating profile...';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +
@@ -37,4 +38,4 @@ export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
 
 export const SEARCH_URL_WARNING_MESSAGE = 'Warning!! Are you sure you want to continue the last search?';
 export const SITE_RESULT_MESSAGE = 'Results for ';
-export const ADD_USER_TENANT_EMAIL_CONFIG_MESSAGE = 'Please add a mail address for your tenant to add a user.';
+export const ADD_USER_TENANT_EMAIL_CONFIG_MESSAGE = 'Please add the password of your email to add a new user in profile page.';

@@ -42,6 +42,9 @@ UserApi.prototype.handleUserData = function(req, res) {
         case "getUserData":
             new UserApi().getUserData(req, res);
             break;
+        case "setEmailPasswordData":
+            new UserApi().setEmailPasswordData(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -133,9 +136,12 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
                                 'Your password is <b>' + userPasswordBeforEncript + '<b> <br>'
                                 'Regards,<br>xSUM admin';
 
+        var queryToGetLoggedUser = {email: userObj.loggedUserEmail};
+        var loggedUserData = await MongoDB.getAllData(AppConstants.USER_LIST, queryToGetLoggedUser);
+
         Helpers.sendEmailFrom(
-            tenantData[0].email,
-            tenantData[0].password,
+            userObj.loggedUserEmail,
+            loggedUserData[0].emailPassword,
             userObj.email,
             'Activate your account for XSUM',
             emailBodyToSend
@@ -195,11 +201,23 @@ UserApi.prototype.addEmailSettingsUserData = async function(req, res) {
     res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userUpdateObj.email}});
 }
 
+UserApi.prototype.setEmailPasswordData = async function(req, res) {
+    var userObj = req.body;
+    var queryObj = {_id: ObjectId(userObj.id)};
+    var userUpdateObj = {
+        emailPassword: userObj.emailPassword
+    }
+    MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS});
+}
+
 UserApi.prototype.getUserData = async function(req, res) {
     var userObj = req.body;
     var queryObjToGetUsers = {email: userObj.email};
     var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObjToGetUsers);
+    userData[0].isEmailPasswordSet = (userData[0].emailPassword !== '');
     delete userData[0].password;
+    delete userData[0].emailPassword;
     userData[0].permissions = {
         canCreate: accessControl.can(userData[0].tenants[0].role).createAny(AppConstants.ANY_RESOURCE).granted,
         canRead: accessControl.can(userData[0].tenants[0].role).readAny(AppConstants.ANY_RESOURCE).granted,
@@ -261,6 +279,7 @@ UserApi.prototype.getUserList = async function(req, res) {
 
     for (let user of userList) {
         delete user.password;
+        delete user.emailPassword;
         userData.push(user);
     }
 
