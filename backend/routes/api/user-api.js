@@ -233,10 +233,29 @@ UserApi.prototype.getUserData = async function(req, res) {
     );
 }
 
-UserApi.prototype.checkLoginData = function(req, res) {
+UserApi.prototype.checkLoginData = async function(req, res) {
     var userObj = req.body;
     var queryObj = {email: userObj.email};
-    MongoDB.checkUserExists(AppConstants.USER_LIST, queryObj, userObj.password, res);
+
+    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+
+    if (userData.length > 0) {
+        var storedPassword = userData[0].password;
+
+        if (userData[0].isActive) {
+            if (bcrypt.compareSync(userObj.password, storedPassword)) {
+                res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userData[0].email}});
+            } else {
+                res.send({message: AppConstants.EMAIL_AND_PASSWORD_NOT_MATCH});
+            }
+        } else {
+            res.send({message: AppConstants.USER_INACTIVE});
+        }
+
+
+    } else {
+        res.send({message: AppConstants.EMAIL_NOT_EXISTS});
+    }
 }
 
 UserApi.prototype.removeUserData = async function(req, res) {

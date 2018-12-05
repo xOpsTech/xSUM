@@ -77,7 +77,7 @@ Api.prototype.handleTestData = function(req, res) {
     }
 }
 
-Api.prototype.insertUrlData = function(req, res) {
+Api.prototype.insertUrlData = async function(req, res) {
     var urlObj = req.body;
     var currentDate = new Date();
     var urlInsertObj = {
@@ -88,10 +88,14 @@ Api.prototype.insertUrlData = function(req, res) {
         resultID: ''
     };
 
-    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res, executeResultGenerator);
+    await MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj);
+
+    executeResultGenerator(AppConstants.DB_URL_LIST, urlInsertObj);
+
+    res.send(urlInsertObj);
 }
 
-Api.prototype.insertLoggedUserUrlData = function(req, res) {
+Api.prototype.insertLoggedUserUrlData = async function(req, res) {
     var urlObj = req.body;
     var currentDate = new Date();
     var urlInsertObj = {
@@ -103,22 +107,28 @@ Api.prototype.insertLoggedUserUrlData = function(req, res) {
         userEmail: urlObj.userEmail
     };
 
-    MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj, res, executeResultGenerator);
+    await MongoDB.insertData(AppConstants.DB_URL_LIST, urlInsertObj);
+
+    executeResultGenerator(AppConstants.DB_URL_LIST, urlInsertObj);
+
+    res.send(urlInsertObj);
 }
 
-Api.prototype.getUrlData = function(req, res) {
+Api.prototype.getUrlData = async function(req, res) {
     var urlObj = req.body;
     var queryObj = {ID: urlObj.hashID};
-    MongoDB.fetchData(AppConstants.DB_URL_LIST, queryObj, res);
+    var urlData = await MongoDB.getAllData(AppConstants.DB_URL_LIST, queryObj);
+    res.send(urlData);
 }
 
-Api.prototype.getLoggedUserUrlData = function(req, res) {
+Api.prototype.getLoggedUserUrlData = async function(req, res) {
     var urlObj = req.body;
     var queryObj = {
         userEmail: urlObj.userEmail,
         status: 'Done'
     };
-    MongoDB.fetchData(AppConstants.DB_URL_LIST, queryObj, res);
+    var urlData = await MongoDB.getAllData(AppConstants.DB_URL_LIST, queryObj);
+    res.send(urlData);
 }
 
 function executeResultGenerator(collectionName, objectToInsert) {
@@ -168,7 +178,7 @@ Api.prototype.handleJobs = function(req, res) {
     }
 }
 
-Api.prototype.insertJob = function(req, res) {
+Api.prototype.insertJob = async function(req, res) {
     var jobObj = req.body;
 
     var jobInsertObj = {
@@ -183,24 +193,36 @@ Api.prototype.insertJob = function(req, res) {
         jobName: jobObj.jobName
     };
 
-    MongoDB.insertJobWithUserCheck(AppConstants.DB_JOB_LIST, jobInsertObj, res, executeScheduleJob);
+    var queryObj = {userEmail: jobObj.userEmail};
+    var jobData = await MongoDB.getAllData(AppConstants.DB_JOB_LIST, queryObj);
 
-    jobTimers[jobObj.jobId] = setInterval(
-        function() {
-            executeJob(AppConstants.DB_JOB_LIST, jobInsertObj)
-        },
-        jobObj.recursiveSelect.value
-    );
+    if (jobData.length < 5) {
+        await MongoDB.insertData(AppConstants.DB_JOB_LIST, jobInsertObj);
+
+        jobTimers[jobObj.jobId] = setInterval(
+            function() {
+                executeJob(AppConstants.DB_JOB_LIST, jobInsertObj)
+            },
+            jobObj.recursiveSelect.value
+        );
+
+        executeScheduleJob(AppConstants.DB_JOB_LIST, jobInsertObj);
+
+        res.send(jobInsertObj);
+    } else {
+        res.send({error: 'You can add only five jobs'});
+    }
 }
 
 function executeScheduleJob(collectionName, insertedObject) {
     executeJob(collectionName, insertedObject);
 }
 
-Api.prototype.getAllJobs = function(req, res) {
+Api.prototype.getAllJobs = async function(req, res) {
     var userObj = req.body;
     var queryObj = {userEmail: userObj.userEmail};
-    MongoDB.fetchData(AppConstants.DB_JOB_LIST, queryObj, res);
+    var urlData = await MongoDB.getAllData(AppConstants.DB_URL_LIST, queryObj);
+    res.send(urlData);
 }
 
 Api.prototype.removeJob = function(req, res) {

@@ -23,7 +23,7 @@ AlertApi.prototype.handleAlertData = function(req, res) {
     }
 }
 
-AlertApi.prototype.saveAlert = function(req, res) {
+AlertApi.prototype.saveAlert = async function(req, res) {
     var alertObj = req.body;
 
     if (alertObj._id) {
@@ -37,7 +37,8 @@ AlertApi.prototype.saveAlert = function(req, res) {
     } else {
         alertObj.warningAlertCount = 0;
         alertObj.criticalAlertCount = 0;
-        MongoDB.insertData(AppConstants.ALERT_LIST, alertObj, res);
+        await MongoDB.insertData(AppConstants.ALERT_LIST, alertObj);
+        res.send(alertObj);
     }
 
 }
