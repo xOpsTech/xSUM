@@ -221,7 +221,7 @@ function executeScheduleJob(collectionName, insertedObject) {
 Api.prototype.getAllJobs = async function(req, res) {
     var userObj = req.body;
     var queryObj = {userEmail: userObj.userEmail};
-    var urlData = await MongoDB.getAllData(AppConstants.DB_URL_LIST, queryObj);
+    var urlData = await MongoDB.getAllData(AppConstants.DB_JOB_LIST, queryObj);
     res.send(urlData);
 }
 
