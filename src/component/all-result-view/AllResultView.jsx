@@ -43,8 +43,7 @@ class AllResultView extends React.Component {
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
-            this.getAllJobs(loggedUserObject);
-            UIHelper.getUserData(loggedUserObject, this);
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -60,29 +59,45 @@ class AllResultView extends React.Component {
             loggedUserObj: null,
             jobsWithResults: [],
             locationMarker: [],
-            isLeftNavCollapse: false
+            isLeftNavCollapse: false,
+            selectedTenant: {userList: []}
         };
 
         return initialState;
     }
 
-    getAllJobs(loggedUserObj) {
+    getLoggedUserData(loggedUserObj) {
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllJobs);
+    }
+
+    getAllJobs(loggedUserObj, selectedTenant, context) {
         var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_API;
         var urlForResultJob = Config.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
-        jobApi.getAllJobsFrom(urlToGetJobs, {userEmail: loggedUserObj.email}).then((data) => {
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        var objectToRetrieve = {
+            tenantID: selectedTenant._id
+        };
+        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
             for (var i = 0; i < data.length; i++) {
                 var currentJob = Object.assign(data[i]);
-                jobApi.getResult(urlForResultJob, {jobID: data[i].jobId}, currentJob).then((jobResult) => {
-                    var resultsArr = this.state.jobsWithResults;
-                    var locationMarkerArr = this.state.locationMarker;
+                var jobObj = {
+                    jobID: data[i].jobId,
+                    tenantID: selectedTenant._id
+                }
+                jobApi.getResult(urlForResultJob, jobObj, currentJob).then((jobResult) => {
+                    var resultsArr = context.state.jobsWithResults;
+                    var locationMarkerArr = context.state.locationMarker;
                     resultsArr.push({
                         job: jobResult.jobData,
                         result: jobResult.resposeObj,
                         selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                         selectedChartIndex: '0',
-                        barChartData: this.getArrangedBarChartData(jobResult.resposeObj, 0)
+                        barChartData: context.getArrangedBarChartData(jobResult.resposeObj, 0)
                     });
 
                     for (var j = 0; j < jobResult.resposeObj.length; j++) {
@@ -105,12 +120,12 @@ class AllResultView extends React.Component {
 
                     }
 
-                    this.setState({jobsWithResults: resultsArr});
+                    context.setState({jobsWithResults: resultsArr});
                 });
 
             }
 
-            this.setState({isLoading: false, loadingMessage: ''});
+            context.setState({isLoading: false, loadingMessage: ''});
         });
     }
 

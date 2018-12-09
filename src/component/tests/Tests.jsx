@@ -40,9 +40,7 @@ class Tests extends React.Component {
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
-
-            this.getAllJobs(loggedUserObject);
-            UIHelper.getUserData(loggedUserObject, this);
+            UIHelper.getUserData(loggedUserObject, this, this.getAllTenantsData);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -57,7 +55,8 @@ class Tests extends React.Component {
             loadingMessage: '',
             siteList : [],
             loggedUserObj: null,
-            isLeftNavCollapse: false
+            isLeftNavCollapse: false,
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -72,11 +71,18 @@ class Tests extends React.Component {
         this.setState(stateObject);
     }
 
-    getAllJobs(loggedUserObj) {
+    getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllJobs);
+    }
+
+    getAllJobs(loggedUserObj, selectedTenant, context) {
         var url = Config.API_URL + AppConstants.JOBS_GET_API;
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
-        jobApi.getAllJobsFrom(url, {userEmail: loggedUserObj.email}).then((data) => {
-            this.setState({siteList: data, isLoading: false, loadingMessage: ''});
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        var objectToRetrieve = {
+            tenantID: selectedTenant._id
+        };
+        jobApi.getAllJobsFrom(url, objectToRetrieve).then((data) => {
+            context.setState({siteList: data, isLoading: false, loadingMessage: ''});
         });
     }
 
@@ -91,9 +97,15 @@ class Tests extends React.Component {
     removeJobClick(e, jobIdToRemove) {
         e.preventDefault();
 
+        const {selectedTenant} = this.state;
+
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
         var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
-        jobApi.removeJob(url, {jobId: jobIdToRemove}).then(() => {
+        var objectToRemove = {
+            jobId: jobIdToRemove,
+            tenantID: selectedTenant._id
+        };
+        jobApi.removeJob(url, objectToRemove).then(() => {
             let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
                 return siteObject.jobId !== jobIdToRemove;
             });

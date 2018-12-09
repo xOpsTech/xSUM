@@ -42,7 +42,6 @@ class UserManagementView extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
 
             this.getLoggedUserData(loggedUserObject);
-            this.getAllUsers(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -58,8 +57,7 @@ class UserManagementView extends React.Component {
             loggedUserObj: null,
             isLeftNavCollapse: false,
             tenantList: [],
-            selectedTenant: {userList: []},
-            userList: []
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -90,21 +88,6 @@ class UserManagementView extends React.Component {
                 }
             );
 
-        });
-    }
-
-    getAllUsers(loggedUserObj) {
-        var urlToGetUsers = Config.API_URL + AppConstants.GET_USER_LIST_API;
-
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USERS});
-        userApi.getUserList(urlToGetUsers, {userEmail: loggedUserObj.email}).then((data) => {
-            this.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    userList: data.userData
-                }
-            );
         });
     }
 

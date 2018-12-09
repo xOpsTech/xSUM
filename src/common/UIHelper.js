@@ -3,6 +3,7 @@ import {useRouterHistory} from 'react-router';
 import {randomBytes} from 'crypto';
 
 import userApi from '../api/userApi';
+import tenantApi from '../api/tenantApi';
 
 import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
@@ -150,5 +151,47 @@ export function getUserData(loggedUserObj, context, callBackFunction) {
         );
 
         callBackFunction && callBackFunction(data.user, context);
+    });
+}
+
+export function getAllTenantsData(user, context, callBackFunction) {
+    var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+    context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+    tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
+        var tenantList = [];
+        var selectedTenant = context.state.selectedTenant;
+
+        for (var i = 0; i < data.length; i++) {
+            var tenant = data[i];
+            tenant.email = {value: data[i].email, error: {}};
+            tenant.password = {value: '', error: {}};
+            tenantList.push(tenant);
+
+            if (context.props.location.query.userObj) {
+                var userObj = JSON.parse(context.props.location.query.userObj);
+
+                if (userObj.tenantID === tenant._id) {
+                    selectedTenant = tenant;
+                }
+
+            }
+
+        }
+
+        if (selectedTenant) {
+            selectedTenant = tenantList[0];
+        }
+
+        callBackFunction && callBackFunction(user, selectedTenant, context);
+
+        context.setState (
+            {
+                isLoading: false,
+                loadingMessage: '',
+                tenantList: tenantList,
+                selectedTenant: selectedTenant
+            }
+        );
+
     });
 }
