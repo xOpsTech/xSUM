@@ -151,7 +151,7 @@ class Login extends React.Component {
                 <LogoContainer/>
                 <div className="login-container-div">
                     <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>
-                    <h1 className="site-add-title">Login</h1>
+                    <h1 id="login-form-header" className="site-add-title">Login</h1>
                     <form
                         name="login-form"
                         method="post">
@@ -191,7 +191,7 @@ class Login extends React.Component {
                                 type="password"
                                 className="form-control"
                                 id="passwordInput"
-                                placeholder="Password"
+                                placeholder="PASSWORD"
                                 onKeyPress={this.loginCheck}/>
                             <ForgotPassword/>
                         </div>
