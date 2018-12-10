@@ -14,30 +14,29 @@ var jobTimers = {};
 function JobApi(){};
 
 async function startCurrentJobs() {
-    var jobList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.DB_JOB_LIST, {});
+    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
 
     console.log('------------Start executing existing jobs------------');
-    for (var i = 0; i < jobList.length; i++) {
+    for (let tenant of tenantList) {
 
-        var jobToStart = jobList[i];
+        var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
 
-        if (jobToStart.isRecursiveCheck) {
-            (
-                function(i) {
-                    jobTimers[jobToStart.jobId] = setInterval(
-                        () => {
-                            executeJob(AppConstants.DB_JOB_LIST, jobList[i]);
-                        },
-                        jobToStart.recursiveSelect.value
-                    );
-                }
-            )(i);
-            console.log('Started executing: ', jobToStart);
+        for (let job of jobList) {
+
+            if (job.isRecursiveCheck) {
+                jobTimers[job.jobId] = setInterval(
+                    () => {
+                        executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+                    },
+                    job.recursiveSelect.value
+                );
+                console.log('Started executing: ', job);
+            }
+
         }
 
     }
     console.log('------------Started executing existing jobs------------');
-
 }
 
 startCurrentJobs();
