@@ -32,12 +32,12 @@ AlertApi.prototype.saveAlert = async function(req, res) {
             criticalThreshold: alertObj.criticalThreshold
         };
 
-        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
+        MongoDB.updateData(alertObj.tenantID, AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
         res.send(alertObj);
     } else {
         alertObj.warningAlertCount = 0;
         alertObj.criticalAlertCount = 0;
-        await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, alertObj);
+        await MongoDB.insertData(alertObj.tenantID, AppConstants.ALERT_LIST, alertObj);
         res.send(alertObj);
     }
 
@@ -46,7 +46,7 @@ AlertApi.prototype.saveAlert = async function(req, res) {
 AlertApi.prototype.getAllAlerts = async function(req, res) {
     var userObj = req.body;
     var queryObj = {userEmail: userObj.userEmail};
-    var jobData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.DB_JOB_LIST, queryObj);
+    var jobData = await MongoDB.getAllData(userObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
 
     var alertsData = [];
 
@@ -55,8 +55,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
             'job.jobId': jobData[i].jobId
         };
 
-        var alertObjData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, queryToGetJobAlert);
-        var jobResults = await InfluxDB.getAllDataFor("SELECT * FROM pageLoadTime where jobid='" + jobData[i].jobId+"'"); //+ "' and time >= '" + yesterDay + "'")
+        var alertObjData = await MongoDB.getAllData(userObj.tenantID, AppConstants.ALERT_LIST, queryToGetJobAlert);
+        var jobResults = await InfluxDB.getAllDataFor(userObj.tenantID, "SELECT * FROM pageLoadTime where jobid='" + jobData[i].jobId+"'"); //+ "' and time >= '" + yesterDay + "'")
 
         var meanCount = 0;
         for (var j = 0; j < jobResults.length; j++) {
@@ -96,13 +96,14 @@ AlertApi.prototype.removeAlert = function(req, res) {
     var queryToRemoveAlert = {
         _id: ObjectId(alertObj.alertId)
     };
-    MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, queryToRemoveAlert);
-    res.send(queryToGetJobAlert);
+    MongoDB.deleteOneData(alertObj.tenantID, AppConstants.ALERT_LIST, queryToRemoveAlert);
+    res.send(queryToRemoveAlert);
 }
 
-AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMilliSec) {
+AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, curDateMilliSec) {
     // Send alert
     var jobResults = await InfluxDB.getAllDataFor(
+        databaseName,
         "SELECT * FROM pageLoadTime where jobid='"
         + insertedJobObj.jobId + "' and curDateMilliSec = '" + curDateMilliSec + "'"
     );
@@ -111,7 +112,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMill
         'job.jobId': insertedJobObj.jobId
     };
 
-    var alertObjData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, queryToGetJobAlert);
+    var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
 
     if (alertObjData.length > 0) {
 
@@ -135,7 +136,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMill
                         criticalAlertCount: 0
                     };
 
-                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                     break;
                 } else {
 
@@ -144,7 +145,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMill
                         criticalAlertCount: alertObjData[0].criticalAlertCount + 1
                     };
 
-                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                 }
 
             } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
@@ -165,7 +166,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMill
                         warningAlertCount: 0
                     };
 
-                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                     break;
                 } else {
 
@@ -174,7 +175,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(insertedJobObj, curDateMill
                         warningAlertCount: alertObjData[0].warningAlertCount + 1
                     };
 
-                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                 }
 
             }
