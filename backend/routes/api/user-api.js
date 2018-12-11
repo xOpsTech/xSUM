@@ -67,12 +67,12 @@ UserApi.prototype.registerUserData = async function(req, res) {
     };
 
     var queryObj = {email: userObj.email};
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
     if (userData.length > 0) {
         res.send({message: AppConstants.USER_EXISTS});
     } else {
-        await MongoDB.insertData(AppConstants.USER_LIST, userInsertObj);
+        await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
         var tenantObj = await TenantApi.insertTenantData(userInsertObj._id);
 
         var tenantsArray = userInsertObj.tenants;
@@ -81,7 +81,11 @@ UserApi.prototype.registerUserData = async function(req, res) {
         var toUpdateTenantArray = {
             tenants: tenantsArray
         };
-        MongoDB.updateData(AppConstants.USER_LIST, {_id: ObjectId(userInsertObj._id)}, toUpdateTenantArray);
+        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, {_id: ObjectId(userInsertObj._id)}, toUpdateTenantArray);
+
+        // Insert user to tenant id database
+        await MongoDB.insertData(String(tenantObj._id), AppConstants.USER_LIST, userInsertObj);
+        InfluxDB.createDatabase(String(tenantObj._id));
         res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userInsertObj.email}});
     }
 
@@ -106,16 +110,17 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
     };
 
     var queryObj = {email: userObj.email};
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+    var userData = await MongoDB.getAllData(userObj.tenantID, AppConstants.USER_LIST, queryObj);
 
     if (userData.length > 0) {
         res.send({message: AppConstants.USER_EXISTS});
     } else {
-        await MongoDB.insertData(AppConstants.USER_LIST, userInsertObj);
+        await MongoDB.insertData(userObj.tenantID, AppConstants.USER_LIST, userInsertObj);
+        await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
 
         // Update tenant users array
         var queryToGetTenantObj = {_id: ObjectId(userObj.tenantID)};
-        var tenantData = await MongoDB.getAllData(AppConstants.TENANT_LIST, queryToGetTenantObj);
+        var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
         var userArray = tenantData[0].users;
         userArray.push({userID: userInsertObj._id});
         var tenantUpdateObj = {
@@ -123,10 +128,11 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
         };
 
         var queryToUpdateTenant = {_id: ObjectId(userObj.tenantID)};
-        MongoDB.updateData(AppConstants.TENANT_LIST, queryToUpdateTenant, tenantUpdateObj);
+        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToUpdateTenant, tenantUpdateObj);
 
         var activateURL = userObj.siteURL + '/userAuth?action=activateUser&userID='
-                          + userInsertObj._id + '&activationCode=' + activationCode;
+                          + userInsertObj._id + '&activationCode=' + activationCode
+                          + '&tenantID=' + userObj.tenantID;
 
         // Send warning alert
         var emailBodyToSend = 'Hi ,<br><br>' +
@@ -137,7 +143,7 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
                                 'Regards,<br>xSUM admin';
 
         var queryToGetLoggedUser = {email: userObj.loggedUserEmail};
-        var loggedUserData = await MongoDB.getAllData(AppConstants.USER_LIST, queryToGetLoggedUser);
+        var loggedUserData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToGetLoggedUser);
 
         Helpers.sendEmailFrom(
             userObj.loggedUserEmail,
@@ -155,7 +161,7 @@ UserApi.prototype.updateUserData = async function(req, res) {
     var userObj = req.body;
 
     var queryObjToGetUsers = {email: userObj.email};
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObjToGetUsers);
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObjToGetUsers);
 
     for (let tenant of userObj.tenants) {
 
@@ -173,10 +179,11 @@ UserApi.prototype.updateUserData = async function(req, res) {
 
     if (userData.length > 0) {
         var queryObj = {_id: ObjectId(userObj.id)};
-        var existingUserData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+        var existingUserData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
         if (existingUserData[0].email === userUpdateObj.email) {
-            MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+            MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, userUpdateObj);
+            MongoDB.updateData(userObj.tenantID, AppConstants.USER_LIST, queryObj, userUpdateObj);
             res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userUpdateObj.email}});
         } else {
             res.send({message: AppConstants.USER_EXISTS});
@@ -184,7 +191,8 @@ UserApi.prototype.updateUserData = async function(req, res) {
 
     } else {
         var queryObj = {_id: ObjectId(userObj.id)};
-        MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, userUpdateObj);
+        MongoDB.updateData(userObj.tenantID, AppConstants.USER_LIST, queryObj, userUpdateObj);
         res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userUpdateObj.email}});
     }
 
@@ -197,7 +205,7 @@ UserApi.prototype.addEmailSettingsUserData = async function(req, res) {
         settingEmail: userObj.settingEmail,
         settingEmailPassword: userObj.settingPassword
     }
-    MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, userUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userUpdateObj.email}});
 }
 
@@ -207,17 +215,24 @@ UserApi.prototype.setEmailPasswordData = async function(req, res) {
     var userUpdateObj = {
         emailPassword: userObj.emailPassword
     }
-    MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, userUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS});
 }
 
 UserApi.prototype.getUserData = async function(req, res) {
     var userObj = req.body;
     var queryObjToGetUsers = {email: userObj.email};
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObjToGetUsers);
-    userData[0].isEmailPasswordSet = (userData[0].emailPassword !== '');
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObjToGetUsers);
+
+    if (userData[0].emailPassword && (userData[0].emailPassword !== '')) {
+        userData[0].isEmailPasswordSet = true;
+    } else {
+        userData[0].isEmailPasswordSet = false;
+    }
+
     delete userData[0].password;
     delete userData[0].emailPassword;
+    delete userData[0].activationCode;
     userData[0].permissions = {
         canCreate: accessControl.can(userData[0].tenants[0].role).createAny(AppConstants.ANY_RESOURCE).granted,
         canRead: accessControl.can(userData[0].tenants[0].role).readAny(AppConstants.ANY_RESOURCE).granted,
@@ -237,7 +252,7 @@ UserApi.prototype.checkLoginData = async function(req, res) {
     var userObj = req.body;
     var queryObj = {email: userObj.email};
 
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
     if (userData.length > 0) {
         var storedPassword = userData[0].password;
@@ -266,7 +281,7 @@ UserApi.prototype.removeUserData = async function(req, res) {
 
     // Get relevant tenant
     var queryToGetTenantObj = {_id: ObjectId(userObj.tenantID)};
-    var tenantData = await MongoDB.getAllData(AppConstants.TENANT_LIST, queryToGetTenantObj);
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
     var userArray = tenantData[0].users;
     var arrayAfterRemove = [];
 
@@ -285,20 +300,23 @@ UserApi.prototype.removeUserData = async function(req, res) {
         users: arrayAfterRemove
     };
 
-    MongoDB.updateData(AppConstants.TENANT_LIST, queryTenantObj, tenantUpdateObj);
-    MongoDB.deleteOneData(AppConstants.USER_LIST, queryToRemoveUser, res);
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryTenantObj, tenantUpdateObj);
+    MongoDB.deleteOneData(userObj.tenantID, AppConstants.USER_LIST, queryToRemoveUser);
+    MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToRemoveUser);
+    res.send(queryToRemoveUser);
 }
 
 UserApi.prototype.getUserList = async function(req, res) {
     var userObj = req.body;
     var queryObj = {};
-    var userList = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+    var userList = await MongoDB.getAllData(userObj.tenantID, AppConstants.USER_LIST, queryObj);
 
     var userData = [];
 
     for (let user of userList) {
         delete user.password;
         delete user.emailPassword;
+        delete user.activationCode;
         userData.push(user);
     }
 
@@ -347,7 +365,7 @@ UserApi.prototype.activateUser = async function(req, res) {
 
     if (checkForHexRegExp.test(paramObj.userID)) {
         var queryObj = {_id: ObjectId(paramObj.userID)};
-        var userDataToActivate = await MongoDB.getAllData(AppConstants.USER_LIST, queryObj);
+        var userDataToActivate = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
         if (userDataToActivate.length > 0) {
 
@@ -359,7 +377,8 @@ UserApi.prototype.activateUser = async function(req, res) {
                     activationCode: ''
                 };
                 var queryObj = {_id: ObjectId(paramObj.userID)};
-                MongoDB.updateData(AppConstants.USER_LIST, queryObj, userUpdateObj);
+                MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, userUpdateObj);
+                MongoDB.updateData(paramObj.tenantID, AppConstants.USER_LIST, queryObj, userUpdateObj);
                 res.send("User is activated successful");
             } else {
 

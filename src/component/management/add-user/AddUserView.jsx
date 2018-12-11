@@ -69,7 +69,7 @@ class AddUserView extends React.Component {
             userList: [],
             userSaveError: {},
             tenantList: [],
-            selectedTenant: {userList: []},
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -91,11 +91,59 @@ class AddUserView extends React.Component {
                 }
             );
         });
+    }
 
+    getLoggedUserData(loggedUserObj) {
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getAllTenantsData(user, context) {
+        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
+            var tenantList = [];
+            var selectedTenant = context.state.selectedTenant;
+
+            for (var i = 0; i < data.length; i++) {
+                var tenant = data[i];
+                tenant.email = {value: data[i].email, error: {}};
+                tenant.password = {value: '', error: {}};
+                tenantList.push(tenant);
+
+                if (context.props.location.query.userObj) {
+                    var userObj = JSON.parse(context.props.location.query.userObj);
+
+                    if (userObj.tenantID === tenant._id) {
+                        selectedTenant = tenant;
+                        context.getUsersForTenant(user, tenant);
+                    }
+
+                }
+
+            }
+
+            if (selectedTenant) {
+                selectedTenant = tenantList[0];
+            }
+
+            context.setState (
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    tenantList: tenantList,
+                    selectedTenant: selectedTenant
+                }
+            );
+
+        });
+    }
+
+    getUsersForTenant(loggedUserObj, selectedTenant) {
         var urlToGetUsers = Config.API_URL + AppConstants.GET_USER_LIST_API;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USERS});
-        userApi.getUserList(urlToGetUsers, {userEmail: loggedUserObj.email}).then((data) => {
+        userApi.getUserList(urlToGetUsers,
+            {userEmail: loggedUserObj.email, tenantID: selectedTenant._id}).then((data) => {
 
             if (this.props.location.query.userObj) {
                 var userObj = JSON.parse(this.props.location.query.userObj);
@@ -134,50 +182,6 @@ class AddUserView extends React.Component {
                     userList: data.userData
                 }
             );
-        });
-    }
-
-    getLoggedUserData(loggedUserObj) {
-        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
-    }
-
-    getAllTenantsData(user, context) {
-        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
-            var tenantList = [];
-            var selectedTenant = context.state.selectedTenant;
-
-            for (var i = 0; i < data.length; i++) {
-                var tenant = data[i];
-                tenant.email = {value: data[i].email, error: {}};
-                tenant.password = {value: '', error: {}};
-                tenantList.push(tenant);
-
-                if (context.props.location.query.userObj) {
-                    var userObj = JSON.parse(context.props.location.query.userObj);
-
-                    if (userObj.tenantID === tenant._id) {
-                        selectedTenant = tenant;
-                    }
-
-                }
-
-            }
-
-            if (selectedTenant) {
-                selectedTenant = tenantList[0];
-            }
-
-            context.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    tenantList: tenantList,
-                    selectedTenant: selectedTenant
-                }
-            );
-
         });
     }
 

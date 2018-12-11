@@ -51,13 +51,20 @@ class SiteAdd extends React.Component {
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({ loggedUserObj: loggedUserObject });
-
-            this.getAllJobs(loggedUserObject);
+            this.setState({loggedUserObj: loggedUserObject});
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
 
+    }
+
+    getLoggedUserData(loggedUserObj) {
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllJobs);
     }
 
     // Returns initial props
@@ -74,8 +81,9 @@ class SiteAdd extends React.Component {
             recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
             isModalVisible: false,
             siteToResult: null,
-            jobName: { value: '', error: {} },
-            selectedJobID: null
+            jobName: {value: '', error: {}},
+            selectedJobID: null,
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -90,10 +98,13 @@ class SiteAdd extends React.Component {
         this.setState(stateObj);
     }
 
-    getAllJobs(loggedUserObj) {
+    getAllJobs(loggedUserObj, selectedTenant, context) {
         var url = Config.API_URL + AppConstants.JOBS_GET_API;
-        this.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS });
-        jobApi.getAllJobsFrom(url, { userEmail: loggedUserObj.email }).then((data) => {
+        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        var objectToRetrieve = {
+            tenantID: selectedTenant._id
+        };
+        jobApi.getAllJobsFrom(url, objectToRetrieve).then((data) => {
 
             if (this.props.location.query.jobObj) {
                 var jobObj = JSON.parse(this.props.location.query.jobObj);
@@ -161,7 +172,10 @@ class SiteAdd extends React.Component {
     addJobClick(e) {
         e.preventDefault();
 
-        var { siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName, selectedJobID } = this.state;
+        var {
+            siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName, selectedJobID, loggedUserObj,
+            selectedTenant
+        } = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
             siteObject.value = 'http://' + siteObject.value;
@@ -180,8 +194,9 @@ class SiteAdd extends React.Component {
                     scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
                     isRecursiveCheck,
                     recursiveSelect,
-                    userEmail: this.state.loggedUserObj.email,
-                    jobName: jobName.value
+                    userEmail: loggedUserObj.email,
+                    jobName: jobName.value,
+                    tenantID: selectedTenant._id
                 };
 
                 jobApi.updateJob(url, { job: jobToUpdate }).then(() => {
@@ -197,8 +212,9 @@ class SiteAdd extends React.Component {
                     scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
                     isRecursiveCheck,
                     recursiveSelect,
-                    userEmail: this.state.loggedUserObj.email,
-                    jobName: jobName.value
+                    userEmail: loggedUserObj.email,
+                    jobName: jobName.value,
+                    tenantID: selectedTenant._id
                 };
                 var url = Config.API_URL + AppConstants.JOB_INSERT_API;
                 this.setState({ isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB });
@@ -318,7 +334,8 @@ class SiteAdd extends React.Component {
             isRecursiveCheck,
             isModalVisible,
             siteToResult,
-            jobName
+            jobName,
+            selectedTenant
         } = this.state;
 
         return (

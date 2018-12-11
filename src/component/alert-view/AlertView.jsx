@@ -39,8 +39,7 @@ class AlertView extends React.Component {
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
-
-            this.getAllAlerts(loggedUserObject);
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -56,16 +55,29 @@ class AlertView extends React.Component {
             alertsData: [],
             selectedAlertData: null,
             selectedAlertIndex: 0,
+            selectedTenant: {userList: []}
         };
 
         return initialState;
     }
 
-    getAllAlerts(loggedUserObj) {
+    getLoggedUserData(loggedUserObj) {
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllAlerts);
+    }
+
+    getAllAlerts(loggedUserObj, selectedTenant, context) {
         var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
-        alertApi.getAllAlertsFrom(urlToGetAlerts, {userEmail: loggedUserObj.email}).then((data) => {
+        var objToGetAlerts = {
+            userEmail: loggedUserObj.email,
+            tenantID: selectedTenant._id
+        };
+        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
 
             if (this.props.location.query.alertObj) {
                 var alertObj = JSON.parse(this.props.location.query.alertObj);
@@ -110,8 +122,10 @@ class AlertView extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.SAVE_ALERT});
-        var {loggedUserObj, selectedAlertData} = this.state;
+        var {loggedUserObj, selectedAlertData, selectedTenant} = this.state;
         selectedAlertData.email = loggedUserObj.email;
+
+        selectedAlertData.tenantID = selectedTenant._id;
 
         var urlToSaveAlert = Config.API_URL + AppConstants.SAVE_ALERT_API;
         alertApi.saveAlert(urlToSaveAlert, selectedAlertData).then(() => {

@@ -24,6 +24,7 @@ class AlertListView extends React.Component {
         this.dropDownClick = this.dropDownClick.bind(this);
         this.redirectToAddAlert = this.redirectToAddAlert.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
+        this.getAllAlerts  = this.getAllAlerts.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -40,9 +41,7 @@ class AlertListView extends React.Component {
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             this.setState({loggedUserObj: loggedUserObject});
-
-            this.getAllAlerts(loggedUserObject);
-            UIHelper.getUserData(loggedUserObject, this);
+            this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
         }
@@ -57,7 +56,8 @@ class AlertListView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             isLeftNavCollapse: false,
-            alertsData: []
+            alertsData: [],
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -72,12 +72,24 @@ class AlertListView extends React.Component {
         this.setState(stateObject);
     }
 
-    getAllAlerts(loggedUserObj) {
+    getLoggedUserData(loggedUserObj) {
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllAlerts);
+    }
+
+    getAllAlerts(loggedUserObj, selectedTenant, context) {
         var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
-        alertApi.getAllAlertsFrom(urlToGetAlerts, {userEmail: loggedUserObj.email}).then((data) => {
-            this.setState(
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
+        var objToGetAlerts = {
+            userEmail: loggedUserObj.email,
+            tenantID: selectedTenant._id
+        };
+        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
+            context.setState(
                 {
                     isLoading: false,
                     loadingMessage: '',
@@ -99,10 +111,15 @@ class AlertListView extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_ALERT});
+        const {selectedTenant} = this.state;
         var url = Config.API_URL + AppConstants.REMOVE_ALERT_API;
-        alertApi.removeAlert(url, {alertId: alertToRemove._id}).then(() => {
+        var alertToRemove = {
+            alertId: alertToRemove._id,
+            tenantID: selectedTenant._id
+        };
+        alertApi.removeAlert(url, alertToRemove).then(() => {
             let arrayAfterRemove = this.state.alertsData.filter((alertObj) => {
-                return alertObj._id !== alertToRemove._id;
+                return alertObj.alertId !== alertToRemove._id;
             });
             delete alertToRemove._id;
             arrayAfterRemove.push(alertToRemove);

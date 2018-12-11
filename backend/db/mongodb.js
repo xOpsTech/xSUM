@@ -3,7 +3,7 @@ var InfluxDB = require('./influxdb');
 var AppConstants = require('../constants/AppConstants');
 var config = require('../config/config');
 var dbName = 'xsum';
-var url = 'mongodb://' + config.MONGODB_IP + ':27017/' + dbName;
+var url = 'mongodb://' + config.MONGODB_IP + ':27017/';
 const bcrypt = require('bcryptjs');
 
 function MongoDB(){};
@@ -14,21 +14,21 @@ MongoClient.connect(url, function(err, db) {
     db.close();
 });
 
-function connectMongoDB() {
-    return MongoClient.connect(url);
+function connectMongoDB(database) {
+    return MongoClient.connect(url + database);
 }
 
-function connectDB() {
+function connectDB(database) {
     return new Promise((resolve) => {
-        connectMongoDB().then((db) => {
+        connectMongoDB(database).then((db) => {
             resolve(db);
         });
     });
 }
 
-function getResult(db, collectionName, query) {
+function getResult(db, databaseName, collectionName, query) {
     return new Promise((resolve) => {
-        var dbo = db.db(dbName);
+        var dbo = db.db(databaseName);
         dbo.collection(collectionName).find(query).toArray((error, result) => {
 
             if (error) {
@@ -41,11 +41,11 @@ function getResult(db, collectionName, query) {
     });
 }
 
-function insertDataInto(db, collectionName, objectToInsert) {
+function insertDataInto(db, databaseName, collectionName, objectToInsert) {
     return new Promise((resolve) => {
-        var dbo = db.db(dbName);
+        var dbo = db.db(databaseName);
         dbo.collection(collectionName).insertOne(objectToInsert, (error, result) => {
-            console.log("one row added for " + collectionName);
+            console.log("one row added for " + collectionName + ' in ' + databaseName);
             if (error) {
                 resolve(error);
             }
@@ -56,10 +56,10 @@ function insertDataInto(db, collectionName, objectToInsert) {
     });
 }
 
-MongoDB.prototype.updateData = function(collectionName, updateIdObject, newObjectWithValues) {
+MongoDB.prototype.updateData = function(databaseName, collectionName, updateIdObject, newObjectWithValues) {
 
-    connectMongoDB().then((db) => {
-        var dbo = db.db(dbName);
+    connectMongoDB(databaseName).then((db) => {
+        var dbo = db.db(databaseName);
         dbo.collection(collectionName).updateOne(updateIdObject,
             {
                 $set: newObjectWithValues
@@ -71,33 +71,31 @@ MongoDB.prototype.updateData = function(collectionName, updateIdObject, newObjec
 
 }
 
-MongoDB.prototype.deleteOneData = function(collectionName, query, response) {
+MongoDB.prototype.deleteOneData = function(databaseName, collectionName, query, response) {
 
-    connectMongoDB().then((db) => {
-        var dbo = db.db(dbName);
+    connectMongoDB(databaseName).then((db) => {
+        var dbo = db.db(databaseName);
         dbo.collection(collectionName).remove(
             query,
             {justOne: true}
         );
         db.close();
-
-        response.send(query)
     });
 
 }
 
-MongoDB.prototype.getAllData = async function(collectionName, query) {
-    var dbObject = await connectDB();
-    var allresults = await getResult(dbObject, collectionName, query);
+MongoDB.prototype.getAllData = async function(databaseName, collectionName, query) {
+    var dbObject = await connectDB(databaseName);
+    var allresults = await getResult(dbObject, databaseName, collectionName, query);
 
     return new Promise((resolve) => {
         resolve(allresults);
     });
 }
 
-MongoDB.prototype.insertData = async function(collectionName, objectToInsert) {
-    var dbObject = await connectDB();
-    var insertedObject = await insertDataInto(dbObject, collectionName, objectToInsert);
+MongoDB.prototype.insertData = async function(databaseName, collectionName, objectToInsert) {
+    var dbObject = await connectDB(databaseName);
+    var insertedObject = await insertDataInto(dbObject, databaseName, collectionName, objectToInsert);
 
     return new Promise((resolve) => {
         resolve(objectToInsert);
