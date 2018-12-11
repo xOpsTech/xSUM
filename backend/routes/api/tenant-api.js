@@ -35,7 +35,7 @@ TenantApi.prototype.addTenantData = async function(req, res) {
 
 TenantApi.prototype.getAllTenantsData = async function(req, res) {
     var userObj = req.body;
-    var tenantData = await MongoDB.getAllData(AppConstants.TENANT_LIST, {});
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
     var matchedTenants = [];
 
     for (var i = 0; i < tenantData.length; i++) {
@@ -57,44 +57,26 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
 
 TenantApi.prototype.getAllTenantsWithUsers = async function(req, res) {
     var userObj = req.body;
-    var tenantData = await MongoDB.getAllData(AppConstants.TENANT_LIST, {});
-    var userData = await MongoDB.getAllData(AppConstants.USER_LIST, {});
-    var matchedTenants = [];
 
-    for (let tenant of tenantData) {
+    var queryObj = {_id: ObjectId(userObj.userID)};
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
-        for (let user of tenant.users) {
+    var tenantsArray = [];
 
-            if (user.userID == userObj.userID) {
-                delete tenant.password;
-                matchedTenants.push(tenant);
-                break;
-            }
+    for (let tenant of userData[0].tenants) {
+        var queryToGetTenant = {_id: ObjectId(tenant.tenantID)};
+        var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenant);
+        var userList = await MongoDB.getAllData(String(tenant.tenantID), AppConstants.USER_LIST, {});
 
+        delete tenantData[0].password;
+        for (let user of userList) {
+            delete user.password;
         }
-
+        tenantData[0].userList = userList;
+        tenantsArray.push(tenantData[0]);
     }
 
-    for (let tenant of matchedTenants) {
-        var userList = [];
-
-        for (let user of tenant.users) {
-
-            // Get other user list
-            for (let dbUser of userData) {
-
-                if (JSON.stringify(user.userID) == JSON.stringify(dbUser._id)) {
-                    delete dbUser.password;
-                    userList.push(dbUser);
-                }
-
-            }
-        }
-
-        tenant.userList = userList;
-    }
-
-    res.send(matchedTenants);
+    res.send(tenantsArray);
 }
 
 TenantApi.prototype.insertTenantData = async function(userID) {
@@ -109,7 +91,7 @@ TenantApi.prototype.insertTenantData = async function(userID) {
             }
         ]
     };
-    await MongoDB.insertData(AppConstants.TENANT_LIST, tenantInsertObj);
+    await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;
 }
 
@@ -121,7 +103,7 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
         password: tenantObj.password,
         name: tenantObj.name
     };
-    MongoDB.updateData(AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});
 }
 

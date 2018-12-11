@@ -1,3 +1,5 @@
+exports.DB_NAME   = 'xsum';
+
 exports.DB_URL_LIST = 'urlList';
 exports.DB_JOB_LIST = 'jobList';
 exports.USER_LIST   = 'userList';
