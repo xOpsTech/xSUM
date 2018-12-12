@@ -212,10 +212,10 @@ class AlertView extends React.Component {
                 <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
                 <div className="alert-view">
                     <div className="row">
-                        <div className="col-sm-9">
+                        <div className="col-sm-12">
                             <h1 className="alert-title">Alerts</h1>
                         </div>
-                        <div className="col-sm-3">
+                        <div id="warning-icon-div">
                             <img className="warning-icon" src="./assets/img/warning-icon.png"/>
                         </div>
                     </div>
