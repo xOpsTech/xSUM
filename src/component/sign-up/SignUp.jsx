@@ -158,7 +158,7 @@ class SignUp extends React.Component {
                 <NavContainer/>
                 <div className="sign-up-container">
                     <LoadingScreen isDisplay={isSignup} message={MessageConstants.LOGING_MESSAGE}/>
-                    <h1 className="site-add-title">Create Account</h1>
+                    <h1 id="create-account-title" className="site-add-title">Create Account</h1>
                     <form
                         name="login-form"
                         method="post">
@@ -186,7 +186,6 @@ class SignUp extends React.Component {
                                 placeholder="EMAIL"/>
                             <ErrorIconComponent error={email.error}/>
                             <ErrorMessageComponent error={email.error}/>
-                            <ForgotPassword/>
                         </div>
 
                         <div className={
@@ -202,7 +201,7 @@ class SignUp extends React.Component {
                                 onChange={(e) => {
                                     this.passwordCheck(e.target.value, confirmPassword.value);
                                 }}
-                                placeholder="Password"/>
+                                placeholder="PASSWORD"/>
                             <ErrorIconComponent error={password.error}/>
                             <ErrorMessageComponent error={password.error}/>
                         </div>
@@ -219,25 +218,25 @@ class SignUp extends React.Component {
                                 onChange={(e) => {
                                     this.passwordCheck(password.value, e.target.value);
                                 }}
-                                placeholder="Confirm Password"/>
+                                placeholder="CONFIRM PASSWORD"/>
                             <ErrorIconComponent error={confirmPassword.error}/>
                         </div>
                         <ErrorMessageComponent error={regError}/>
                         <div className="form-group">
                             <button
-                                className="btn btn-primary form-control button-all-caps-text"
+                                className="btn btn-primary form-control button-all-caps-text btn-register btn-register-primary"
                                 onClick={(e) => this.signUpClick(e)}>
                                 Register
                             </button>
                         </div>
                         <div className="form-group">
                             <button
-                                className="btn btn-primary form-control half-button button-all-caps-text"
+                                className="btn btn-primary form-control half-button button-all-caps-text btn-register btn-register-secondary"
                                 onClick={(e) => this.termsOfServiceClick(e)}>
                                 Terms of Service
                             </button>
                             <button
-                                className="btn btn-primary form-control half-button button-all-caps-text"
+                                className="btn btn-primary form-control half-button button-all-caps-text btn-register btn-register-secondary "
                                 onClick={(e) => this.privacyPolicyClick(e)}>
                                 Privacy Policy
                             </button>
