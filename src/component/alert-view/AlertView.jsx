@@ -211,7 +211,7 @@ class AlertView extends React.Component {
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
                 <div className="alert-view">
-                    <div className="row">
+                    <div id="alert-row" className="row">
                         <div className="col-sm-12">
                             <h1 className="alert-title">Alerts</h1>
                         </div>
