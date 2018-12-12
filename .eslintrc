@@ -17,7 +17,7 @@
     "rules": {
         "max-len": [1, 200, 2, {"ignoreComments": true}],
         "indent": [1, 4],
-        "linebreak-style": [],
+        "linebreak-style": [0],
         "quotes": [1, "double"],
         "semi": [2, "always"]
     }
