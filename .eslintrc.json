@@ -20,7 +20,7 @@
     "rules": {
         "max-len": [1, 120, 2, {"ignoreComments": true}],
         "indent": [2, 4, {"SwitchCase": 1}],
-        "linebreak-style": [2, "unix"],
+        "linebreak-style": [0],
         "quotes": [0, "double"],
         "semi": [2, "always"],
         "react/jsx-uses-react": [1],
