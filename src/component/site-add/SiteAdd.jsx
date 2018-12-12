@@ -109,42 +109,34 @@ class SiteAdd extends React.Component {
             if (this.props.location.query.jobObj) {
                 var jobObj = JSON.parse(this.props.location.query.jobObj);
 
-                for (var i = 0; i < data.length; i++) {
-                    var currentJobObj = data[i];
-                    if (jobObj.jobId === currentJobObj.jobID) {
+                for (let currentJobObj of data) {
+                    if (jobObj.jobID === currentJobObj.jobId) {
                         var siteUrl = currentJobObj.siteObject.value.replace(/http:\/\//g, '');
-
-                        UIHelper.getUserData(loggedUserObj, this, (user, context) => {
-
-
-                            context.setState(
-                                {
-                                    siteObject: {
-                                        value: siteUrl, // Remove http://
-                                        error: {
-                                            hasError: UIHelper.isUrlHasError(siteUrl),
-                                            name: MessageConstants.URL_ERROR
-                                        }
-                                    },
-                                    jobName: {
-                                        value: currentJobObj.jobName,
-                                        error: {
-                                            hasError: UIHelper.isNameHasError(currentJobObj.jobName),
-                                            name: MessageConstants.NAME_ERROR
-                                        }
-                                    },
-                                    browser: currentJobObj.browser,
-                                    recursiveSelect: {
-                                        value: currentJobObj.recursiveSelect.value,
-                                        textValue: currentJobObj.recursiveSelect.textValue
-                                    },
-                                    selectedJobID: currentJobObj.jobId
-                                }
-                            );
-
-
-                        });
-
+                        context.setState(
+                            {
+                                siteObject: {
+                                    value: siteUrl, // Remove http://
+                                    error: {
+                                        hasError: UIHelper.isUrlHasError(siteUrl),
+                                        name: MessageConstants.URL_ERROR
+                                    }
+                                },
+                                jobName: {
+                                    value: currentJobObj.jobName,
+                                    error: {
+                                        hasError: UIHelper.isNameHasError(currentJobObj.jobName),
+                                        name: MessageConstants.NAME_ERROR
+                                    }
+                                },
+                                browser: currentJobObj.browser,
+                                recursiveSelect: {
+                                    value: currentJobObj.recursiveSelect.value,
+                                    textValue: currentJobObj.recursiveSelect.textValue
+                                },
+                                selectedJobID: currentJobObj.jobId
+                            }
+                        );
+                        break;
                     }
 
                 }
@@ -359,7 +351,7 @@ class SiteAdd extends React.Component {
                     // </div>
                     // <span className="input-group-addon">
                     //                 http://
-                    //             </span> 
+                    //             </span>
                 }
                 <div className="site-add-container">
                     <form
