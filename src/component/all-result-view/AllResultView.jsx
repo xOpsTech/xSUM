@@ -360,7 +360,7 @@ class AllResultView extends React.Component {
                     </div>
                     {
                         (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                            ? <div className="row add-test-section">
+                            ? <div className="row" id="add-test-section">
                                 <div className="col-sm-4"></div>
                                 <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
                                     <div className="row">
