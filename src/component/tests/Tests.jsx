@@ -249,7 +249,7 @@ class Tests extends React.Component {
                                             }
                                         </tbody>
                                     </table>
-                                : null
+                                : <div>No Tests available</div>
                             }
                             {
                                 (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)

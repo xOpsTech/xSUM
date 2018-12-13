@@ -253,7 +253,7 @@ class AlertListView extends React.Component {
                     </table>
                 );
             } else {
-                return null;
+                return <div>No Alerts available</div>;
             }
 
         };
