@@ -23,6 +23,7 @@ class Login extends React.Component {
         super(props);
 
         this.handleChange          = this.handleChange.bind(this);
+        this.handleKeyPress        = this.handleKeyPress.bind(this);
         this.loginCheck            = this.loginCheck.bind(this);
         this.signUpClick           = this.signUpClick.bind(this);
         this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
@@ -54,11 +55,14 @@ class Login extends React.Component {
         this.setState(stateObj);
     }
 
-    loginCheck(e) {
-
-        if(e.key == 'Enter') {
+    handleKeyPress(e){
+        if (e.key === 'Enter') {
             e.preventDefault();
+            this.loginCheck(e);
+        }
+    }
 
+    loginCheck(e) {
             const {email, password} = this.state;
             var undefinedCheck = !(email.error.hasError === undefined);
             var errorCheck = !(email.error.hasError);
@@ -106,7 +110,6 @@ class Login extends React.Component {
 
             }
 
-        }
 
 
     }
@@ -152,9 +155,7 @@ class Login extends React.Component {
                 <div className="login-container-div">
                     <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>
                     <h1 id="login-form-header" className="site-add-title">Login</h1>
-                    <form
-                        name="login-form"
-                        method="post">
+                    <div name="login-form">
                         <div className={
                             'form-group has-feedback ' +
                             ((email.error.hasError !== undefined)
@@ -192,10 +193,17 @@ class Login extends React.Component {
                                 className="form-control"
                                 id="passwordInput"
                                 placeholder="PASSWORD"
-                                onKeyPress={this.loginCheck}/>
+                                onKeyPress={this.handleKeyPress}/>
                             <ForgotPassword/>
                         </div>
                         <ErrorMessageComponent error={loginError}/>
+                        <div className="form-group">
+                            <button
+                                className="btn btn-primary form-control button-all-caps-text"
+                                onClick={this.loginCheck}>
+                                Login
+                            </button>
+                        </div>
                         <GoogleLoginButton
                             googleResponseSuccess={this.googleResponseSuccess}
                             googleResponseFail={this.googleResponseFail}/>
@@ -215,7 +223,7 @@ class Login extends React.Component {
                                 Create a new account
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 <div className="login-container-div">
                     <OneTimeTest/>
