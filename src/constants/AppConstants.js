@@ -106,6 +106,11 @@ export const LEFT_NAV_TABS = [
         route: '',
         subSections: [
             {
+                index: USER_PROFILE_INDEX,
+                text: 'Profile',
+                route: USER_PROFILE_ROUTE
+            },
+            {
                 index: USER_MANAGMENT_INDEX,
                 text: 'User Management',
                 route: USER_MANAGMENT_ROUTE
@@ -124,11 +129,6 @@ export const LEFT_NAV_TABS = [
                 index: SETTINGS_INDEX,
                 text: 'Settings',
                 route: SETTINGS_ROUTE
-            },
-            {
-                index: USER_PROFILE_INDEX,
-                text: 'Profile',
-                route: USER_PROFILE_ROUTE
             }
         ]
     }
