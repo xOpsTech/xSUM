@@ -204,9 +204,6 @@ class Login extends React.Component {
                                 Login
                             </button>
                         </div>
-                        <GoogleLoginButton
-                            googleResponseSuccess={this.googleResponseSuccess}
-                            googleResponseFail={this.googleResponseFail}/>
                         {
                             // <div className="form-group">
                             //     <button
@@ -223,6 +220,10 @@ class Login extends React.Component {
                                 Create a new account
                             </button>
                         </div>
+                        <GoogleLoginButton
+                            googleResponseSuccess={this.googleResponseSuccess}
+                            googleResponseFail={this.googleResponseFail}
+                            style="padding: 0px" />
                     </div>
                 </div>
                 <div className="login-container-div">
