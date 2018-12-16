@@ -83,7 +83,8 @@ class SiteAdd extends React.Component {
             siteToResult: null,
             jobName: {value: '', error: {}},
             selectedJobID: null,
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            selectedLocationID: 0
         };
 
         return initialState;
@@ -166,7 +167,7 @@ class SiteAdd extends React.Component {
 
         var {
             siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName, selectedJobID, loggedUserObj,
-            selectedTenant
+            selectedTenant, selectedLocationID
         } = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
@@ -188,7 +189,8 @@ class SiteAdd extends React.Component {
                     recursiveSelect,
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
-                    tenantID: selectedTenant._id
+                    tenantID: selectedTenant._id,
+                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID]
                 };
 
                 jobApi.updateJob(url, { job: jobToUpdate }).then(() => {
@@ -206,7 +208,8 @@ class SiteAdd extends React.Component {
                     recursiveSelect,
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
-                    tenantID: selectedTenant._id
+                    tenantID: selectedTenant._id,
+                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID]
                 };
                 var url = Config.API_URL + AppConstants.JOB_INSERT_API;
                 this.setState({ isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB });
@@ -327,7 +330,8 @@ class SiteAdd extends React.Component {
             isModalVisible,
             siteToResult,
             jobName,
-            selectedTenant
+            selectedTenant,
+            selectedLocationID
         } = this.state;
 
         return (
@@ -337,7 +341,8 @@ class SiteAdd extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                            loggedUserObj={loggedUserObj} />
+                            loggedUserObj={loggedUserObj}
+                            isFixedNav={true}/>
                         : <div className="sign-in-button">
                             <button onClick={() => { UIHelper.redirectTo(AppConstants.LOGIN_ROUTE); }}
                                 className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -406,6 +411,22 @@ class SiteAdd extends React.Component {
                                     placeholder="ENTER WEBSITE URL" />
                             </div>
                             <ErrorMessageComponent error={siteObject.error} />
+                        </div>
+                        <div className="form-group">
+                            <select
+                                className="form-control form-control-sm form-group"
+                                value={selectedLocationID}
+                                onChange={(e) => this.dropDownClick({selectedLocationID: e.target.value})}>
+                                {
+                                    Config.SERVER_LOCATION_ARRAY.map((location, i) => {
+                                        return (
+                                            <option key={'location_' + i} value={location.locationid}>
+                                                {location.textValue}
+                                            </option>
+                                        );
+                                    })
+                                }
+                            </select>
                         </div>
                         <div className="form-group">
                             <select

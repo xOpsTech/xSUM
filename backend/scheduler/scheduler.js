@@ -34,14 +34,10 @@ async function executeAllJobs() {
 
         for (let job of jobList) {
 
-            if (job.isRecursiveCheck) {
+            if (job.isRecursiveCheck &&
+                job.serverLocation &&
+                parseInt(job.serverLocation.locationid) === config.SERVER_LOCATION_ID) {
                 executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
-                // jobTimers[job.jobId] = setInterval(
-                //     () => {
-                //         executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
-                //     },
-                //     job.recursiveSelect.value
-                // );
                 console.log('Start executing: ', job);
             }
 
@@ -52,31 +48,31 @@ async function executeAllJobs() {
 
 }
 
-function executeJob(databaseName, collectionName, objectToInsert) {
+function executeJob(databaseName, collectionName, jobToExecute) {
     var resultID = crypto.randomBytes(10).toString('hex');
-    var locationTitle = 'California';
-    var locationLatitude = 36.7783;
-    var locationLongitude = -119.4179;
+    var locationTitle = jobToExecute.serverLocation.textValue;
+    var locationLatitude = jobToExecute.serverLocation.latitude;
+    var locationLongitude = jobToExecute.serverLocation.longitude;
 
     var curDateMilliSec = new Date().getTime();
 
     //Send process request to sitespeed
     var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
         ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
-        ' --browser ' + objectToInsert.browser +
-        ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID
+        ' --browser ' + jobToExecute.browser +
+        ' --influxdb.tags "jobid=' + jobToExecute.jobId + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
         + ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" '
-        + objectToInsert.siteObject.value;
+        + jobToExecute.siteObject.value;
     cmd.get(
         commandStr,
         async function(err, data, stderr) {
-            objectToInsert.result.push({resultID: resultID, executedDate: new Date()});
+            jobToExecute.result.push({resultID: resultID, executedDate: new Date()});
             var newValueObj = {
-                result: objectToInsert.result
+                result: jobToExecute.result
             };
-            //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: objectToInsert.jobId}, newValueObj);
-            AlertApi.sendEmailAsAlert(databaseName, objectToInsert, curDateMilliSec);
+            //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
+            AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
     );
 }

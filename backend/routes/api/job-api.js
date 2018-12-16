@@ -48,7 +48,8 @@ JobApi.prototype.insertJob = async function(req, res) {
         recursiveSelect: jobObj.recursiveSelect,
         result: [],
         userEmail: jobObj.userEmail,
-        jobName: jobObj.jobName
+        jobName: jobObj.jobName,
+        serverLocation: jobObj.serverLocation
     };
 
     var queryObj = {userEmail: jobObj.userEmail};
@@ -57,23 +58,10 @@ JobApi.prototype.insertJob = async function(req, res) {
     if (jobData.length < 5) {
         await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
 
-        jobTimers[jobObj.jobId] = setInterval(
-            function() {
-                executeJob(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj)
-            },
-            jobObj.recursiveSelect.value
-        );
-
-        executeScheduleJob(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
-
         res.send(jobInsertObj);
     } else {
         res.send({error: 'You can add only five jobs'});
     }
-}
-
-function executeScheduleJob(databaseName, collectionName, insertedObject) {
-    executeJob(databaseName, collectionName, insertedObject);
 }
 
 JobApi.prototype.getAllJobs = async function(req, res) {
@@ -88,7 +76,6 @@ JobApi.prototype.removeJob = function(req, res) {
     var queryToRemoveJob = {
         jobId: jobObj.jobId
     };
-    clearInterval(jobTimers[jobObj.jobId]);
     MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
     InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId+ "'");
     res.send(queryToRemoveJob);
@@ -96,7 +83,6 @@ JobApi.prototype.removeJob = function(req, res) {
 
 JobApi.prototype.updateJob = function(req, res) {
     var jobObj = req.body.job;
-    clearInterval(jobTimers[jobObj.jobId]);
 
     var updateValueObj = {
         jobName: jobObj.jobName,
@@ -105,14 +91,6 @@ JobApi.prototype.updateJob = function(req, res) {
     };
 
     MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
-
-    // Start the job
-    jobTimers[jobObj.jobId] = setInterval(
-        function() {
-            executeJob(AppConstants.DB_NAME, AppConstants.DB_JOB_LIST, jobObj)
-        },
-        jobObj.recursiveSelect.value
-    );
 
     res.send(jobObj);
 }
@@ -140,35 +118,6 @@ JobApi.prototype.startorStopJob = function(req, res) {
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, newValueObj);
 
     res.send(jobObj);
-}
-
-function executeJob(databaseName, collectionName, objectToInsert) {
-    var resultID = crypto.randomBytes(10).toString('hex');
-    var locationTitle = 'California';
-    var locationLatitude = 36.7783;
-    var locationLongitude = -119.4179;
-
-    var curDateMilliSec = new Date().getTime();
-
-    //Send process request to sitespeed
-    var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
-        ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
-        ' --browser ' + objectToInsert.browser +
-        ' --influxdb.tags "jobid=' + objectToInsert.jobId + ',resultID=' + resultID
-        + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
-        + ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" '
-        + objectToInsert.siteObject.value;
-    cmd.get(
-        commandStr,
-        async function(err, data, stderr) {
-            objectToInsert.result.push({resultID: resultID, executedDate: new Date()});
-            var newValueObj = {
-                result: objectToInsert.result
-            };
-            //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: objectToInsert.jobId}, newValueObj);
-            AlertApi.sendEmailAsAlert(databaseName, objectToInsert, curDateMilliSec);
-        }
-    );
 }
 
 module.exports = new JobApi();
