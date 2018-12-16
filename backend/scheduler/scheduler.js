@@ -14,9 +14,20 @@ var jobTimers = {};
 function Scheduler(){};
 
 Scheduler.prototype.startScheduler = async function() {
-    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
+    executeAllJobs();
+    setInterval(
+        () => {
+            executeAllJobs();
+        },
+        1000*60*10
+    );
+}
 
-    console.log('------------Start executing existing jobs------------');
+async function executeAllJobs() {
+    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
+    var currentDateTime = moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+
+    console.log('------------Start executing existing jobs for ' + currentDateTime + ' ------------');
     for (let tenant of tenantList) {
 
         var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
@@ -24,19 +35,21 @@ Scheduler.prototype.startScheduler = async function() {
         for (let job of jobList) {
 
             if (job.isRecursiveCheck) {
-                jobTimers[job.jobId] = setInterval(
-                    () => {
-                        executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
-                    },
-                    job.recursiveSelect.value
-                );
-                console.log('Started executing: ', job);
+                executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+                // jobTimers[job.jobId] = setInterval(
+                //     () => {
+                //         executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+                //     },
+                //     job.recursiveSelect.value
+                // );
+                console.log('Start executing: ', job);
             }
 
         }
 
     }
-    console.log('------------Started executing existing jobs------------');
+    console.log('--------------------------------------------------------------------------------');
+
 }
 
 function executeJob(databaseName, collectionName, objectToInsert) {
