@@ -25,6 +25,9 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAllJobs":
             new JobApi().getAllJobs(req, res);
             break;
+        case "getAllJobsWithResults":
+            new JobApi().getAllJobsWithResults(req, res);
+            break;
         case "startorStopJob":
             new JobApi().startorStopJob(req, res);
             break;
@@ -69,6 +72,38 @@ JobApi.prototype.getAllJobs = async function(req, res) {
     var queryObj = {};
     var urlData = await MongoDB.getAllData(userObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
     res.send(urlData);
+}
+
+JobApi.prototype.getAllJobsWithResults = async function(req, res) {
+    var userObj = req.body;
+    var queryObj = {};
+    var jobsList = await MongoDB.getAllData(userObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
+
+    var locationsArr = [];
+
+    for (let job of jobsList) {
+        var yesterDay = moment().subtract(6, 'hours').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+
+        var jobResults = await InfluxDB.getAllDataFor(
+            userObj.tenantID,
+            "SELECT * FROM pageLoadTime where jobid='" + job.jobId + "' and time >= '" + yesterDay + "'"
+        );
+
+        job.result = jobResults;
+
+        var isLocationFound = locationsArr.find(function(locationObj) {
+            return (locationObj.locationid === job.serverLocation.locationid);
+        });
+
+        if (!isLocationFound) {
+            locationsArr.push(job.serverLocation);
+        }
+
+    }
+
+    var objectToSend = {jobsList: jobsList, locations: locationsArr};
+
+    res.send(objectToSend);
 }
 
 JobApi.prototype.removeJob = function(req, res) {
