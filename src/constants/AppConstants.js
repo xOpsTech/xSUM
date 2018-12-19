@@ -11,6 +11,7 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
+export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';

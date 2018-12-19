@@ -75,57 +75,39 @@ class AllResultView extends React.Component {
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
-        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_API;
-        var urlForResultJob = Config.API_URL + AppConstants.GET_ALL_RESULTS_JOB_API;
+        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_RESULTS_API;
 
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
-            for (var i = 0; i < data.length; i++) {
-                var currentJob = Object.assign(data[i]);
-                var jobObj = {
-                    jobID: data[i].jobId,
-                    tenantID: selectedTenant._id
-                }
-                jobApi.getResult(urlForResultJob, jobObj, currentJob).then((jobResult) => {
-                    var resultsArr = context.state.jobsWithResults;
-                    var locationMarkerArr = context.state.locationMarker;
-                    resultsArr.push({
-                        job: jobResult.jobData,
-                        result: jobResult.resposeObj,
-                        selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
-                        selectedChartIndex: '0',
-                        barChartData: context.getArrangedBarChartData(jobResult.resposeObj, 0)
-                    });
+            var jobsList = [];
 
-                    for (var j = 0; j < jobResult.resposeObj.length; j++) {
-                        // Check Result ID exists
-                        var isLocationFound = locationMarkerArr.find(function(locationObj) {
-                            return (locationObj.latitude === jobResult.resposeObj[j].latitude)
-                                && (locationObj.longitude === jobResult.resposeObj[j].longitude);
-                        });
-
-                        if (!isLocationFound) {
-                            locationMarkerArr.push({
-                                svgPath: AppConstants.TARGET_SVG,
-                                zoomLevel: 5,
-                                scale: 2,
-                                title: jobResult.resposeObj[j].locationTitle,
-                                latitude: jobResult.resposeObj[j].latitude,
-                                longitude: jobResult.resposeObj[j].longitude
-                            });
-                        }
-
-                    }
-
-                    context.setState({jobsWithResults: resultsArr});
-                });
-
+            for (let job of data.jobsList) {
+                jobsList.push({
+                    job: job,
+                    result: job.result,
+                    selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
+                    selectedChartIndex: '0',
+                    barChartData: context.getArrangedBarChartData(job.result, 0)
+                })
             }
 
-            context.setState({isLoading: false, loadingMessage: ''});
+            var locationsArr = [];
+
+            for (let location of data.locations) {
+                locationsArr.push({
+                    svgPath: AppConstants.TARGET_SVG,
+                    zoomLevel: 5,
+                    scale: 2,
+                    title: location.textValue,
+                    latitude: location.latitude,
+                    longitude: location.longitude
+                })
+            }
+
+            context.setState({isLoading: false, loadingMessage: '', jobsWithResults: jobsList,locationMarker: locationsArr});
         });
     }
 
