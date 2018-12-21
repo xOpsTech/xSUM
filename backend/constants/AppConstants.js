@@ -6,6 +6,10 @@ exports.USER_LIST   = 'userList';
 exports.ALERT_LIST   = 'alertList';
 exports.TENANT_LIST   = 'tenantList';
 
+// InfluxDB Datatables
+exports.PERFORMANCE_RESULT_LIST = 'pageLoadTime';
+exports.PING_RESULT_LIST   = 'pingResults';
+
 exports.RESPONSE_SUCCESS = 'Success';
 exports.RESPONSE_ERROR = 'Error';
 
@@ -46,3 +50,7 @@ exports.ACCESS_LIST = [
     { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'update:any', attributes: '!views' },
     { role: this.VIEW_ROLE, resource: this.ANY_RESOURCE, action: 'delete:any', attributes: '!views' },
 ];
+
+// Test types
+exports.PERFORMANCE_TEST_TYPE = 'performace';
+exports.PING_TEST_TYPE = 'ping';

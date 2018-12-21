@@ -148,6 +148,13 @@ export const BROWSER_ARRAY = [
     {value: 'firefox', textValue: 'FIREFOX'}
 ];
 
+export const PERFORMANCE_TEST_TYPE = 'performace';
+export const PING_TEST_TYPE = 'ping';
+export const TEST_TYPE_ARRAY = [
+    {value: PERFORMANCE_TEST_TYPE, textValue: 'PERFORMANCE TEST'},
+    {value: PING_TEST_TYPE, textValue: 'PING TEST'}
+];
+
 export const RECURSIVE_EXECUTION_ARRAY = [
     {value: 1000*60*10, textValue: 'TEST FREQUENCY - 10 Minute Intervals'},
     {value: 1000*3600*24, textValue: 'TEST FREQUENCY - 24 Hour Intervals'},

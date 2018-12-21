@@ -46,6 +46,7 @@ JobApi.prototype.insertJob = async function(req, res) {
         jobId: jobObj.jobId,
         siteObject: {value: jobObj.siteObject.value},
         browser: jobObj.browser,
+        testType: jobObj.testType,
         scheduleDate: jobObj.scheduleDate,
         isRecursiveCheck: jobObj.isRecursiveCheck,
         recursiveSelect: jobObj.recursiveSelect,
@@ -82,11 +83,18 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-        var yesterDay = moment().subtract(6, 'hours').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
 
+        var dataTable = '';
+        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
+        } else {
+            dataTable = AppConstants.PING_RESULT_LIST;
+        }
+
+        var yesterDay = moment().subtract(6, 'hours').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
         var jobResults = await InfluxDB.getAllDataFor(
             userObj.tenantID,
-            "SELECT * FROM pageLoadTime where jobid='" + job.jobId + "' and time >= '" + yesterDay + "'"
+            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + yesterDay + "'"
         );
 
         job.result = jobResults;

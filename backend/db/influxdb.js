@@ -11,6 +11,14 @@ InfluxDB.prototype.createDatabase = function(databaseName) {
     influx.createDatabase(databaseName);
 }
 
+InfluxDB.prototype.insertData = function(databaseName, tableName, tagsObj, valuesToInsert) {
+    const influx = new Influx.InfluxDB({
+        host: config.INFLUXDB_IP,
+        database: databaseName
+    });
+    return influx.writeMeasurement(tableName, [{tags: tagsObj, fields: valuesToInsert}]);
+}
+
 InfluxDB.prototype.getAllData = function(databaseName, query) {
     const influx = new Influx.InfluxDB({
         host: config.INFLUXDB_IP,

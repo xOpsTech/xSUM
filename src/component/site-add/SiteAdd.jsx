@@ -74,6 +74,7 @@ class SiteAdd extends React.Component {
             loadingMessage: '',
             siteObject: { value: '', error: {} },
             browser: AppConstants.BROWSER_ARRAY[0].value,
+            testType: AppConstants.TEST_TYPE_ARRAY[0].value,
             siteList: [],
             scheduleDate: new Date(),
             loggedUserObj: null,
@@ -166,8 +167,9 @@ class SiteAdd extends React.Component {
         e.preventDefault();
 
         var {
-            siteObject, browser, scheduleDate, isRecursiveCheck, recursiveSelect, jobName, selectedJobID, loggedUserObj,
-            selectedTenant, selectedLocationID
+            siteObject, browser, testType, scheduleDate,
+            isRecursiveCheck, recursiveSelect, jobName,
+            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID
         } = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
@@ -184,6 +186,7 @@ class SiteAdd extends React.Component {
                     jobId: selectedJobID,
                     siteObject,
                     browser,
+                    testType,
                     scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
                     isRecursiveCheck,
                     recursiveSelect,
@@ -203,6 +206,7 @@ class SiteAdd extends React.Component {
                     jobId: UIHelper.getRandomHexaValue(),
                     siteObject,
                     browser,
+                    testType,
                     scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
                     isRecursiveCheck,
                     recursiveSelect,
@@ -325,6 +329,7 @@ class SiteAdd extends React.Component {
             scheduleDate,
             siteObject,
             browser,
+            testType,
             loggedUserObj,
             isRecursiveCheck,
             isModalVisible,
@@ -428,20 +433,44 @@ class SiteAdd extends React.Component {
                                 }
                             </select>
                         </div>
-                        <div className="form-group">
-                            <select
-                                className="form-control form-control-sm form-group"
-                                value={browser}
-                                onChange={(e) => this.dropDownClick({ browser: e.target.value })}>
-                                {
-                                    AppConstants.BROWSER_ARRAY.map((browser, i) => {
-                                        return <option key={'browser_' + i} value={browser.value}>
-                                            {browser.textValue}
-                                        </option>;
-                                    })
-                                }
-                            </select>
+                        <div className="form-group radio-group">
+                            {
+                                AppConstants.TEST_TYPE_ARRAY.map((test, i) => {
+                                    return <div className="radio radio-div-container">
+                                                <label>
+                                                    <input
+                                                        value={test.value}
+                                                        type="radio"
+                                                        name="optradio"
+                                                        checked={testType === test.value}
+                                                        onChange={
+                                                            (e) => this.dropDownClick({ testType: e.target.value })
+                                                        }/>
+                                                    {test.textValue}
+                                                </label>
+                                            </div>;
+                                })
+                            }
                         </div>
+                        {
+                            (testType === AppConstants.PERFORMANCE_TEST_TYPE)
+                                ? <div className="form-group">
+                                    <select
+                                        className="form-control form-control-sm form-group"
+                                        value={browser}
+                                        onChange={(e) => this.dropDownClick({ browser: e.target.value })}>
+                                        {
+                                            AppConstants.BROWSER_ARRAY.map((browser, i) => {
+                                                return <option key={'browser_' + i} value={browser.value}>
+                                                    {browser.textValue}
+                                                </option>;
+                                            })
+                                        }
+                                    </select>
+                                  </div>
+                                : null
+                        }
+
                         <div className="form-group form-row">
                             {
                                 /* TODO : Uncomment for enable recursive selection

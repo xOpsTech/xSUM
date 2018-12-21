@@ -8,6 +8,7 @@ var crypto = require('crypto');
 var moment = require('moment');
 var Helpers = require('../common/Helpers');
 var AlertApi = require('../routes/api/alert-api');
+var request = require('request');
 
 var jobTimers = {};
 
@@ -37,7 +38,14 @@ async function executeAllJobs() {
             if (job.isRecursiveCheck &&
                 job.serverLocation &&
                 parseInt(job.serverLocation.locationid) === config.SERVER_LOCATION_ID) {
-                executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+
+                if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+                    executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+                } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+                    // Execute ping test
+                    executePingJob(String(tenant._id), job);
+                }
+
                 console.log('Start executing: ', job);
             }
 
@@ -75,6 +83,23 @@ function executeJob(databaseName, collectionName, jobToExecute) {
             AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
     );
+}
+
+function executePingJob(databaseName, jobObj) {
+
+    request({
+        uri: jobObj.siteObject.value,
+        method: 'GET',
+        time: true
+    }, (err, resp) => {
+        if (resp) {
+            var resultID = crypto.randomBytes(10).toString('hex');
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID };
+            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
+        }
+
+    })
+
 }
 
 module.exports = new Scheduler();

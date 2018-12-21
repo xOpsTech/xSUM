@@ -90,7 +90,7 @@ class AllResultView extends React.Component {
                     result: job.result,
                     selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                     selectedChartIndex: '0',
-                    barChartData: context.getArrangedBarChartData(job.result, 0)
+                    barChartData: context.getArrangedBarChartData(job, 0)
                 })
             }
 
@@ -111,10 +111,10 @@ class AllResultView extends React.Component {
         });
     }
 
-    getArrangedBarChartData(jobResult, selectedChartIndex) {
+    getArrangedBarChartData(job, selectedChartIndex) {
         var resultArray = [];
 
-        if (jobResult.length === 0) {
+        if (job.result.length === 0) {
             resultArray.push({
                 execution: moment().format(AppConstants.TIME_ONLY_FORMAT),
                 responseTime: 0,
@@ -123,21 +123,34 @@ class AllResultView extends React.Component {
             });
         }
 
-        for (var i = 0; i < jobResult.length; i++) {
+        for (let currentJob of job.result) {
 
-            // Check Result ID exists
-            var isResultIdFound = resultArray.find(function(jobObj) {
-                return jobObj.resultID === jobResult[i].resultID;
-            });
+            if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
 
-            if (!isResultIdFound) {
+                // Check Result ID exists
+                var isResultIdFound = resultArray.find(function(jobObj) {
+                    return jobObj.resultID === currentJob.resultID;
+                });
+
+                if (!isResultIdFound) {
+                    resultArray.push({
+                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        responseTime: currentJob[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                        color: '#eb00ff',
+                        resultID: currentJob.resultID
+                    });
+                }
+
+            } else if (job.testType === AppConstants.PING_TEST_TYPE) {
                 resultArray.push({
-                    execution: moment(jobResult[i].time).format(AppConstants.TIME_ONLY_FORMAT),
-                    responseTime: jobResult[i][AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                    responseTime: currentJob.response/1000,
                     color: '#eb00ff',
-                    resultID: jobResult[i].resultID
+                    resultID: currentJob.resultID
                 });
             }
+
+
         }
 
         return resultArray;
@@ -147,7 +160,7 @@ class AllResultView extends React.Component {
         var jobsList = this.state.jobsWithResults;
         jobWithResult.selectedChartIndex = selectedChartIndex;
         jobWithResult.selectedChart = AppConstants.CHART_TYPES_ARRAY[selectedChartIndex];
-        jobWithResult.barChartData = this.getArrangedBarChartData(jobWithResult.result, selectedChartIndex);
+        jobWithResult.barChartData = this.getArrangedBarChartData(jobWithResult, selectedChartIndex);
         // Remove old job and add updated job
         jobsList.splice(jobIndex, 1, jobWithResult);
         this.setState({jobsWithResults: jobsList});
@@ -258,7 +271,7 @@ class AllResultView extends React.Component {
                     <div className="row">
                         <div className="col-sm-4">
                             {
-                                (props.jobWithResult.result.length > 0)
+                                (props.jobWithResult.result.length > 0 && props.jobWithResult.testType === AppConstants.PERFORMANCE_TEST_TYPE)
                                     ? <select className="form-control form-control-sm form-group chart-drop-down"
                                         value={props.jobWithResult.selectedChartIndex}
                                         onChange={(e) => this.chartDropDownClick(
