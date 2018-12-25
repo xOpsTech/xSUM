@@ -1,4 +1,4 @@
 exports.PORT = 5000;
-exports.INFLUXDB_IP = '35.202.62.238';
-exports.MONGODB_IP = '35.232.3.105';
+exports.INFLUXDB_IP = '10.142.0.4';
+exports.MONGODB_IP = '10.142.0.3';
 exports.SERVER_LOCATION_ID = 0;
