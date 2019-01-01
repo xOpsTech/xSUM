@@ -24,6 +24,7 @@ class UserManagementView extends React.Component {
         this.redirectToAddUser = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
         this.getAllTenantsWithUsers = this.getAllTenantsWithUsers.bind(this);
+        this.dropDownClick = this.dropDownClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -57,7 +58,8 @@ class UserManagementView extends React.Component {
             loggedUserObj: null,
             isLeftNavCollapse: false,
             tenantList: [],
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            selectedTenantIndex: 0
         };
 
         return initialState;
@@ -77,16 +79,55 @@ class UserManagementView extends React.Component {
 
     getAllTenantsWithUsers(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+
+        if (user.isSuperUser) {
+            urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
+        }
+
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
-            context.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    selectedTenant: data[0],
-                    tenantList: data
+
+            if (user.isSuperUser) {
+                var selectedTenantID = UIHelper.getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+                var selectedTenant;
+                var selectedTenantIndex = 0;
+
+                if (selectedTenantID) {
+
+                    for (let tenant of data) {
+
+                        if (tenant._id === selectedTenantID) {
+                            selectedTenant = tenant;
+                            break;
+                        }
+
+                        selectedTenantIndex++;
+                    }
+
+                } else {
+                    selectedTenant = data[0];
                 }
-            );
+
+                context.setState (
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
+                        selectedTenant: selectedTenant,
+                        selectedTenantIndex: selectedTenantIndex,
+                        tenantList: data
+                    }
+                );
+
+            } else {
+                context.setState (
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
+                        selectedTenant: data[0],
+                        tenantList: data
+                    }
+                );
+            }
 
         });
     }
@@ -121,6 +162,12 @@ class UserManagementView extends React.Component {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
+    dropDownClick(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
+    }
+
     render() {
         const {
             isLoading,
@@ -128,6 +175,7 @@ class UserManagementView extends React.Component {
             loggedUserObj,
             isLeftNavCollapse,
             selectedTenant,
+            selectedTenantIndex,
             tenantList
         } = this.state;
 
@@ -231,9 +279,13 @@ class UserManagementView extends React.Component {
                                 </div>
                                 <div className="col-sm-3">
                                     <div className="form-group">
-                                        <select className="form-control form-control-sm form-group">
+                                        <select className="form-control form-control-sm form-group"
+                                            value={selectedTenantIndex}
                                             onChange={(e) => this.dropDownClick(
-                                                  {selectedTenant: tenantList[e.target.value]})
+                                                  {
+                                                      selectedTenant: tenantList[e.target.value],
+                                                      selectedTenantIndex: e.target.value
+                                                  })
                                             }>
                                             {
                                                 tenantList.map((tenant, i) => {

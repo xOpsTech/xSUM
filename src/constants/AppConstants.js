@@ -36,6 +36,7 @@ export const REMOVE_ALERT_API = '/alert?action=removeAlert';
 export const GET_TENANT_DATA_API = '/tenant?action=getAllTenantsData';
 export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailData';
 export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
+export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
 
 export const RESPONSE_SUCCESS = 'Success';
 
@@ -54,6 +55,7 @@ export const EMPTY_TEXT_PATTERN = /^\s*$/;
 export const URL_ID_COOKIE          = 'urlId';
 export const STORAGE_ID             = 'STORAGE_ID';
 export const LEFTNAV_COLLAPSE_STATE = 'LEFTNAV_COLLAPSE';
+export const SELECTED_TENANT_ID     = 'SELECTED_TENANT_ID';
 
 // Routes
 export const SITEADD_ROUTE = '/siteAdd';
@@ -220,3 +222,5 @@ export const MAP_CONTENT_DATA = {
         }
     ]
 };
+
+export const SUPER_USER = 'super-user';

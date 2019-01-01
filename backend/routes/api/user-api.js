@@ -5,6 +5,7 @@ var Helpers = require('../../common/Helpers');
 var crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 var {ObjectId} = require('mongodb');
+var SuperUserApi = require('./super-user-api');
 const AccessControl = require('accesscontrol');
 const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
 
@@ -240,6 +241,9 @@ UserApi.prototype.getUserData = async function(req, res) {
         canDelete: accessControl.can(userData[0].tenants[0].role).deleteAny(AppConstants.ANY_RESOURCE).granted
     };
 
+    // Get super user permissions
+    userData[0].isSuperUser = (userData[0].tenants[0].role === AppConstants.SUPER_USER);
+
     res.send(
         {
             message: AppConstants.RESPONSE_SUCCESS,
@@ -325,6 +329,9 @@ UserApi.prototype.getUserList = async function(req, res) {
 
 UserApi.prototype.getUserRolesList = function(req, res) {
     var userRoles = [
+        {
+            type: AppConstants.SUPER_USER
+        },
         {
             type: AppConstants.ADMIN_ROLE
         },

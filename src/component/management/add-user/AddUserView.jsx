@@ -412,9 +412,17 @@ class AddUserView extends React.Component {
                                       }}>
                                       {
                                           userRoles.map((userRole, i) => {
-                                              return <option key={'role_' + i} value={userRole.type}>
-                                                        {UIHelper.toTitleCase(userRole.type)}
-                                                    </option>;
+
+                                              if ((userRole.type === AppConstants.SUPER_USER &&
+                                                  loggedUserObj && loggedUserObj.isSuperUser) ||
+                                                  userRole.type !== AppConstants.SUPER_USER) {
+                                                  return <option key={'role_' + i} value={userRole.type}>
+                                                            {UIHelper.toTitleCase(userRole.type)}
+                                                        </option>;
+                                              } else {
+                                                  return null;
+                                              }
+
                                           })
                                       }
                                 </select>

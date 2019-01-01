@@ -21,6 +21,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "getAllTenantsWithUsers":
             new TenantApi().getAllTenantsWithUsers(req, res);
             break;
+        case "getAllUsersWithTenants":
+            new TenantApi().getAllUsersWithTenants(req, res);
+            break;
         case "addTenantEmailData":
             new TenantApi().addTenantEmailData(req, res);
             break;
@@ -77,6 +80,33 @@ TenantApi.prototype.getAllTenantsWithUsers = async function(req, res) {
     }
 
     res.send(tenantsArray);
+}
+
+TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
+    var userObj = req.body;
+
+    var queryObj = {_id: ObjectId(userObj.userID)};
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
+
+    if (userData[0].tenants[0].role === AppConstants.SUPER_USER) {
+        var tenantsArray = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
+
+        for (let tenant of tenantsArray) {
+            var usersArray = [];
+            for (let user of tenant.users) {
+                var queryObj = {_id: ObjectId(user.userID)};
+                var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
+                delete userData[0].password;
+                usersArray.push(userData[0]);
+            }
+            tenant.userList = usersArray;
+        }
+
+        res.send(tenantsArray);
+    } else {
+        res.send({message: AppConstants.RESPONSE_ERROR});
+    }
+
 }
 
 TenantApi.prototype.insertTenantData = async function(userID) {

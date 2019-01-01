@@ -155,31 +155,58 @@ export function getUserData(loggedUserObj, context, callBackFunction) {
 }
 
 export function getAllTenantsData(user, context, callBackFunction) {
-    var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+    var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+
+    if (user.isSuperUser) {
+        urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
+    }
+
     context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
     tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
         var tenantList = [];
         var selectedTenant = context.state.selectedTenant;
+        var selectedTenantID = getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
 
-        for (var i = 0; i < data.length; i++) {
-            var tenant = data[i];
-            tenant.email = {value: data[i].email, error: {}};
-            tenant.password = {value: '', error: {}};
-            tenantList.push(tenant);
+        if (user.isSuperUser) {
 
-            if (context.props.location.query.userObj) {
-                var userObj = JSON.parse(context.props.location.query.userObj);
+            if (selectedTenantID) {
 
-                if (userObj.tenantID === tenant._id) {
-                    selectedTenant = tenant;
+                for (let tenant of data) {
+                    tenant.email = {value: tenant.email, error: {}};
+                    tenant.password = {value: '', error: {}};
+                    tenantList.push(tenant);
+
+                    if (tenant._id === selectedTenantID) {
+                        selectedTenant = tenant;
+                    }
+
+                }
+
+            } else {
+                selectedTenant = data[0];
+            }
+
+        } else {
+            for (let tenant of data) {
+                tenant.email = {value: tenant.email, error: {}};
+                tenant.password = {value: '', error: {}};
+                tenantList.push(tenant);
+
+                if (context.props.location.query.userObj) {
+                    var userObj = JSON.parse(context.props.location.query.userObj);
+
+                    if (userObj.tenantID === tenant._id) {
+                        selectedTenant = tenant;
+                    }
+
                 }
 
             }
 
-        }
+            if (selectedTenant) {
+                selectedTenant = tenantList[0];
+            }
 
-        if (selectedTenant) {
-            selectedTenant = tenantList[0];
         }
 
         callBackFunction && callBackFunction(user, selectedTenant, context);

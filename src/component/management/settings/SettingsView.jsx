@@ -196,7 +196,7 @@ class SettingsView extends React.Component {
                                 </div>
                                 <div className="col-sm-9">
                                     <div className="form-group">
-                                        <select className="form-control form-control-sm form-group">
+                                        <select className="form-control form-control-sm form-group"
                                             onChange={(e) => this.dropDownClick(
                                                   {selectedTenant: tenantList[e.target.value]})
                                             }>
