@@ -98,7 +98,11 @@ class AddUserView extends React.Component {
     }
 
     getAllTenantsData(user, context) {
-        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+        var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+
+        if (user.isSuperUser) {
+            urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
+        }
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
             var tenantList = [];
@@ -248,13 +252,18 @@ class AddUserView extends React.Component {
         e.preventDefault();
 
         this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_USER});
-        var {userObj, selectedTenant} = this.state;
+        var {userObj, selectedTenant, loggedUserObj} = this.state;
+
+        var selectedTenantID = selectedTenant._id;
+        if (loggedUserObj.isSuperUser) {
+            selectedTenantID = UIHelper.getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+        }
 
         var userToUpdate = {
             id: userObj.id,
             email: userObj.email.value,
             role: userObj.role.value,
-            tenantID: selectedTenant._id,
+            tenantID: selectedTenantID,
             tenants: userObj.tenants
         };
 

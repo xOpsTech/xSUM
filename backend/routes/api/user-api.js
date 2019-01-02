@@ -164,19 +164,31 @@ UserApi.prototype.updateUserData = async function(req, res) {
     var queryObjToGetUsers = {email: userObj.email};
     var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObjToGetUsers);
 
-    for (let tenant of userObj.tenants) {
-
-        if (tenant.tenantID == userObj.tenantID) {
-            tenant.role = userObj.role;
-            break;
-        }
-
-    }
-
     var userUpdateObj = {
-        email: userObj.email,
-        tenants: userObj.tenants
+        email: userObj.email
     };
+
+    if (userData.length > 0) {
+        for (let tenant of userData[0].tenants) {
+
+            if (tenant.tenantID == userObj.tenantID) {
+                tenant.role = userObj.role;
+                break;
+            }
+
+        }
+        userUpdateObj.tenants = userData[0].tenants;
+    } else {
+        for (let tenant of userObj.tenants) {
+
+            if (tenant.tenantID == userObj.tenantID) {
+                tenant.role = userObj.role;
+                break;
+            }
+
+        }
+        userUpdateObj.tenants = userObj.tenants;
+    }
 
     if (userData.length > 0) {
         var queryObj = {_id: ObjectId(userObj.id)};
