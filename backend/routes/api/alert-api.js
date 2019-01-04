@@ -114,10 +114,10 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
     var queryToGetTenantDetails = {email:insertedJobObj.userEmail};
 
-    var TanantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
 
-    var emailCriticalAlertCount =  TanantData[0].alert.critical_alert_limit;
-    var emailWarningAlertCount =  TanantData[0].alert.warning_alert_limit;
+    var emailCriticalAlertCount =  tenantData[0].alert.critical_alert_limit;
+    var emailWarningAlertCount =  tenantData[0].alert.warning_alert_limit;
 
 
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
