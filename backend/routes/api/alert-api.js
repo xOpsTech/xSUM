@@ -116,8 +116,8 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
     var TanantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
 
-    var email_critical_alert_count =  TanantData[0].alert.critical_alert_limit;
-    var email_warning_alert_count =  TanantData[0].alert.warning_alert_limit;
+    var emailCriticalAlertCount =  TanantData[0].alert.critical_alert_limit;
+    var emailWarningAlertCount =  TanantData[0].alert.warning_alert_limit;
 
 
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
@@ -128,7 +128,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
             if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
 
-                if (alertObjData[0].criticalAlertCount >= email_critical_alert_count) {
+                if (alertObjData[0].criticalAlertCount >= emailCriticalAlertCount) {
 
                     // Send warning alert
                     var emailBodyToSend = 'Hi ,<br><br>' +
@@ -158,7 +158,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
             } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
 
-                if (alertObjData[0].warningAlertCount >= email_warning_alert_count) {
+                if (alertObjData[0].warningAlertCount >= emailWarningAlertCount) {
 
                     // Send critical alert
                     var emailBodyToSend = 'Hi ,<br><br>' +
