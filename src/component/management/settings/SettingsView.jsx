@@ -61,7 +61,9 @@ class SettingsView extends React.Component {
             selectedTenant: {
                 email: {value: '', error: {}},
                 password: {value: '', error: {}},
-                name: {value: '', error: {}}
+                name: {value: '', error: {}},
+                warning_alert_count: { value: '', error: {}},
+                critical_alert_count: { value: '', error: {}}
             }
         };
 
@@ -84,6 +86,8 @@ class SettingsView extends React.Component {
                 tenant.email = {value: data[i].email, error: {}};
                 tenant.password = {value: '', error: {}};
                 tenant.name = {value: data[i].name, error: {}};
+                tenant.warning_alert_count = {value: '', error: {}};
+                tenant.critical_alert_count = {value: '', error: {}};
                 tenantList.push(tenant);
             }
 
@@ -114,7 +118,9 @@ class SettingsView extends React.Component {
             id: selectedTenant._id,
             email: selectedTenant.email.value,
             password: selectedTenant.password.value,
-            name: selectedTenant.name.value
+            name: selectedTenant.name.value,
+            warning_alert_limit: selectedTenant.warning_alert_count.value,
+            critical_alert_limit: selectedTenant.critical_alert_count.value
         };
 
         var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
@@ -301,7 +307,60 @@ class SettingsView extends React.Component {
                                 </div>
                             </div>
                         </div>
+                        <div className="row alert-list-wrap-div settings-section">
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column section-head">
+                                    <h4 className="site-add-title">
+                                        Alert Settings
+                                    </h4>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Email Warning Alert count</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group">
+                                        <input
+                                            type="number" value={selectedTenant.warning_alert_count.value}
+                                            className="form-control"
+                                            onChange={(e) => {
+                                                selectedTenant.warning_alert_count = {
+                                                    value: e.target.value
+                                                }
+                                                this.handleChange(e, {selectedTenant});
+                                            }}
+                                            id="tenantWarningAlertCount"
+                                            placeholder="Warning Alert count" />
+                                    </div>
+                                </div>
+                            </div>
 
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Email Critical Alert count</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group has-feedback label-div">
+                                        <input
+                                            type="number" value={selectedTenant.critical_alert_count.value}
+                                              onChange={(e) => {
+                                                selectedTenant.critical_alert_count = {
+                                                    value: e.target.value
+                                                }
+                                                this.handleChange(e, {selectedTenant});
+                                            }}
+                                            className="form-control"
+                                            id="tenantCriticalAlertCount"
+                                            placeholder="Critical Alert count" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div className="row alert-list-wrap-div">
                             {
                                 (loggedUserObj.permissions && loggedUserObj.permissions.canUpdate)
