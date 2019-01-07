@@ -24,7 +24,7 @@ class UserManagementView extends React.Component {
         this.redirectToAddUser = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
         this.getAllTenantsWithUsers = this.getAllTenantsWithUsers.bind(this);
-        this.dropDownClick = this.dropDownClick.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -162,7 +162,7 @@ class UserManagementView extends React.Component {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
-    dropDownClick(stateObject) {
+    tenantDropDown(stateObject) {
         this.state.loggedUserObj.isSuperUser &&
             UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
         this.setState(stateObject);
@@ -253,7 +253,8 @@ class UserManagementView extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                               loggedUserObj={loggedUserObj}
-                              isFixedNav={true}/>
+                              isFixedNav={true}
+                              tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -281,7 +282,7 @@ class UserManagementView extends React.Component {
                                     <div className="form-group">
                                         <select className="form-control form-control-sm form-group"
                                             value={selectedTenantIndex}
-                                            onChange={(e) => this.dropDownClick(
+                                            onChange={(e) => this.tenantDropDown(
                                                   {
                                                       selectedTenant: tenantList[e.target.value],
                                                       selectedTenantIndex: e.target.value

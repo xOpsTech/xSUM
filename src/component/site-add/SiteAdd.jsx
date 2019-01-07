@@ -36,6 +36,7 @@ class SiteAdd extends React.Component {
         this.closeClick = this.closeClick.bind(this);
         this.viewResult = this.viewResult.bind(this);
         this.navigateToResultView = this.navigateToResultView.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state = this.getInitialState();
@@ -321,6 +322,14 @@ class SiteAdd extends React.Component {
         UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE, {});
     }
 
+    tenantDropDown(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
+
+        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+    }
+
     render() {
         const {
             isLoading,
@@ -347,7 +356,8 @@ class SiteAdd extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                             loggedUserObj={loggedUserObj}
-                            isFixedNav={true}/>
+                            isFixedNav={true}
+                            tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                             <button onClick={() => { UIHelper.redirectTo(AppConstants.LOGIN_ROUTE); }}
                                 className="btn btn-primary btn-sm log-out-drop-down--li--button">

@@ -22,6 +22,7 @@ class AlertView extends React.Component {
         this.getAllAlerts  = this.getAllAlerts.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
         this.handleChange  = this.handleChange.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -149,6 +150,14 @@ class AlertView extends React.Component {
         this.setState(stateObj);
     }
 
+    tenantDropDown(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
+
+        this.getAllAlerts(this.state.loggedUserObj, stateObject.selectedTenant, this);
+    }
+
     render() {
         const {
             loggedUserObj,
@@ -200,7 +209,9 @@ class AlertView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                                  loggedUserObj={loggedUserObj} isFixedNav={false}/>
+                                  loggedUserObj={loggedUserObj}
+                                  isFixedNav={false}
+                                  tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">

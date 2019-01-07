@@ -23,6 +23,7 @@ class TenantsView extends React.Component {
         this.removeTenantClick = this.removeTenantClick.bind(this);
         this.redirectToAddUser = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -55,7 +56,8 @@ class TenantsView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             isLeftNavCollapse: false,
-            tenantList: []
+            tenantList: [],
+            selectedTenant: {userList: []}
         };
 
         return initialState;
@@ -103,6 +105,12 @@ class TenantsView extends React.Component {
 
     leftNavStateUpdate() {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+    }
+
+    tenantDropDown(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
     }
 
     render() {
@@ -190,7 +198,8 @@ class TenantsView extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                               loggedUserObj={loggedUserObj}
-                              isFixedNav={true}/>
+                              isFixedNav={true}
+                              tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">

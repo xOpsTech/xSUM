@@ -26,6 +26,7 @@ class AddUserView extends React.Component {
         this.addUserClick = this.addUserClick.bind(this);
         this.updateUserClick = this.updateUserClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -69,7 +70,8 @@ class AddUserView extends React.Component {
             userList: [],
             userSaveError: {},
             tenantList: [],
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            selectedTenantIndex: 0
         };
 
         return initialState;
@@ -293,6 +295,16 @@ class AddUserView extends React.Component {
         this.setState(stateObject);
     }
 
+    tenantDropDown(stateObject, selectedIndex) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        let selectedTenantObj = {
+            selectedTenantIndex: parseInt(selectedIndex),
+            selectedTenant: stateObject.selectedTenant
+        };
+        this.setState(stateObject);
+    }
+
     render() {
         const {
             isLoading,
@@ -303,7 +315,8 @@ class AddUserView extends React.Component {
             userRoles,
             userSaveError,
             tenantList,
-            selectedTenant
+            selectedTenant,
+            selectedTenantIndex
         } = this.state;
 
         return (
@@ -317,7 +330,8 @@ class AddUserView extends React.Component {
                 {
                     (loggedUserObj)
                         ? <NavContainer
-                              loggedUserObj={loggedUserObj}/>
+                              loggedUserObj={loggedUserObj}
+                              tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -445,9 +459,13 @@ class AddUserView extends React.Component {
                             </div>
                             <div className="col-sm-9">
                                 <div className="form-group">
-                                    <select className="form-control form-control-sm form-group">
+                                    <select className="form-control form-control-sm form-group"
+                                        value={selectedTenantIndex}
                                         onChange={(e) => this.dropDownClick(
-                                              {selectedTenant: tenantList[e.target.value]})
+                                              {
+                                                  selectedTenant: tenantList[e.target.value],
+                                                  selectedTenantIndex: e.target.value
+                                              })
                                         }>
                                         {
                                             tenantList.map((tenant, i) => {

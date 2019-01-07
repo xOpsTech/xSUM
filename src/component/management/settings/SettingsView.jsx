@@ -25,6 +25,7 @@ class SettingsView extends React.Component {
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -62,7 +63,8 @@ class SettingsView extends React.Component {
                 email: {value: '', error: {}},
                 password: {value: '', error: {}},
                 name: {value: '', error: {}}
-            }
+            },
+            selectedTenantIndex: 0
         };
 
         return initialState;
@@ -74,6 +76,10 @@ class SettingsView extends React.Component {
 
     getAllTenantsData(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
+
+        if (user.isSuperUser) {
+            urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
+        }
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
 
@@ -140,6 +146,21 @@ class SettingsView extends React.Component {
         this.setState(stateObject);
     }
 
+    tenantDropDown(stateObject, selectedIndex) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        let selectedTenantObj = {
+            selectedTenantIndex: parseInt(selectedIndex),
+            selectedTenant: {
+                _id: stateObject.selectedTenant._id,
+                email: {value: stateObject.selectedTenant.email, error: {}},
+                password: {value: '', error: {}},
+                name: {value: stateObject.selectedTenant.name, error: {}}
+            }
+        };
+        this.setState(selectedTenantObj);
+    }
+
     render() {
         const {
             isLoading,
@@ -147,7 +168,8 @@ class SettingsView extends React.Component {
             loggedUserObj,
             isLeftNavCollapse,
             tenantList,
-            selectedTenant
+            selectedTenant,
+            selectedTenantIndex
         } = this.state;
 
         return (
@@ -162,7 +184,8 @@ class SettingsView extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                               loggedUserObj={loggedUserObj}
-                              isFixedNav={true}/>
+                              isFixedNav={true}
+                              tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
@@ -197,8 +220,12 @@ class SettingsView extends React.Component {
                                 <div className="col-sm-9">
                                     <div className="form-group">
                                         <select className="form-control form-control-sm form-group"
+                                            value={selectedTenantIndex}
                                             onChange={(e) => this.dropDownClick(
-                                                  {selectedTenant: tenantList[e.target.value]})
+                                                {
+                                                    selectedTenant: tenantList[e.target.value],
+                                                    selectedTenantIndex: e.target.value
+                                                })
                                             }>
                                             {
                                                 tenantList.map((tenant, i) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import LoginContainer from '../login-container/LoginContainer';
+import TenantListDropdown from './tenant-list-dropdown/TenantListDropdown';
 import * as AppConstants from '../../../constants/AppConstants';
 import * as UIHelper from '../../../common/UIHelper';
 
@@ -44,7 +45,7 @@ class NavContainer extends React.Component {
     }
 
     render() {
-        const {loggedUserObj, viewHistory, addJob, siteLoad, isFixedNav} = this.props;
+        const {loggedUserObj, viewHistory, addJob, siteLoad, isFixedNav, tenantDropDown} = this.props;
         return (
             <nav className={
                     'nav-container navbar navbar-expand-lg navbar-light bg-light '
@@ -80,12 +81,18 @@ class NavContainer extends React.Component {
                         : null
                 }
 
-                <div className="get-involved-container">
-                    <img
-                        className="get-involve-icon"
-                        src="./assets/img/get-involve-img.png"
-                        onClick={this.navigateToSourceCode}/>
-                </div>
+                {
+                    (loggedUserObj && loggedUserObj.isSuperUser)
+                        ? <div className="tenant-list-container">
+                            <TenantListDropdown loggedUserObj={loggedUserObj} tenantDropDown={tenantDropDown}/>
+                          </div>
+                        : <div className="get-involved-container">
+                            <img
+                                className="get-involve-icon"
+                                src="./assets/img/get-involve-img.png"
+                                onClick={this.navigateToSourceCode}/>
+                          </div>
+                }
             </nav>
         );
     }

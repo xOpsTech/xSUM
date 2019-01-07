@@ -22,8 +22,9 @@ class Tests extends React.Component {
         this.updateJobClick = this.updateJobClick.bind(this);
         this.removeJobClick = this.removeJobClick.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
-        this.redirectToAddJob     = this.redirectToAddJob.bind(this);
+        this.redirectToAddJob = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -122,6 +123,14 @@ class Tests extends React.Component {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
+    tenantDropDown(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
+
+        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+    }
+
     render() {
         const {
             isLoading,
@@ -142,7 +151,8 @@ class Tests extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                               loggedUserObj={loggedUserObj}
-                              isFixedNav={true}/>
+                              isFixedNav={true}
+                              tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">

@@ -27,6 +27,8 @@ class AllResultView extends React.Component {
         this.getArrangedBarChartData = this.getArrangedBarChartData.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
+        this.tenantDropDown       = this.tenantDropDown.bind(this);
+
         // Setting initial state objects
         this.state  = this.getInitialState();
     }
@@ -181,6 +183,14 @@ class AllResultView extends React.Component {
         this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
     }
 
+    tenantDropDown(stateObject) {
+        this.state.loggedUserObj.isSuperUser &&
+            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+        this.setState(stateObject);
+
+        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+    }
+
     render() {
         const {
             isLoading,
@@ -323,7 +333,8 @@ class AllResultView extends React.Component {
                         ? <NavContainer
                                   loggedUserObj={loggedUserObj}
                                   isFixedNav={true}
-                                  leftNavStateUpdate={this.leftNavStateUpdate}/>
+                                  leftNavStateUpdate={this.leftNavStateUpdate}
+                                  tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                               <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
                                   className="btn btn-primary btn-sm log-out-drop-down--li--button">
