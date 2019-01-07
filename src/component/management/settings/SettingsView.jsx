@@ -161,7 +161,9 @@ class SettingsView extends React.Component {
                 _id: stateObject.selectedTenant._id,
                 email: {value: stateObject.selectedTenant.email, error: {}},
                 password: {value: '', error: {}},
-                name: {value: stateObject.selectedTenant.name, error: {}}
+                name: {value: stateObject.selectedTenant.name, error: {}},
+                warning_alert_count: {value: '', error: {}},
+                critical_alert_count: {value: '', error: {}}
             }
         };
         this.setState(selectedTenantObj);
