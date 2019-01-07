@@ -1,1 +1,130 @@
 @import (reference) "../../../variables.less";
+
+.label-text{
+    text-align: left; 
+}
+
+.alert-label{
+    color: white; 
+    font-size: 18px; 
+}
+
+.edit-icon{
+    color: #EB00FF;
+    float: right;   
+    font-size: 22px;
+}
+
+.settings-section{
+    box-shadow: 1px 2px 8px 2px black;
+}
+
+@import "https://fonts.googleapis.com/css?family=Aller";
+body {
+  margin: 0;
+  padding: 0;
+  background: #333;
+  font-family: Aller;
+  color: #fff;
+}
+
+.change-profile-title {
+  /*  margin: 0px;
+  float: left;
+  display: inline; */
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.change-profile-form-group {
+  padding: 0px 20px;
+}
+
+.change-profile-form-label {
+  float: left;
+  color: #d9d9d9;
+}
+
+.change-profile-input {
+  display: block;
+  border: 0px;
+  font-size: 18px;
+  height: 46px;
+  border-radius: 2px;
+  box-shadow: inset 0px 2px 10px 1px black;
+  background-color: #222029;
+  -webkit-box-shadow: inset 0px 2px 10px 1px black;
+  -moz-box-shadow: inset 0px 2px 10px 1px black;
+  color: white;
+}
+
+.change-profile-form-buttons {
+  padding: 20px;
+}
+
+.exit {
+  /*position: absolute;
+  top: 15px;
+  right: 15px;
+  margin: 0px;
+ */
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.change-profile-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 30px 20px;
+}
+
+.profile-label{
+    font-size: 20px; 
+    display: inline; 
+}
+
+#password-change{
+    margin-top: 10px;
+}
+
+.profile-row{
+    border-bottom: 1px solid #17161d; 
+    padding: 20px 0px 0px 5px;
+    &:hover{
+        background: #4d4966; 
+        cursor: pointer; 
+    }
+}
+
+.change-profile-form {
+  z-index: 2; 
+  display: block;
+  box-shadow: 1px 2px 8px 2px black;
+  padding: 15px;
+  width: 400px;
+  text-align: center;
+  background-color: #2c2a36;;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+}
+
+.formBtn {
+  width: auto;
+  float: right;
+  display: inline;
+  background: none;
+  text-align: right;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.formBtnDone {
+  background-image: linear-gradient(to bottom, #ba00ff, #a100dd);
+  color: white;
+  padding: 6px 12px;
+}
