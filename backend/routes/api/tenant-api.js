@@ -119,7 +119,15 @@ TenantApi.prototype.insertTenantData = async function(userID) {
             {
                 userID: userID
             }
-        ]
+        ],
+        alert: {
+            warning_alert_limit:AppConstants.EMAIL_WARNING_ALERT_COUNT,
+            critical_alert_limit:AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+        },
+        jobs: {
+            critical: [],
+            warning: []
+        }
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;
