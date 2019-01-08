@@ -97,14 +97,49 @@ class SettingsView extends React.Component {
                 tenantList.push(tenant);
             }
 
-            context.setState (
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    tenantList: tenantList,
-                    selectedTenant: tenantList[0]
+            if (user.isSuperUser) {
+                var selectedTenantID = UIHelper.getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+                var selectedTenant;
+                var selectedTenantIndex = 0;
+
+                if (selectedTenantID) {
+
+                    for (let tenant of data) {
+
+                        if (tenant._id === selectedTenantID) {
+                            selectedTenant = tenant;
+                            break;
+                        }
+
+                        selectedTenantIndex++;
+                    }
+
+                } else {
+                    selectedTenant = data[0];
                 }
-            );
+
+                context.setState (
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
+                        selectedTenant: selectedTenant,
+                        selectedTenantIndex: selectedTenantIndex,
+                        tenantList: data
+                    }
+                );
+
+            } else {
+
+                context.setState (
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
+                        tenantList: tenantList,
+                        selectedTenant: tenantList[0]
+                    }
+                );
+
+            }
 
         });
     }
@@ -353,7 +388,7 @@ class SettingsView extends React.Component {
                                 <div className="col-sm-3">
                                     <div className="form-group">
                                         <input
-                                            type="number" value={selectedTenant.warning_alert_limit.value}
+                                            type="number" value={''}
                                             className="form-control"
                                             onChange={(e) => {
                                                 selectedTenant.warning_alert_limit = {
@@ -376,7 +411,7 @@ class SettingsView extends React.Component {
                                 <div className="col-sm-3">
                                     <div className="form-group has-feedback label-div">
                                         <input
-                                            type="number" value={selectedTenant.critical_alert_limit.value}
+                                            type="number" value={''}
                                               onChange={(e) => {
                                                 selectedTenant.critical_alert_limit = {
                                                     value: e.target.value
