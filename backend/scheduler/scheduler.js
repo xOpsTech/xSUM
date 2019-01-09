@@ -79,6 +79,7 @@ function executeJob(databaseName, collectionName, jobToExecute) {
             var newValueObj = {
                 result: jobToExecute.result
             };
+            console.log('Successfully executed the job : ', jobToExecute.jobId);
             //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
             //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
@@ -93,9 +94,12 @@ function executePingJob(databaseName, jobObj) {
         time: true
     }, (err, resp) => {
         if (resp) {
+            console.log('Successfully executed the job : ', jobObj.jobId);
             var resultID = crypto.randomBytes(10).toString('hex');
             var tagsObj = { jobid: jobObj.jobId, resultID: resultID };
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
+        } else {
+            console.log('Error in executing the job : ', jobObj.jobId);
         }
 
     })
