@@ -80,7 +80,7 @@ function executeJob(databaseName, collectionName, jobToExecute) {
                 result: jobToExecute.result
             };
             //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
-            AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
+            //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
     );
 }
