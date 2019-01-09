@@ -109,9 +109,9 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
 
 }
 
-TenantApi.prototype.insertTenantData = async function(userID) {
+TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
     var tenantInsertObj = {
-        name: '',
+        name: tenantName,
         ownerId: userID,
         email: '',
         password: '',

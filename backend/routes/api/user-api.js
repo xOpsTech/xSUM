@@ -74,7 +74,8 @@ UserApi.prototype.registerUserData = async function(req, res) {
         res.send({message: AppConstants.USER_EXISTS});
     } else {
         await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
-        var tenantObj = await TenantApi.insertTenantData(userInsertObj._id);
+        var tenantName = userObj.email.replace(/@.*$/,'') + '-account';
+        var tenantObj = await TenantApi.insertTenantData(userInsertObj._id, tenantName);
 
         var tenantsArray = userInsertObj.tenants;
 
