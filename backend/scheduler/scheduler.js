@@ -79,7 +79,17 @@ function executeJob(databaseName, collectionName, jobToExecute) {
             var newValueObj = {
                 result: jobToExecute.result
             };
-            console.log('Successfully executed the job : ', jobToExecute.jobId);
+
+            if (err) {
+                console.log('Error in executing the job : ', jobToExecute.jobId);
+                console.log('Error : ', err);
+            } else if (stderr) {
+                console.log('STD Error in executing the job : ', jobToExecute.jobId);
+                console.log('STD Error : ', stderr);
+            } else {
+                console.log('Successfully executed the job : ', jobToExecute.jobId);
+            }
+
             //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
             //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
