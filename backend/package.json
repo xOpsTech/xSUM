@@ -1,28 +1,29 @@
 {
-  "name": "xops-backend",
-  "version": "1.0.0",
-  "description": "Backend of xops",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prestart": "echo xops-backend started",
-    "start": "node app.js"
-  },
-  "author": "mcsfernando10@gmail.com",
-  "license": "ISC",
-  "dependencies": {
-    "accesscontrol": "2.2.1",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "1.15.2",
-    "crypto": "1.0.1",
-    "express": "4.14.0",
-    "influx": "5.0.7",
-    "moment": "^2.22.2",
-    "mongodb": "3.0.10",
-    "node-cmd": "3.0.0",
-    "nodemailer": "^4.6.8",
-    "path": "0.12.7",
-    "request": "^2.88.0",
-    "selenium-webdriver": "^4.0.0-alpha.1"
-  }
+    "name": "xops-backend",
+    "version": "1.0.0",
+    "description": "Backend of xops",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "prestart": "echo xops-backend started",
+        "service": "node app.js",
+        "scheduler": "node scheduler.js"
+    },
+    "author": "mcsfernando10@gmail.com",
+    "license": "ISC",
+    "dependencies": {
+        "accesscontrol": "2.2.1",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "1.15.2",
+        "crypto": "1.0.1",
+        "express": "4.14.0",
+        "influx": "5.0.7",
+        "moment": "^2.22.2",
+        "mongodb": "3.0.10",
+        "node-cmd": "3.0.0",
+        "nodemailer": "^4.6.8",
+        "path": "0.12.7",
+        "request": "^2.88.0",
+        "selenium-webdriver": "^4.0.0-alpha.1"
+    }
 }
