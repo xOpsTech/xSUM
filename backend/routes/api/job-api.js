@@ -53,7 +53,12 @@ JobApi.prototype.insertJob = async function(req, res) {
         result: [],
         userEmail: jobObj.userEmail,
         jobName: jobObj.jobName,
-        serverLocation: jobObj.serverLocation
+        serverLocation: jobObj.serverLocation,
+        alerts: {
+            critical: [],
+            warning: []
+        }
+
     };
 
     var queryObj = {userEmail: jobObj.userEmail};
