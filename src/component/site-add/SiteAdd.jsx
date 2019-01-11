@@ -8,7 +8,6 @@ import NavContainer from '../common/nav-container/NavContainer';
 import LeftNav from '../common/left-nav/LeftNav';
 import jobApi from '../../api/jobApi';
 import ModalContainer from '../common/modal-container/ModalContainer';
-import OneTimeTest from '../common/one-time-test/OneTimeTest';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as Config from '../../config/config';
@@ -645,9 +644,6 @@ class SiteAdd extends React.Component {
                             //     : null
                         }
                     </form>
-                </div>
-                <div className="login-container-div">
-                    <OneTimeTest/>
                 </div>
             </Fragment>
         );

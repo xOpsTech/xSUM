@@ -153,7 +153,7 @@ class OneTimeTest extends React.Component {
                             result: {
                                 isResultRecieved: true,
                                 resultID: data[0].resultID,
-                                searchedUrl: data[0].url
+                                searchedUrl: data[0].urlValue
                             }
                         });
                     }

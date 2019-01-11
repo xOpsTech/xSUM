@@ -69,16 +69,16 @@ class ResultView extends React.Component {
                 svgPath: AppConstants.TARGET_SVG,
                 zoomLevel: 5,
                 scale: 2,
-                title: data[0].locationTitle,
-                latitude: data[0].latitude,
-                longitude: data[0].longitude
+                title: data.location.title,
+                latitude: data.location.latitude,
+                longitude: data.location.longitude
             });
             this.setState({resultObj: data, isLoading: false, loadingMessage: ''});
         });
     }
 
     redirectToAddJob() {
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE);
+        UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
     }
 
     render() {
@@ -125,18 +125,41 @@ class ResultView extends React.Component {
                                   <div className="row">
                                       <div className="col-xs-3 result-summary">
                                           <ResultTile tileName="Website"
-                                              value={UIHelper.replaceCharacter(resultObj[0].group, '_', '.')}/>
+                                              value={resultObj.urlValue}/>
                                           <ResultTile tileName="Date"
-                                              value={moment(resultObj[0].time).format(AppConstants.DATE_ONLY_FORMAT)}/>
+                                              value={moment(resultObj.dateTime).format(AppConstants.DATE_ONLY_FORMAT)}/>
                                           <ResultTile tileName="Time"
-                                              value={moment(resultObj[0].time).format(AppConstants.TIME_ONLY_FORMAT)}/>
-                                          <ResultTile tileName="Browser"
-                                              value={UIHelper.toTitleCase(resultObj[0].browser)}/>
-                                          <ResultTile tileName="Max Time" value={resultObj[0].max/1000}/>
-                                          <ResultTile tileName="Min Time" value={resultObj[0].min/1000}/>
-                                          <ResultTile tileName="Mean Time" value={resultObj[0].mean/1000}/>
-                                          <ResultTile tileName="Median Time" value={resultObj[0].median/1000}/>
-
+                                              value={moment(resultObj.dateTime).format(AppConstants.TIME_ONLY_FORMAT)}/>
+                                          <ResultTile
+                                              tileName="First Byte"
+                                              value={
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.response/10) +
+                                                  ' seconds'
+                                              }/>
+                                          <ResultTile
+                                              tileName="Last Byte"
+                                              value={
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.end/10) +
+                                                  ' seconds'
+                                              }/>
+                                          <ResultTile
+                                              tileName="DNS Resolve"
+                                              value={
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  ' seconds'
+                                              }/>
+                                          <ResultTile
+                                              tileName="TCP Ack"
+                                              value={
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  ' seconds'
+                                              }/>
+                                          <ResultTile
+                                              tileName="Socket Req"
+                                              value={
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  ' seconds'
+                                              }/>
                                           <div className="row backbutton" onClick={this.redirectToAddJob}>
                                               <div className="col-sm-4">
                                               </div>

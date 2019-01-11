@@ -77,6 +77,10 @@ export function getLeftState() {
     }
 }
 
+export function roundValueToTwoDecimals (value) {
+    return Math.round(value * 100) / 100;
+}
+
 export function removeLocalStorageValue(key) {
     localStorage.removeItem(key);
 }

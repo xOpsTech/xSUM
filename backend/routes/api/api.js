@@ -52,16 +52,21 @@ Api.prototype.insertUrlData = async function(req, res) {
     var urlObj = req.body;
     var currentDate = new Date();
     var urlInsertObj = {
-        ID: urlObj.hashID,
-        url: urlObj.urlValue,
+        jobId: urlObj.hashID,
+        urlValue: urlObj.urlValue,
         dateTime: currentDate.toString(),
         status: 'New',
-        resultID: ''
+        resultID: '',
+        location: {
+            title: 'USA',
+            latitude: 36.778259,
+            longitude: -119.417931
+        }
     };
 
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, urlInsertObj);
 
-    executeResultGenerator(AppConstants.DB_URL_LIST, urlInsertObj);
+    Helpers.executePingJob(AppConstants.DB_NAME, urlInsertObj, true);
 
     res.send(urlInsertObj);
 }
@@ -80,14 +85,14 @@ Api.prototype.insertLoggedUserUrlData = async function(req, res) {
 
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, urlInsertObj);
 
-    executeResultGenerator(AppConstants.DB_URL_LIST, urlInsertObj);
+    executePingJob(AppConstants.DB_URL_LIST, urlInsertObj);
 
     res.send(urlInsertObj);
 }
 
 Api.prototype.getUrlData = async function(req, res) {
     var urlObj = req.body;
-    var queryObj = {ID: urlObj.hashID};
+    var queryObj = {jobId: urlObj.hashID};
     var urlData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, queryObj);
     res.send(urlData);
 }
@@ -140,16 +145,19 @@ Api.prototype.handleResults = function(req, res) {
     }
 }
 
-Api.prototype.getResult = function(req, res) {
+Api.prototype.getResult = async function(req, res) {
     var resultObj = req.body;
-    InfluxDB.getAllData(
-        AppConstants.DB_NAME,
-        "SELECT * FROM pageLoadTime where resultID='" + resultObj.resultID+ "'"
-    ).then((result) => {
-        res.send(result);
-    }).catch((error) => {
-        res.send(error);
-    });
+
+    var jobResults = await InfluxDB.getAllDataFor(AppConstants.DB_NAME,
+        "SELECT * FROM " + AppConstants.PING_RESULT_LIST + " where resultID='" + resultObj.resultID+ "'");
+
+    var queryObj = {jobId: jobResults[0].jobid};
+    var urlData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, queryObj);
+
+    var resultsObj = urlData[0];
+    resultsObj.results = jobResults[0];
+
+    res.send(resultsObj);
 }
 
 Api.prototype.getAllResultsForJob = function(req, res) {

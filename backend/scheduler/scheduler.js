@@ -42,8 +42,9 @@ async function executeAllJobs() {
                 if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
                     executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
                 } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+                    job.urlValue = job.siteObject.value;
                     // Execute ping test
-                    executePingJob(String(tenant._id), job);
+                    Helpers.executePingJob(String(tenant._id), job, false);
                 }
 
                 console.log('Start executing: ', job);
@@ -94,26 +95,6 @@ function executeJob(databaseName, collectionName, jobToExecute) {
             //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
         }
     );
-}
-
-function executePingJob(databaseName, jobObj) {
-
-    request({
-        uri: jobObj.siteObject.value,
-        method: 'GET',
-        time: true
-    }, (err, resp) => {
-        if (resp) {
-            console.log('Successfully executed the job : ', jobObj.jobId);
-            var resultID = crypto.randomBytes(10).toString('hex');
-            var tagsObj = { jobid: jobObj.jobId, resultID: resultID };
-            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
-        } else {
-            console.log('Error in executing the job : ', jobObj.jobId);
-        }
-
-    })
-
 }
 
 module.exports = new Scheduler();
