@@ -7,7 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "prestart": "echo xops-backend started",
         "service": "node app.js",
-        "scheduler": "node scheduler.js"
+        "scheduler": "node scheduler.js",
+        "create-tenants": "node executables.js"
     },
     "author": "mcsfernando10@gmail.com",
     "license": "ISC",
