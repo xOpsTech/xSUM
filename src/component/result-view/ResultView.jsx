@@ -151,13 +151,13 @@ class ResultView extends React.Component {
                                           <ResultTile
                                               tileName="TCP Ack"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.connect/10) +
                                                   ' seconds'
                                               }/>
                                           <ResultTile
                                               tileName="Socket Req"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.socket/10) +
                                                   ' seconds'
                                               }/>
                                           <div className="row backbutton" onClick={this.redirectToAddJob}>
