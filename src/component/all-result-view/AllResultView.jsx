@@ -146,7 +146,7 @@ class AllResultView extends React.Component {
             } else if (job.testType === AppConstants.PING_TEST_TYPE) {
                 resultArray.push({
                     execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
-                    responseTime: currentJob.response/10,
+                    responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response/10),
                     color: '#eb00ff',
                     resultID: currentJob.resultID
                 });

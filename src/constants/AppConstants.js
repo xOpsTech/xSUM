@@ -153,7 +153,6 @@ export const BROWSER_ARRAY = [
 export const PERFORMANCE_TEST_TYPE = 'performace';
 export const PING_TEST_TYPE = 'ping';
 export const TEST_TYPE_ARRAY = [
-    {value: PERFORMANCE_TEST_TYPE, textValue: 'PERFORMANCE TEST'},
     {value: PING_TEST_TYPE, textValue: 'PING TEST'}
 ];
 
