@@ -63,8 +63,10 @@ class SettingsView extends React.Component {
                 email: {value: '', error: {}},
                 password: {value: '', error: {}},
                 name: {value: '', error: {}},
-                warning_alert_count: { value: '', error: {}},
-                critical_alert_count: { value: '', error: {}}
+                alert: {
+                    warningAlertCount: { value: 0, error: {}},
+                    criticalAlertCount: { value: 0, error: {}}
+                }
             },
             selectedTenantIndex: 0
         };
@@ -92,8 +94,8 @@ class SettingsView extends React.Component {
                 tenant.email = {value: data[i].email, error: {}};
                 tenant.password = {value: '', error: {}};
                 tenant.name = {value: data[i].name, error: {}};
-                tenant.warning_alert_limit = {value: '', error: {}};
-                tenant.critical_alert_limit = {value: '', error: {}};
+                tenant.alert.warningAlertCount = {value:data[i].alert.warningAlertCount, error: {}};
+                tenant.alert.criticalAlertCount = {value:data[i].alert.criticalAlertCount, error: {}};
                 tenantList.push(tenant);
             }
 
@@ -160,8 +162,8 @@ class SettingsView extends React.Component {
             email: selectedTenant.email.value,
             password: selectedTenant.password.value,
             name: selectedTenant.name.value,
-            warning_alert_limit: selectedTenant.warning_alert_limit.value,
-            critical_alert_limit: selectedTenant.critical_alert_limit.value
+            warningAlertCount: selectedTenant.alert.warningAlertCount.value,
+            criticalAlertCount: selectedTenant.alert.criticalAlertCount.value
         };
 
         var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
@@ -197,8 +199,10 @@ class SettingsView extends React.Component {
                 email: {value: stateObject.selectedTenant.email, error: {}},
                 password: {value: '', error: {}},
                 name: {value: stateObject.selectedTenant.name, error: {}},
-                warning_alert_count: {value: '', error: {}},
-                critical_alert_count: {value: '', error: {}}
+                alert: {
+                    warningAlertCount: { value: stateObject.selectedTenant.alert.warningAlertCount, error: {}},
+                    criticalAlertCount: { value: stateObject.selectedTenant.alert.criticalAlertCount, error: {}}
+                }
             }
         };
         this.setState(selectedTenantObj);
@@ -388,11 +392,11 @@ class SettingsView extends React.Component {
                                 <div className="col-sm-3">
                                     <div className="form-group">
                                         <input
-                                            type="number" value={''}
+                                            type="number" value={selectedTenant.alert.warningAlertCount.value}
                                             className="form-control"
                                             onChange={(e) => {
-                                                selectedTenant.warning_alert_limit = {
-                                                    value: e.target.value
+                                                selectedTenant.alert.warningAlertCount = {
+                                                    value: parseInt(e.target.value)
                                                 }
                                                 this.handleChange(e, {selectedTenant});
                                             }}
@@ -411,14 +415,14 @@ class SettingsView extends React.Component {
                                 <div className="col-sm-3">
                                     <div className="form-group has-feedback label-div">
                                         <input
-                                            type="number" value={''}
+                                            type="number" value={selectedTenant.alert.criticalAlertCount.value}
+                                            className="form-control"
                                               onChange={(e) => {
-                                                selectedTenant.critical_alert_limit = {
-                                                    value: e.target.value
+                                                selectedTenant.alert.criticalAlertCount = {
+                                                    value: parseInt(e.target.value)
                                                 }
                                                 this.handleChange(e, {selectedTenant});
                                             }}
-                                            className="form-control"
                                             id="tenantCriticalAlertCount"
                                             placeholder="Critical Alert count" />
                                     </div>
