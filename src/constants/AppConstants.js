@@ -37,6 +37,7 @@ export const GET_TENANT_DATA_API = '/tenant?action=getAllTenantsData';
 export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailData';
 export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
 export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
+export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 
 export const RESPONSE_SUCCESS = 'Success';
 
@@ -74,6 +75,7 @@ export const TENANTS_ROUTE = '/tenants';
 export const SETTINGS_ROUTE = '/user-settings';
 export const ADD_USER_ROUTE = '/add-user';
 export const USER_PROFILE_ROUTE = '/user-profile';
+export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -83,6 +85,7 @@ export const GRANT_ACCESS_INDEX = 4;
 export const TENANTS_INDEX = 5;
 export const SETTINGS_INDEX = 6;
 export const USER_PROFILE_INDEX = 7;
+export const TENANT_SETTINGS_INDEX = 8;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
@@ -132,6 +135,11 @@ export const LEFT_NAV_TABS = [
                 index: SETTINGS_INDEX,
                 text: 'Settings',
                 route: SETTINGS_ROUTE
+            },
+            {
+                index: TENANT_SETTINGS_INDEX,
+                text: 'Account Settings',
+                route: TENANT_SETTINGS_ROUTE
             }
         ]
     }

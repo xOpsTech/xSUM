@@ -19,6 +19,7 @@ import TenantsView from './component/management/tenants/TenantsView';
 import SettingsView from './component/management/settings/SettingsView';
 import AddUserView from './component/management/add-user/AddUserView';
 import ProfileView from './component/management/profile/ProfileView';
+import TenantSettings from './component/management/tenant-settings/TenantSettings';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -39,5 +40,6 @@ export default (
         <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView}/>
         <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView}/>
         <Route path={AppConstants.USER_PROFILE_ROUTE} component={ProfileView}/>
+        <Route path={AppConstants.TENANT_SETTINGS_ROUTE} component={TenantSettings}/>
     </Route>
 );

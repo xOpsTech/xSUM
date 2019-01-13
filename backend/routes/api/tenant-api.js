@@ -27,6 +27,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "addTenantEmailData":
             new TenantApi().addTenantEmailData(req, res);
             break;
+        case "updateTenantData":
+            new TenantApi().updateTenantData(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -41,13 +44,21 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
     var matchedTenants = [];
 
-    for (var i = 0; i < tenantData.length; i++) {
+    for (let tenant of tenantData) {
 
-        for (var j = 0; j < tenantData[i].users.length; j++) {
+        for (let user of tenant.users) {
 
-            if (tenantData[i].users[j].userID == userObj.userID) {
-                delete tenantData[i].password;
-                matchedTenants.push(tenantData[i]);
+            if (user.userID == userObj.userID) {
+                delete tenant.password;
+
+                if (tenant.alert === undefined) {
+                    tenant.alert = {
+                        warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
+                        criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+                    }
+                }
+
+                matchedTenants.push(tenant);
                 break;
             }
 
@@ -100,6 +111,12 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
                 usersArray.push(userData[0]);
             }
             tenant.userList = usersArray;
+            if (tenant.alert === undefined) {
+                tenant.alert = {
+                    warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
+                    criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+                }
+            }
         }
 
         res.send(tenantsArray);
@@ -121,8 +138,8 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
             }
         ],
         alert: {
-            warningAlertCount:AppConstants.EMAIL_WARNING_ALERT_COUNT,
-            criticalAlertCount:AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+            warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
+            criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
         }
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
@@ -137,9 +154,19 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
         password: tenantObj.password,
         name: tenantObj.name,
         alert: {
-            warningAlertCount:tenantObj.warningAlertCount,
-            criticalAlertCount:tenantObj.criticalAlertCount
+            warningAlertCount: tenantObj.warningAlertCount,
+            criticalAlertCount: tenantObj.criticalAlertCount
         }
+    };
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});
+}
+
+TenantApi.prototype.updateTenantData = async function(req, res) {
+    var tenantObj = req.body;
+    var queryObj = {_id: ObjectId(tenantObj.id)};
+    var tenantUpdateObj = {
+        name: tenantObj.name
     };
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});

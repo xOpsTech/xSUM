@@ -26,8 +26,8 @@ exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 exports.EMAIL_USERNAME = 'xsum.xops@gmail.com';
 exports.EMAIL_PASSWORD = 'xsum@9871az';
 
-exports.EMAIL_WARNING_ALERT_COUNT  = 1;
-exports.EMAIL_CRITICAL_ALERT_COUNT = 1;
+exports.EMAIL_WARNING_ALERT_COUNT  = 5;
+exports.EMAIL_CRITICAL_ALERT_COUNT = 5;
 
 // User roles
 exports.SUPER_USER = 'super-user';

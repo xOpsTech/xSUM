@@ -13,10 +13,10 @@ import * as UIHelper from '../../../common/UIHelper';
 import * as MessageConstants from '../../../constants/MessageConstants';
 
 /* eslint-disable no-unused-vars */
-import Styles from './SettingsStyles.less';
+import Styles from './TenantSettingsStyles.less';
 /* eslint-enable no-unused-vars */
 
-class SettingsView extends React.Component {
+class TenantSettings extends React.Component {
     constructor(props) {
         super(props);
 
@@ -32,7 +32,7 @@ class SettingsView extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Settings - ' + AppConstants.PRODUCT_NAME;
+        document.title = 'Account Settings - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 
@@ -62,11 +62,7 @@ class SettingsView extends React.Component {
             selectedTenant: {
                 email: {value: '', error: {}},
                 password: {value: '', error: {}},
-                name: {value: '', error: {}},
-                alert: {
-                    warningAlertCount: { value: 0, error: {}},
-                    criticalAlertCount: { value: 0, error: {}}
-                }
+                name: {value: '', error: {}}
             },
             selectedTenantIndex: 0
         };
@@ -93,8 +89,6 @@ class SettingsView extends React.Component {
                 tenant.email = {value: tenant.email, error: {}};
                 tenant.password = {value: '', error: {}};
                 tenant.name = {value: tenant.name, error: {}};
-                tenant.alert.warningAlertCount = {value: tenant.alert.warningAlertCount, error: {}};
-                tenant.alert.criticalAlertCount = {value: tenant.alert.criticalAlertCount, error: {}};
                 tenantList.push(tenant);
             }
 
@@ -158,14 +152,10 @@ class SettingsView extends React.Component {
 
         var emailSettingToInsert = {
             id: selectedTenant._id,
-            email: selectedTenant.email.value,
-            password: selectedTenant.password.value,
-            name: selectedTenant.name.value,
-            warningAlertCount: selectedTenant.alert.warningAlertCount.value,
-            criticalAlertCount: selectedTenant.alert.criticalAlertCount.value
+            name: selectedTenant.name.value
         };
 
-        var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
+        var urlToUpdateTenant = Config.API_URL + AppConstants.UPDATE_TENANT_DATA_API;
         tenantApi.saveTenant(urlToUpdateTenant, emailSettingToInsert).then((response) => {
             this.setState(
                 {
@@ -197,11 +187,7 @@ class SettingsView extends React.Component {
                 _id: stateObject.selectedTenant._id,
                 email: {value: stateObject.selectedTenant.email, error: {}},
                 password: {value: '', error: {}},
-                name: {value: stateObject.selectedTenant.name, error: {}},
-                alert: {
-                    warningAlertCount: { value: stateObject.selectedTenant.alert.warningAlertCount, error: {}},
-                    criticalAlertCount: { value: stateObject.selectedTenant.alert.criticalAlertCount, error: {}}
-                }
+                name: {value: stateObject.selectedTenant.name, error: {}}
             }
         };
         this.setState(selectedTenantObj);
@@ -222,7 +208,7 @@ class SettingsView extends React.Component {
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <LeftNav
-                    selectedIndex={AppConstants.SETTINGS_INDEX}
+                    selectedIndex={AppConstants.TENANT_SETTINGS_INDEX}
                     isFixedLeftNav={true}
                     leftNavStateUpdate={this.leftNavStateUpdate}
                     isSubSectionExpand={true}/>
@@ -245,7 +231,7 @@ class SettingsView extends React.Component {
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
                             <h1 className="site-add-title">
-                                Settings
+                                Account Settings
                             </h1>
                         </div>
 
@@ -253,39 +239,34 @@ class SettingsView extends React.Component {
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column section-head">
                                     <h4 className="site-add-title">
-                                        Email Settings
+                                        Account Settings
                                     </h4>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Account's Email</label>
+                                        <label className="control-label">Account ID</label>
                                     </div>
                                 </div>
                                 <div className="col-sm-9">
-                                    <div className={
-                                        'form-group has-feedback ' +
-                                        ((selectedTenant.email.error.hasError !== undefined)
-                                            ? ((selectedTenant.email.error.hasError) ? 'has-error' : 'has-success') : '')
-                                        }>
-                                        <input
-                                            value={selectedTenant.email.value}
-                                            onChange={(e) => {
-                                                selectedTenant.email =  {
-                                                    value: e.target.value,
-                                                    error: {
-                                                        hasError: UIHelper.isEmailHasError(e.target.value),
-                                                        name: MessageConstants.EMAIL_ERROR
-                                                    }
-                                                }
-                                                this.handleChange(e, {selectedTenant});
-                                            }}
-                                            type="text"
-                                            className="form-control"
-                                            id="userEmailInput"
-                                            placeholder="EMAIL"/>
-                                        <ErrorMessageComponent error={selectedTenant.email.error}/>
+                                    <div className="form-group">
+                                        <select className="form-control form-control-sm form-group"
+                                            value={selectedTenantIndex}
+                                            onChange={(e) => this.dropDownClick(
+                                                {
+                                                    selectedTenant: tenantList[e.target.value],
+                                                    selectedTenantIndex: e.target.value
+                                                })
+                                            }>
+                                            {
+                                                tenantList.map((tenant, i) => {
+                                                    return <option key={'tenant_' + i} value={i}>
+                                                                {tenant._id}
+                                                           </option>;
+                                                })
+                                            }
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -293,77 +274,22 @@ class SettingsView extends React.Component {
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Email Password</label>
+                                        <label className="control-label">Account Name</label>
                                     </div>
                                 </div>
                                 <div className="col-sm-9">
-                                    <div className="form-group">
+                                    <div className="form-group has-feedback label-div">
                                         <input
-                                            value={selectedTenant.password.value}
+                                            value={selectedTenant.name.value}
                                             onChange={(e) => {
-                                                selectedTenant.password = {
+                                                selectedTenant.name = {
                                                     value: e.target.value
                                                 }
                                                 this.handleChange(e, {selectedTenant});
                                             }}
-                                            type="password"
                                             className="form-control"
-                                            id="passwordInput"
-                                            placeholder="Password"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="row alert-list-wrap-div settings-section">
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column section-head">
-                                    <h4 className="site-add-title">
-                                        Alert Settings
-                                    </h4>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Email Warning Alert count</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-3">
-                                    <div className="form-group">
-                                        <input
-                                            type="number" value={selectedTenant.alert.warningAlertCount.value}
-                                            className="form-control"
-                                            onChange={(e) => {
-                                                selectedTenant.alert.warningAlertCount = {
-                                                    value: parseInt(e.target.value)
-                                                }
-                                                this.handleChange(e, {selectedTenant});
-                                            }}
-                                            id="tenantWarningAlertCount"
-                                            placeholder="Warning Alert count" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Email Critical Alert count</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-3">
-                                    <div className="form-group has-feedback label-div">
-                                        <input
-                                            type="number" value={selectedTenant.alert.criticalAlertCount.value}
-                                            className="form-control"
-                                              onChange={(e) => {
-                                                selectedTenant.alert.criticalAlertCount = {
-                                                    value: parseInt(e.target.value)
-                                                }
-                                                this.handleChange(e, {selectedTenant});
-                                            }}
-                                            id="tenantCriticalAlertCount"
-                                            placeholder="Critical Alert count" />
+                                            id="tenantNameInput"
+                                            placeholder="Account Name"/>
                                     </div>
                                 </div>
                             </div>
@@ -394,7 +320,7 @@ class SettingsView extends React.Component {
     }
 }
 
-SettingsView.propTypes = {
+TenantSettings.propTypes = {
 };
 
-export default SettingsView;
+export default TenantSettings;
