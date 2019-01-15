@@ -154,6 +154,10 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
         alert: {
             warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
             criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+        },
+        point: {
+            totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
+            pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
         }
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
