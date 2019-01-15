@@ -29,6 +29,8 @@ exports.EMAIL_PASSWORD = 'xsum@9871az';
 exports.EMAIL_WARNING_ALERT_COUNT  = 5;
 exports.EMAIL_CRITICAL_ALERT_COUNT = 5;
 
+exports.DEFAULT_POINTS_COUNT = 25000;
+
 // User roles
 exports.SUPER_USER = 'super-user';
 exports.ADMIN_ROLE = 'admin';

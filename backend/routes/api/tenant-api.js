@@ -58,6 +58,13 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
                     }
                 }
 
+                if (tenant.points === undefined) {
+                    tenant.points = {
+                        totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
+                        pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
+                    }
+                }
+
                 matchedTenants.push(tenant);
                 break;
             }
@@ -117,6 +124,13 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
                     criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
                 }
             }
+
+            if (tenant.points === undefined) {
+                tenant.points = {
+                    totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
+                    pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
+                }
+            }
         }
 
         res.send(tenantsArray);
@@ -165,11 +179,8 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
 TenantApi.prototype.updateTenantData = async function(req, res) {
     var tenantObj = req.body;
     var queryObj = {_id: ObjectId(tenantObj.id)};
-    var tenantUpdateObj = {
-        name: tenantObj.name
-    };
-    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
-    res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantObj.updateObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantObj.updateObj}});
 }
 
 module.exports = new TenantApi();

@@ -14,10 +14,10 @@ import * as UIHelper from '../../../common/UIHelper';
 import * as MessageConstants from '../../../constants/MessageConstants';
 
 /* eslint-disable no-unused-vars */
-import Styles from './TenantSettingsStyles.less';
+import Styles from './BillingStyles.less';
 /* eslint-enable no-unused-vars */
 
-class TenantSettings extends React.Component {
+class Billing extends React.Component {
     constructor(props) {
         super(props);
 
@@ -33,7 +33,7 @@ class TenantSettings extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Account Settings - ' + AppConstants.PRODUCT_NAME;
+        document.title = 'Billing - ' + AppConstants.PRODUCT_NAME;
         document.getElementById("background-video").style.display = 'none';
     }
 
@@ -61,9 +61,8 @@ class TenantSettings extends React.Component {
             isLeftNavCollapse: false,
             tenantList: [],
             selectedTenant: {
-                email: {value: '', error: {}},
-                password: {value: '', error: {}},
-                name: {value: '', error: {}}
+                points: {totalPoints: '', error: {}},
+                pointsRemain: 0
             },
             selectedTenantIndex: 0
         };
@@ -72,7 +71,15 @@ class TenantSettings extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+        UIHelper.getUserData(loggedUserObj, this, (user, context) => {
+
+            if (!user.isSuperUser) {
+                UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE);
+            } else {
+                context.getAllTenantsData(user, context);
+            }
+
+        });
     }
 
     getAllTenantsData(user, context) {
@@ -87,9 +94,10 @@ class TenantSettings extends React.Component {
             var tenantList = [];
 
             for (let tenant of data) {
-                tenant.email = {value: tenant.email, error: {}};
-                tenant.password = {value: '', error: {}};
-                tenant.name = {value: tenant.name, error: {}};
+                tenant.points = {
+                    totalPoints: tenant.points.totalPoints, error: {},
+                    pointsRemain: tenant.points.pointsRemain
+                };
                 tenantList.push(tenant);
             }
 
@@ -151,15 +159,18 @@ class TenantSettings extends React.Component {
         this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_TENANT});
         var {selectedTenant, loggedUserObj} = this.state;
 
-        var tenantDataToUpdate = {
+        var tenantSettingsToUpdate = {
             id: selectedTenant._id,
             updateObj: {
-                name: selectedTenant.name.value
+                points: {
+                    totalPoints: parseInt(selectedTenant.points.totalPoints),
+                    pointsRemain: parseInt(selectedTenant.points.pointsRemain)
+                }
             }
         };
 
         var urlToUpdateTenant = Config.API_URL + AppConstants.UPDATE_TENANT_DATA_API;
-        tenantApi.saveTenant(urlToUpdateTenant, tenantDataToUpdate).then((response) => {
+        tenantApi.saveTenant(urlToUpdateTenant, tenantSettingsToUpdate).then((response) => {
             this.setState(
                 {
                     isLoading: false,
@@ -188,9 +199,6 @@ class TenantSettings extends React.Component {
             selectedTenantIndex: parseInt(selectedIndex),
             selectedTenant: {
                 _id: stateObject.selectedTenant._id,
-                email: {value: stateObject.selectedTenant.email, error: {}},
-                password: {value: '', error: {}},
-                name: {value: stateObject.selectedTenant.name, error: {}},
                 points: {
                     totalPoints: stateObject.selectedTenant.points.totalPoints, error: {},
                     pointsRemain: stateObject.selectedTenant.points.pointsRemain
@@ -215,7 +223,7 @@ class TenantSettings extends React.Component {
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <LeftNav
-                    selectedIndex={AppConstants.TENANT_SETTINGS_INDEX}
+                    selectedIndex={AppConstants.BILLING_INDEX}
                     isFixedLeftNav={true}
                     leftNavStateUpdate={this.leftNavStateUpdate}
                     isSubSectionExpand={true}/>
@@ -238,7 +246,7 @@ class TenantSettings extends React.Component {
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
                             <h1 className="site-add-title">
-                                Account Settings
+                                Billings
                             </h1>
                         </div>
 
@@ -246,14 +254,14 @@ class TenantSettings extends React.Component {
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column section-head">
                                     <h4 className="site-add-title">
-                                        Account Settings
+                                        Account Points
                                     </h4>
                                 </div>
                             </div>
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Account ID</label>
+                                        <label className="control-label">Account Name</label>
                                     </div>
                                 </div>
                                 <div className="col-sm-9">
@@ -269,7 +277,7 @@ class TenantSettings extends React.Component {
                                             {
                                                 tenantList.map((tenant, i) => {
                                                     return <option key={'tenant_' + i} value={i}>
-                                                                {tenant._id}
+                                                                {tenant.name}
                                                            </option>;
                                                 })
                                             }
@@ -281,22 +289,48 @@ class TenantSettings extends React.Component {
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
-                                        <label className="control-label">Account Name</label>
+                                        <label className="control-label">Total Points</label>
                                     </div>
                                 </div>
                                 <div className="col-sm-9">
                                     <div className="form-group has-feedback label-div">
                                         <input
-                                            value={selectedTenant.name.value}
+                                            value={selectedTenant.points.totalPoints}
                                             onChange={(e) => {
-                                                selectedTenant.name = {
-                                                    value: e.target.value
+                                                let newPoints = parseInt(e.target.value);
+                                                let oldPoints = parseInt(selectedTenant.points.totalPoints);
+
+                                                if (e.target.value !== '') {
+                                                    selectedTenant.points = {
+                                                        totalPoints: e.target.value,
+                                                        pointsRemain: (parseInt(selectedTenant.points.pointsRemain) + newPoints - oldPoints)
+                                                    };
+                                                } else {
+                                                    selectedTenant.points = {
+                                                        totalPoints: 0,
+                                                        pointsRemain: 0
+                                                    };
                                                 }
+
                                                 this.handleChange(e, {selectedTenant});
                                             }}
                                             className="form-control"
                                             id="tenantNameInput"
                                             placeholder="Account Name"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Remaining Points</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9">
+                                    <div className="form-group has-feedback label-div">
+                                        <label className="common-label">
+                                            {selectedTenant.points.pointsRemain}
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -328,7 +362,7 @@ class TenantSettings extends React.Component {
     }
 }
 
-TenantSettings.propTypes = {
+Billing.propTypes = {
 };
 
-export default TenantSettings;
+export default Billing;

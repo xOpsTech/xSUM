@@ -129,6 +129,8 @@ class TenantsView extends React.Component {
                         <tr>
                             <th>Account Name</th>
                             <th>Account Email</th>
+                            <th>Total Points</th>
+                            <th>Points Remain</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -156,6 +158,20 @@ class TenantsView extends React.Component {
                                                             ? AppConstants.NOT_AVAILABLE_EMAIL
                                                             : tenant.email
                                                     }
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {tenant.points.totalPoints}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td className="table-cell">
+                                            <div className="form-group has-feedback label-div">
+                                                <label className="alert-label">
+                                                    {tenant.points.pointsRemain}
                                                 </label>
                                             </div>
                                         </td>

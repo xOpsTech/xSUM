@@ -76,6 +76,7 @@ export const SETTINGS_ROUTE = '/user-settings';
 export const ADD_USER_ROUTE = '/add-user';
 export const USER_PROFILE_ROUTE = '/user-profile';
 export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
+export const BILLING_ROUTE = '/billing';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -86,6 +87,7 @@ export const TENANTS_INDEX = 5;
 export const SETTINGS_INDEX = 6;
 export const USER_PROFILE_INDEX = 7;
 export const TENANT_SETTINGS_INDEX = 8;
+export const BILLING_INDEX = 9;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
@@ -127,19 +129,24 @@ export const LEFT_NAV_TABS = [
             //     route: GRANT_ACCESS_ROUTE
             // },
             {
-                index: TENANTS_INDEX,
-                text: 'Accounts',
-                route: TENANTS_ROUTE
-            },
-            {
                 index: SETTINGS_INDEX,
                 text: 'Settings',
                 route: SETTINGS_ROUTE
             },
             {
+                index: TENANTS_INDEX,
+                text: 'Accounts',
+                route: TENANTS_ROUTE
+            },
+            {
                 index: TENANT_SETTINGS_INDEX,
                 text: 'Account Settings',
                 route: TENANT_SETTINGS_ROUTE
+            },
+            {
+                index: BILLING_INDEX,
+                text: 'Billing',
+                route: BILLING_ROUTE
             }
         ]
     }

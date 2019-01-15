@@ -102,7 +102,8 @@ class LeftNav extends React.Component {
                                                                 'glyphicon ' +
                                                                 ((isSubSectionExpand)
                                                                     ? 'glyphicon-chevron-down '
-                                                                    : 'glyphicon-chevron-right ') + 'button-icon span-icon'}>
+                                                                    : 'glyphicon-chevron-right ')
+                                                                        + 'button-icon span-icon'}>
                                                         </span>
                                                     </button>
                                                     <Panel expanded={isSubSectionExpand} className="sub-section-panel">
@@ -114,18 +115,29 @@ class LeftNav extends React.Component {
                                                                     className="sub-nav">
                                                                 {
                                                                     tab.subSections.map((subTag, j) => {
-                                                                        return (
-                                                                            <NavItem
-                                                                                eventKey={subTag.index}
-                                                                                href="#"
-                                                                                key={j}
-                                                                                id={subTag.index}
-                                                                                onClick={(e) => {
-                                                                                    this.tabOnClick(e, subTag);
-                                                                                }}>
-                                                                                {subTag.text}
-                                                                            </NavItem>
-                                                                        );
+
+                                                                        if ((loggedUserObj
+                                                                            && loggedUserObj.isSuperUser
+                                                                            && subTag.index
+                                                                                === AppConstants.BILLING_INDEX)
+                                                                            || subTag.index
+                                                                                !== AppConstants.BILLING_INDEX) {
+                                                                            return (
+                                                                                <NavItem
+                                                                                    eventKey={subTag.index}
+                                                                                    href="#"
+                                                                                    key={j}
+                                                                                    id={subTag.index}
+                                                                                    onClick={(e) => {
+                                                                                        this.tabOnClick(e, subTag);
+                                                                                    }}>
+                                                                                    {subTag.text}
+                                                                                </NavItem>
+                                                                            );
+                                                                        } else {
+                                                                            return null;
+                                                                        }
+
                                                                     })
                                                                 }
                                                                 </Nav>
