@@ -33,13 +33,15 @@ UpdatePoints.prototype.updatePointsInDatabase = async function() {
             totalPointsUsed += noOfExecutionsPerMonth;
         }
 
-        var totalPointsRemain = tenant.points.totalPoints - parseInt(totalPointsUsed);
+        var totalPoints = (tenant.points) ? tenant.points.totalPoints : AppConstants.DEFAULT_POINTS_COUNT;
+
+        var totalPointsRemain = totalPoints - parseInt(totalPointsUsed);
 
         // Update tenant points
         var queryObj = {_id: ObjectId(tenant._id)};
         var tenantUpdateObj = {
             points: {
-                totalPoints: tenant.points.totalPoints,
+                totalPoints: totalPoints,
                 pointsRemain: totalPointsRemain
             }
         };
