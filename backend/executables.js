@@ -4,6 +4,7 @@ var express = require('express'),
     config = require('./config/config');
 
 var CreateTenants = require('./executables/createInfluxTenants');
+var UpdatePoints = require('./executables/updatePoints');
 
 var port = config.PORT;
 var app = express();
@@ -12,5 +13,17 @@ app.use(bodyParser.json());
 app.use('/', apiRouter);
 app.listen(port);
 
-// Create Influx Tenants
-CreateTenants.createInfluxTenants();
+var commandArguments = process.argv.slice(2);
+
+switch (commandArguments[0]) {
+    case 'create-tenants':
+        // Create Influx Tenants
+        CreateTenants.createInfluxTenants();
+        break;
+    case 'update-points':
+        // Update Points
+        UpdatePoints.updatePointsInDatabase();
+        break;
+    default:
+        console.log('Nothing executed');
+}

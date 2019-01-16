@@ -21,9 +21,10 @@ CreateTenants.prototype.createInfluxTenants = async function() {
     console.log('------------Start creating tenants in ' + currentDateTime + ' ------------');
     for (let tenant of tenantList) {
         InfluxDB.createDatabase(String(tenant._id));
-        console.log('Databse has been created for: ', tenant);
+        console.log('Database has been created for: ', tenant);
     }
     console.log('--------------------------------------------------------------------------------');
+    process.exit();
 }
 
 module.exports = new CreateTenants();

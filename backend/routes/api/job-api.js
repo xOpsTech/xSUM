@@ -8,6 +8,8 @@ var crypto = require('crypto');
 var moment = require('moment');
 var Helpers = require('../../common/Helpers');
 var AlertApi = require('./alert-api');
+var TenantApi = require('./tenant-api');
+var {ObjectId} = require('mongodb');
 
 var jobTimers = {};
 
@@ -67,6 +69,8 @@ JobApi.prototype.insertJob = async function(req, res) {
     if (jobData.length < 5) {
         await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
 
+        TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, true);
+
         res.send(jobInsertObj);
     } else {
         res.send({error: 'You can add only five jobs'});
@@ -124,6 +128,7 @@ JobApi.prototype.removeJob = function(req, res) {
     var queryToRemoveJob = {
         jobId: jobObj.jobId
     };
+    TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
     MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
     InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId+ "'");
     res.send(queryToRemoveJob);

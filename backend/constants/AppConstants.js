@@ -31,6 +31,8 @@ exports.EMAIL_CRITICAL_ALERT_COUNT = 5;
 
 exports.DEFAULT_POINTS_COUNT = 25000;
 
+exports.TOTAL_MILLISECONDS_PER_MONTH = 1000 * 60 * 60 * 24 * 30;
+
 // User roles
 exports.SUPER_USER = 'super-user';
 exports.ADMIN_ROLE = 'admin';

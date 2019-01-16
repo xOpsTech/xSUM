@@ -164,6 +164,33 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
     return tenantInsertObj;
 }
 
+TenantApi.prototype.updateTenantPoints = async function(jobID, tenantID, isInsert) {
+    var queryObj = {jobId: jobID};
+    var jobData = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
+
+    var queryToGetTenantObj = {_id: ObjectId(tenantID)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
+
+    var totalPointsRemain;
+    if (isInsert) {
+        totalPointsRemain = tenantData[0].points.pointsRemain -
+                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+    } else {
+        totalPointsRemain = tenantData[0].points.pointsRemain +
+                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+    }
+
+    // Update tenant points
+    var queryObj = {_id: ObjectId(tenantID)};
+    var tenantUpdateObj = {
+        points: {
+            totalPoints: tenantData[0].points.totalPoints,
+            pointsRemain: totalPointsRemain
+        }
+    };
+    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
+}
+
 TenantApi.prototype.addTenantEmailData = async function(req, res) {
     var tenantObj = req.body;
     var queryObj = {_id: ObjectId(tenantObj.id)};

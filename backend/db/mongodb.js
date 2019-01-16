@@ -56,7 +56,7 @@ function insertDataInto(db, databaseName, collectionName, objectToInsert) {
     });
 }
 
-MongoDB.prototype.updateData = function(databaseName, collectionName, updateIdObject, newObjectWithValues) {
+MongoDB.prototype.updateData = async function(databaseName, collectionName, updateIdObject, newObjectWithValues) {
 
     connectMongoDB(databaseName).then((db) => {
         var dbo = db.db(databaseName);
