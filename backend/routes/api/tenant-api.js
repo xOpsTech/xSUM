@@ -155,7 +155,7 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
             warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
             criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
         },
-        point: {
+        points: {
             totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
             pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
         }
