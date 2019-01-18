@@ -24,7 +24,6 @@ CreateTenants.prototype.createInfluxTenants = async function() {
         console.log('Database has been created for: ', tenant);
     }
     console.log('--------------------------------------------------------------------------------');
-    process.exit();
 }
 
 module.exports = new CreateTenants();
