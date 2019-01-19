@@ -7,6 +7,7 @@ import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
+import alertApi from '../../api/alertApi';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as Config from '../../config/config';
@@ -23,6 +24,7 @@ class AllResultView extends React.Component {
 
         this.getAllJobs           = this.getAllJobs.bind(this);
         this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
+        this.getAllAlerts = this.getAllAlerts.bind(this);
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
         this.getArrangedBarChartData = this.getArrangedBarChartData.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
@@ -61,6 +63,7 @@ class AllResultView extends React.Component {
             loggedUserObj: null,
             jobsWithResults: [],
             locationMarker: [],
+            alertData: [],
             isLeftNavCollapse: false,
             selectedTenant: {userList: []}
         };
@@ -73,7 +76,38 @@ class AllResultView extends React.Component {
     }
 
     getAllTenantsData(user, context) {
+        UIHelper.getAllTenantsData(user, context, context.getAllAlerts);
         UIHelper.getAllTenantsData(user, context, context.getAllJobs);
+    }
+
+    getAllAlerts(loggedUserObj, selectedTenant, context) {
+        var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
+
+        var objToGetAlerts = {
+            userEmail: loggedUserObj.email,
+            tenantID: selectedTenant._id
+        };
+        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
+            var alertThresholdsByJob = [];
+            this.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT });
+
+            for (var alert of data.alertsData) {
+                alertThresholdsByJob.push({
+                    jobId: alert.job.jobId,
+                    criticalThreshold: parseInt(alert.criticalThreshold),
+                    warningThreshold: parseInt(alert.warningThreshold)
+                });
+            }
+
+            this.setState(
+                {
+                    alertData: alertThresholdsByJob
+                }
+            );
+            this.setState({ isLoading: false, loadingMessage: '' });
+
+        })
+
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
@@ -144,17 +178,42 @@ class AllResultView extends React.Component {
                 }
 
             } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-                resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
-                    responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response/10),
-                    color: '#eb00ff',
-                    resultID: currentJob.resultID
-                });
+                for (var thresHold of this.state.alertData) {
+                    if (thresHold.jobId == job.jobId) {
+
+                        var criticalThreshold = parseInt(thresHold.criticalThreshold)
+                        var warningThreshold = parseInt(thresHold.warningThreshold)
+                    }
+                }
+
+                var responseTIme = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
+
+                if (responseTIme >= criticalThreshold) {
+                    resultArray.push({
+                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
+                        color: '#B22222',
+                        resultID: currentJob.resultID
+                    });
+                }
+                else if (responseTIme >= warningThreshold && responseTIme < criticalThreshold) {
+                    resultArray.push({
+                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
+                        color: '#FFFF00',
+                        resultID: currentJob.resultID
+                    });
+                }
+                else {
+                    resultArray.push({
+                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
+                        color: '#eb00ff',
+                        resultID: currentJob.resultID
+                    });
+                }
             }
-
-
         }
-
         return resultArray;
     }
 
@@ -198,6 +257,7 @@ class AllResultView extends React.Component {
             loggedUserObj,
             jobsWithResults,
             locationMarker,
+            alertData,
             isLeftNavCollapse
         } = this.state;
 
