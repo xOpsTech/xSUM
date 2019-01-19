@@ -27,6 +27,7 @@ class Billing extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
         this.tenantDropDown = this.tenantDropDown.bind(this);
+        this.handlePointsChange = this.handlePointsChange.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -62,7 +63,8 @@ class Billing extends React.Component {
             tenantList: [],
             selectedTenant: {
                 points: {totalPoints: '', error: {}},
-                pointsRemain: 0
+                pointsRemain: 0,
+                usedPoints: 0
             },
             selectedTenantIndex: 0
         };
@@ -96,7 +98,8 @@ class Billing extends React.Component {
             for (let tenant of data) {
                 tenant.points = {
                     totalPoints: tenant.points.totalPoints, error: {},
-                    pointsRemain: tenant.points.pointsRemain
+                    pointsRemain: tenant.points.pointsRemain,
+                    usedPoints: parseInt(tenant.points.totalPoints) - parseInt(tenant.points.pointsRemain)
                 };
                 tenantList.push(tenant);
             }
@@ -156,28 +159,35 @@ class Billing extends React.Component {
     updateMailClick(e) {
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_TENANT});
         var {selectedTenant, loggedUserObj} = this.state;
 
-        var tenantSettingsToUpdate = {
-            id: selectedTenant._id,
-            updateObj: {
-                points: {
-                    totalPoints: parseInt(selectedTenant.points.totalPoints),
-                    pointsRemain: parseInt(selectedTenant.points.pointsRemain)
-                }
-            }
-        };
+        if (selectedTenant.points.pointsRemain >= 0) {
+            this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_TENANT});
 
-        var urlToUpdateTenant = Config.API_URL + AppConstants.UPDATE_TENANT_DATA_API;
-        tenantApi.saveTenant(urlToUpdateTenant, tenantSettingsToUpdate).then((response) => {
-            this.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: '',
+
+            var tenantSettingsToUpdate = {
+                id: selectedTenant._id,
+                updateObj: {
+                    points: {
+                        totalPoints: parseInt(selectedTenant.points.totalPoints),
+                        pointsRemain: parseInt(selectedTenant.points.pointsRemain)
+                    }
                 }
-            );
-        });
+            };
+
+            var urlToUpdateTenant = Config.API_URL + AppConstants.UPDATE_TENANT_DATA_API;
+            tenantApi.saveTenant(urlToUpdateTenant, tenantSettingsToUpdate).then((response) => {
+                this.setState(
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
+                    }
+                );
+            });
+        } else {
+            alert(MessageConstants.CANT_UPDATE_POINTS);
+        }
+
     }
 
     redirectToAddUser() {
@@ -201,11 +211,34 @@ class Billing extends React.Component {
                 _id: stateObject.selectedTenant._id,
                 points: {
                     totalPoints: stateObject.selectedTenant.points.totalPoints, error: {},
-                    pointsRemain: stateObject.selectedTenant.points.pointsRemain
+                    pointsRemain: stateObject.selectedTenant.points.pointsRemain,
+                    usedPoints: parseInt(stateObject.selectedTenant.points.totalPoints) -
+                                    parseInt(stateObject.selectedTenant.points.pointsRemain)
                 }
             }
         };
         this.setState(selectedTenantObj);
+    }
+
+    handlePointsChange(e, selectedTenant) {
+        let newPoints = parseInt(e.target.value);
+        let usedPoints = parseInt(selectedTenant.points.usedPoints);
+
+        if (e.target.value !== '') {
+            selectedTenant.points = {
+                totalPoints: newPoints,
+                pointsRemain: newPoints - usedPoints,
+                usedPoints: usedPoints
+            };
+        } else {
+            selectedTenant.points = {
+                totalPoints: 0,
+                pointsRemain: 0,
+                usedPoints: usedPoints
+            };
+        }
+
+        this.handleChange(e, {selectedTenant});
     }
 
     render() {
@@ -296,24 +329,7 @@ class Billing extends React.Component {
                                     <div className="form-group has-feedback label-div">
                                         <input
                                             value={selectedTenant.points.totalPoints}
-                                            onChange={(e) => {
-                                                let newPoints = parseInt(e.target.value);
-                                                let oldPoints = parseInt(selectedTenant.points.totalPoints);
-
-                                                if (e.target.value !== '') {
-                                                    selectedTenant.points = {
-                                                        totalPoints: e.target.value,
-                                                        pointsRemain: (parseInt(selectedTenant.points.pointsRemain) + newPoints - oldPoints)
-                                                    };
-                                                } else {
-                                                    selectedTenant.points = {
-                                                        totalPoints: 0,
-                                                        pointsRemain: 0
-                                                    };
-                                                }
-
-                                                this.handleChange(e, {selectedTenant});
-                                            }}
+                                            onChange={(e) => this.handlePointsChange(e, selectedTenant)}
                                             className="form-control"
                                             id="tenantNameInput"
                                             placeholder="Account Name"/>

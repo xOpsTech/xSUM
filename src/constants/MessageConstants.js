@@ -7,6 +7,7 @@ export const EMPTY_ERROR = 'This field can\'t be empty.';
 export const FORGOT_PW_PAGE_INVALID_EMAIL_ERROR = 'Email address invalid.';
 export const PASSWORD_RESET_MAIL_SENT = 'Check your email for the password reset code.';
 export const RESET_PASSWORD_SUCCESS = 'Password reset success.';
+export const CANT_UPDATE_POINTS = 'Points can\'t be a negative value';
 
 export const LOGING_MESSAGE = 'Login...';
 export const REGISTERING_MESSAGE = 'Registering...';
