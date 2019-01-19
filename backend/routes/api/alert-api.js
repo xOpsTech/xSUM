@@ -100,31 +100,32 @@ AlertApi.prototype.removeAlert = function(req, res) {
     res.send(queryToRemoveAlert);
 }
 
-AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, curDateMilliSec) {
-    // Send alert
-    var jobResults = await InfluxDB.getAllDataFor(
-        databaseName,
-        "SELECT * FROM pageLoadTime where jobid='"
-        + insertedJobObj.jobId + "' and curDateMilliSec = '" + curDateMilliSec + "'"
-    );
+AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
+    var queryForPingResults = "SELECT * FROM pingResults where jobid='" + insertedJobObj.jobId + "' and executedTime ='" + executedTime + "'";
+
+    var jobResults = await InfluxDB.getAllDataFor(databaseName, queryForPingResults);
+
 
     var queryToGetJobAlert = {
         'job.jobId': insertedJobObj.jobId
     };
 
-    var queryToGetTenantDetails = { email: insertedJobObj.userEmail };
-  
+    var queryToGetTenantDetails = { _id: ObjectId(databaseName) };
+
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
     
     //give default alert count when alerts are not defnied
-    if (typeof tenantData[0].alert === "undefined") {
-        var emailCriticalAlertCount = AppConstants.EMAIL_CRITICAL_ALERT_COUNT
-        var emailWarningAlertCount = AppConstants.EMAIL_WARNING_ALERT_COUNT
-    }
+    if (tenantData.length > 0) {
+        //give default alert count when alerts are not defnied
+        if (typeof tenantData[0].alert === "undefined") {
+            var emailCriticalAlertCount = AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+            var emailWarningAlertCount = AppConstants.EMAIL_WARNING_ALERT_COUNT
+        }
 
-    else {
-        var emailCriticalAlertCount = tenantData[0].alert.warningAlertCount;
-        var emailWarningAlertCount = tenantData[0].alert.criticalAlertCount;
+        else {
+            var emailCriticalAlertCount = tenantData[0].alert.warningAlertCount;
+            var emailWarningAlertCount = tenantData[0].alert.criticalAlertCount;
+        }
     }
 
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
@@ -157,16 +158,17 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         }
                     }
 
-                    var jobdata = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId:  jobResults[j].jobid  });
-                    
-                    if(typeof alertJobs.alerts.critical === 'undefined')
-                        alertJobs.alerts.critical=[]
+                    var jobdata = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
+
+                    if (typeof alertJobs.alerts.critical === 'undefined')
+                        alertJobs.alerts.critical = []
                     else
                         alertJobs.alerts.critical = jobdata[0].alerts.critical
-                 
+
                     alertJobs.alerts.critical.push({
                         time: jobResults[j].time,
                         resultID: jobResults[j].resultID,
+                        response: jobResults[j].response,
                         status: "critical",
                     })
 
@@ -208,14 +210,15 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         }
                     }
 
-                    if(typeof alertJobs.alerts.warning === 'undefined')
-                    alertJobs.alerts.warning=[]
+                    if (typeof alertJobs.alerts.warning === 'undefined')
+                        alertJobs.alerts.warning = []
                     else
-                    alertJobs.alerts.warning = jobdata[0].alerts.warning
-                   
+                        alertJobs.alerts.warning = jobdata[0].alerts.warning
+
                     alertJobs.alerts.warning.push({
                         time: jobResults[j].time,
                         resultID: jobResults[j].resultID,
+                        response: jobResults[j].response,
                         status: "warning",
                     })
                     //add job details status wise for the DB_JOB_LIST
