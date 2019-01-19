@@ -57,7 +57,7 @@ class PointsViewer extends React.Component {
             titleField: 'title',
             valueField: 'value',
             labelRadius: 10,
-            radius: '50%',
+            radius: '30%',
             innerRadius: '60%',
             labelText: '[[title]]',
             export: {
@@ -67,8 +67,14 @@ class PointsViewer extends React.Component {
 
         return (
             <div className="row">
-                <div className="points-view-heading">
-                    <label className="control-label">Points View</label>
+                <div className="row">
+                    <div className="col-sm-4"></div>
+                    <div className="col-sm-4 alert-label-column section-head">
+                        <h4 className="site-add-title">
+                            Points View
+                        </h4>
+                    </div>
+                    <div className="col-sm-4"></div>
                 </div>
                 <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
             </div>

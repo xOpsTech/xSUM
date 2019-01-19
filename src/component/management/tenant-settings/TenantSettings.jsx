@@ -243,6 +243,7 @@ class TenantSettings extends React.Component {
                         </div>
 
                         <div className="row alert-list-wrap-div settings-section">
+                            <PointsViewer selectedTenant={selectedTenant}/>
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column section-head">
                                     <h4 className="site-add-title">
@@ -300,7 +301,6 @@ class TenantSettings extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                            <PointsViewer selectedTenant={selectedTenant}/>
                         </div>
                         <div className="row alert-list-wrap-div">
                             {

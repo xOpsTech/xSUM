@@ -355,7 +355,6 @@ class SiteAdd extends React.Component {
                     (loggedUserObj)
                         ? <NavContainer
                             loggedUserObj={loggedUserObj}
-                            isFixedNav={true}
                             tenantDropDown={this.tenantDropDown}/>
                         : <div className="sign-in-button">
                             <button onClick={() => { UIHelper.redirectTo(AppConstants.LOGIN_ROUTE); }}
@@ -525,7 +524,10 @@ class SiteAdd extends React.Component {
                             <button
                                 className="btn btn-primary form-control half-button button-all-caps-text monitor-test-button"
                                 onClick={(e) => this.addJobClick(e)}
-                                {...(siteList.length >= 5) && { disabled: true }}>
+                                {
+                                    ...(selectedTenant.points && selectedTenant.points.pointsRemain <= 0) &&
+                                    { disabled: true }
+                                }>
                                 Save Test
                             </button>
                             <button

@@ -20,6 +20,7 @@ exports.EMAIL_AND_PASSWORD_NOT_MATCH = 'Email and password does not match';
 exports.USER_INACTIVE = 'User account is not activated';
 exports.SUPER_USER_EXISTS = 'User is already in the super user list';
 exports.SUPER_USER_NON_EXISTS = 'User is not in super user list';
+exports.POINT_NOT_ENOUGH_ERROR = 'You can\'t add anymore jobs. Please contact administrator for any help...';
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 

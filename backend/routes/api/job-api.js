@@ -63,17 +63,20 @@ JobApi.prototype.insertJob = async function(req, res) {
 
     };
 
-    var queryObj = {userEmail: jobObj.userEmail};
-    var jobData = await MongoDB.getAllData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
+    var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
-    if (jobData.length < 5) {
+    var totalPointsRemain = tenantData[0].points.pointsRemain -
+                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobObj.recursiveSelect.value);
+
+    if (totalPointsRemain >= 0 ) {
         await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
 
         TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, true);
 
         res.send(jobInsertObj);
     } else {
-        res.send({error: 'You can add only five jobs'});
+        res.send({error: AppConstants.POINT_NOT_ENOUGH_ERROR});
     }
 }
 
