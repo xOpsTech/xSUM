@@ -1,9 +1,11 @@
 var nodemailer = require('nodemailer');
 var AppConstants = require('../constants/AppConstants');
+var AlertApi = require('../routes/api/alert-api');
 var InfluxDB = require('../db/influxdb');
 var MongoDB = require('../db/mongodb');
 var request = require('request');
 var crypto = require('crypto');
+
 
 function Helpers(){};
 
@@ -70,8 +72,10 @@ Helpers.prototype.executePingJob = function(databaseName, jobObj, isOneTimeTest)
         if (resp) {
             console.log('Successfully executed the job : ', jobObj.jobId);
             var resultID = crypto.randomBytes(10).toString('hex');
-            var tagsObj = { jobid: jobObj.jobId, resultID: resultID };
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
+            
+            AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
 
             if (isOneTimeTest) {
                 var newValueObj = {

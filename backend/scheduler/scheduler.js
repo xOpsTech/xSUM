@@ -43,6 +43,7 @@ async function executeAllJobs() {
                     executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
                 } else if (job.testType === AppConstants.PING_TEST_TYPE) {
                     job.urlValue = job.siteObject.value;
+                    job.currentDateTime = currentDateTime;
                     // Execute ping test
                     Helpers.executePingJob(String(tenant._id), job, false);
                 }
