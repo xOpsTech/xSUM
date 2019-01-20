@@ -45,7 +45,6 @@ async function executeAllJobs() {
                     job.urlValue = job.siteObject.value;
                     job.currentDateTime = currentDateTime;
                     // Execute ping test
-                    console.log("i come ")
                     Helpers.executePingJob(String(tenant._id), job, false);
                 }
 
