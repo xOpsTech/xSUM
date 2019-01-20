@@ -45,22 +45,29 @@ AlertApi.prototype.saveAlert = async function(req, res) {
 
 AlertApi.prototype.getAllAlerts = async function(req, res) {
     var userObj = req.body;
-    var queryObj = {userEmail: userObj.userEmail};
+    var queryObj = {};
     var jobData = await MongoDB.getAllData(userObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
 
     var alertsData = [];
 
-    for (var i = 0; i < jobData.length; i++) {
+    for (let jobObj of jobData) {
         var queryToGetJobAlert = {
-            'job.jobId': jobData[i].jobId
+            'job.jobId': jobObj.jobId
         };
 
         var alertObjData = await MongoDB.getAllData(userObj.tenantID, AppConstants.ALERT_LIST, queryToGetJobAlert);
-        var jobResults = await InfluxDB.getAllDataFor(userObj.tenantID, "SELECT * FROM pageLoadTime where jobid='" + jobData[i].jobId+"'"); //+ "' and time >= '" + yesterDay + "'")
+
+        var jobResults = [];
+
+        if (jobObj.testType === AppConstants.PING_TEST_TYPE) {
+            jobResults = await InfluxDB.getAllDataFor(
+                                userObj.tenantID,
+                                "SELECT * FROM " + AppConstants.PING_RESULT_LIST+ " where jobid='" + jobObj.jobId+"'");
+        }
 
         var meanCount = 0;
-        for (var j = 0; j < jobResults.length; j++) {
-            meanCount += jobResults[j].mean;
+        for (let jobResult of jobResults) {
+            meanCount += jobResult.response;
         }
 
         var meanAvg = meanCount/jobResults.length;
@@ -69,20 +76,20 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
 
         if (alertObjData.length > 0) {
             alertsData.push({
-                job: jobData[i],
-                meanAvg: meanAvg/1000,
-                warningThreshold: alertObjData[0].warningThreshold,
-                criticalThreshold: alertObjData[0].criticalThreshold,
+                job: jobObj,
+                meanAvg: roundValue(meanAvg/1000, 3),
+                warningThreshold: roundValue(alertObjData[0].warningThreshold, 3),
+                criticalThreshold: roundValue(alertObjData[0].criticalThreshold, 3),
                 _id: alertObjData[0]._id,
                 warningAlertCount: alertObjData[0].warningAlertCount,
                 criticalAlertCount: alertObjData[0].criticalAlertCount
             });
         } else {
             alertsData.push({
-                job: jobData[i],
-                meanAvg: meanAvg/1000,
-                warningThreshold: warningThreshold/1000,
-                criticalThreshold: criticalThreshold/1000
+                job: jobObj,
+                meanAvg: roundValue(meanAvg/1000, 3),
+                warningThreshold: roundValue(warningThreshold / 1000, 3),
+                criticalThreshold: roundValue(criticalThreshold / 1000, 3)
             });
         }
 
@@ -112,7 +119,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
     var queryToGetTenantDetails = { _id: ObjectId(databaseName) };
 
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
-    
+
     //give default alert count when alerts are not defnied
     if (tenantData.length > 0) {
         //give default alert count when alerts are not defnied
@@ -240,6 +247,11 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
         }
 
     }
+}
+
+function roundValue(value, decimalPlaces) {
+    let num = Math.pow(10, decimalPlaces);
+    return Math.round(value * num) / num;
 }
 
 module.exports = new AlertApi();

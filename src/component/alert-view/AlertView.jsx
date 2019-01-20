@@ -283,9 +283,10 @@ class AlertView extends React.Component {
                                         (selectedAlertData)
                                             ? <input
                                                 type="number"
+                                                step="0.1"
                                                 className="form-control"
                                                 id="warningThresholdInput"
-                                                value={Math.round(selectedAlertData.warningThreshold)}
+                                                value={selectedAlertData.warningThreshold}
                                                 onChange={(e) => {
                                                     selectedAlertData.warningThreshold = e.target.value;
                                                     this.handleChange(e, selectedAlertData);
@@ -311,10 +312,11 @@ class AlertView extends React.Component {
                                     {
                                         (selectedAlertData)
                                             ? <input
+                                                step="0.1"
                                                 type="number"
                                                 className="form-control"
                                                 id="criticalThresholdInput"
-                                                value={Math.round(selectedAlertData.criticalThreshold)}
+                                                value={selectedAlertData.criticalThreshold}
                                                 onChange={(e) => {
                                                     selectedAlertData.criticalThreshold = e.target.value;
                                                     this.handleChange(e, selectedAlertData);

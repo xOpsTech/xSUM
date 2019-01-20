@@ -120,10 +120,8 @@ class AlertListView extends React.Component {
         };
         alertApi.removeAlert(url, alertToRemove).then(() => {
             let arrayAfterRemove = this.state.alertsData.filter((alertObj) => {
-                return alertObj.alertId !== alertToRemove._id;
+                return alertObj._id !== alertToRemove.alertId;
             });
-            delete alertToRemove._id;
-            arrayAfterRemove.push(alertToRemove);
             this.setState({isLoading: false, loadingMessage: '', alertsData: arrayAfterRemove});
         });
 
@@ -192,14 +190,14 @@ class AlertListView extends React.Component {
                                                 <td className="table-cell">
                                                     <div className="form-group has-feedback label-div">
                                                         <label className="alert-label">
-                                                            {Math.round(alert.warningThreshold)} seconds
+                                                            {alert.warningThreshold} seconds
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
                                                     <div className="form-group has-feedback label-div">
                                                         <label className="alert-label">
-                                                            {Math.round(alert.criticalThreshold)} seconds
+                                                            {alert.criticalThreshold} seconds
                                                         </label>
                                                     </div>
                                                 </td>
