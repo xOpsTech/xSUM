@@ -105,7 +105,6 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
     var jobResults = await InfluxDB.getAllDataFor(databaseName, queryForPingResults);
 
-
     var queryToGetJobAlert = {
         'job.jobId': insertedJobObj.jobId
     };
