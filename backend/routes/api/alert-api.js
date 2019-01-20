@@ -101,7 +101,7 @@ AlertApi.prototype.removeAlert = function(req, res) {
 }
 
 AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
-    var queryForPingResults = "SELECT * FROM pingResults where jobid='" + insertedJobObj.jobId + "' and executedTime ='" + executedTime + "'";
+    var queryForPingResults = "SELECT * FROM "+AppConstants.PING_RESULT_LIST+" where jobid='" + insertedJobObj.jobId + "' and executedTime ='" + executedTime + "'";
 
     var jobResults = await InfluxDB.getAllDataFor(databaseName, queryForPingResults);
 
