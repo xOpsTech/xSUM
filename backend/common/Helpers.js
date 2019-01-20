@@ -72,7 +72,7 @@ Helpers.prototype.executePingJob = function(databaseName, jobObj, isOneTimeTest)
         if (resp) {
             console.log('Successfully executed the job : ', jobObj.jobId);
             var resultID = crypto.randomBytes(10).toString('hex');
-            var tagsObj = { jobid: jobObj.jobId, resultID: resultID,executedTime:jobObj.currentDateTime };
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
             
             AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
