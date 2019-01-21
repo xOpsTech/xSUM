@@ -77,9 +77,9 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
         if (alertObjData.length > 0) {
             alertsData.push({
                 job: jobObj,
-                meanAvg: roundValue(meanAvg/1000, 3),
-                warningThreshold: roundValue(alertObjData[0].warningThreshold, 3),
-                criticalThreshold: roundValue(alertObjData[0].criticalThreshold, 3),
+                meanAvg: Helpers.roundValue(meanAvg/1000, 3),
+                warningThreshold: Helpers.roundValue(alertObjData[0].warningThreshold, 3),
+                criticalThreshold: Helpers.roundValue(alertObjData[0].criticalThreshold, 3),
                 _id: alertObjData[0]._id,
                 warningAlertCount: alertObjData[0].warningAlertCount,
                 criticalAlertCount: alertObjData[0].criticalAlertCount
@@ -87,9 +87,9 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
         } else {
             alertsData.push({
                 job: jobObj,
-                meanAvg: roundValue(meanAvg/1000, 3),
-                warningThreshold: roundValue(warningThreshold / 1000, 3),
-                criticalThreshold: roundValue(criticalThreshold / 1000, 3)
+                meanAvg: Helpers.roundValue(meanAvg/1000, 3),
+                warningThreshold: Helpers.roundValue(warningThreshold / 1000, 3),
+                criticalThreshold: Helpers.roundValue(criticalThreshold / 1000, 3)
             });
         }
 
@@ -247,11 +247,6 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
         }
 
     }
-}
-
-function roundValue(value, decimalPlaces) {
-    let num = Math.pow(10, decimalPlaces);
-    return Math.round(value * num) / num;
 }
 
 module.exports = new AlertApi();

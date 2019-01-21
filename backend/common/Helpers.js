@@ -6,10 +6,9 @@ var MongoDB = require('../db/mongodb');
 var request = require('request');
 var crypto = require('crypto');
 
-
 function Helpers(){};
 
-Helpers.prototype.sendEmail = function(toMailAddress, subject, html, res) {
+exports.sendEmail = function(toMailAddress, subject, html, res) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -36,7 +35,7 @@ Helpers.prototype.sendEmail = function(toMailAddress, subject, html, res) {
     });
 }
 
-Helpers.prototype.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, subject, html, res) {
+exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, subject, html, res) {
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -63,7 +62,7 @@ Helpers.prototype.sendEmailFrom = function(fromMailAddress, fromPassword, toMail
     });
 }
 
-Helpers.prototype.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
+exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     request({
         uri: jobObj.urlValue,
         method: 'GET',
@@ -74,8 +73,9 @@ Helpers.prototype.executePingJob = function(databaseName, jobObj, isOneTimeTest)
             var resultID = crypto.randomBytes(10).toString('hex');
             var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
-            
-            AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
+
+            databaseName !== AppConstants.DB_NAME
+                && AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
 
             if (isOneTimeTest) {
                 var newValueObj = {
@@ -92,4 +92,7 @@ Helpers.prototype.executePingJob = function(databaseName, jobObj, isOneTimeTest)
     })
 }
 
-module.exports = new Helpers();
+exports.roundValue = function(value, decimalPlaces) {
+    let num = Math.pow(10, decimalPlaces);
+    return Math.round(value * num) / num;
+}
