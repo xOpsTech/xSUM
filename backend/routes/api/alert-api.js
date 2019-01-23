@@ -107,6 +107,45 @@ AlertApi.prototype.removeAlert = function(req, res) {
     res.send(queryToRemoveAlert);
 }
 
+AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobObj) {
+
+    var queryToGetJobAlert = {
+        'job.jobId': insertedJobObj.jobId
+    };
+
+    var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
+
+    var queryForLastTwoPingResults = "SELECT * FROM "+AppConstants.PING_RESULT_LIST+" where jobid='" + insertedJobObj.jobId + "' ORDER BY time DESC LIMIT 2";
+  
+    InfluxDB.getAllDataFor(databaseName, queryForLastTwoPingResults).then((data)=>
+    {
+        var dataObj = data.map(values=>({response:values.response,resultId:values.resultID}));
+        var responseArray = [];
+        var resultArray = [];
+
+        for(var rsp of dataObj) {
+            responseArray.push(rsp.response)
+            resultArray.push(rsp.resultId)
+        }
+       
+        if(responseArray[1]/1000 > alertObjData[0].warningThreshold) {
+
+            if(responseArray[1]/1000>responseArray[0]/1000) {
+
+                if(responseArray[0]/1000 < alertObjData[0].warningThreshold) {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                    'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
+                    'alert is now recoverd <br>'
+                    'Regards,<br>xSUM admin';
+
+                     Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
+                }
+            }
+        }
+    });
+}
+
 AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
     var queryForPingResults = "SELECT * FROM "+AppConstants.PING_RESULT_LIST+" where jobid='" + insertedJobObj.jobId + "' and executedTime ='" + executedTime + "'";
 
@@ -215,6 +254,8 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                             warning: [],
                         }
                     }
+
+                    var jobdata = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
 
                     if (typeof alertJobs.alerts.warning === 'undefined')
                         alertJobs.alerts.warning = []
