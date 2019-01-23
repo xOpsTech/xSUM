@@ -141,7 +141,7 @@ export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
 export function getUserData(loggedUserObj, context, callBackFunction) {
     var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
 
-    context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_USER});
+    context.setState({isLoading: true, alertData:context.state.alertData, loadingMessage: MessageConstants.FETCHING_USER});
     userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
 
         loggedUserObj = data.user;
@@ -150,7 +150,8 @@ export function getUserData(loggedUserObj, context, callBackFunction) {
             {
                 isLoading: false,
                 loadingMessage: '',
-                loggedUserObj
+                loggedUserObj,
+                alertData: context.state.alertData
             }
         );
 
@@ -220,7 +221,8 @@ export function getAllTenantsData(user, context, callBackFunction) {
                 isLoading: false,
                 loadingMessage: '',
                 tenantList: tenantList,
-                selectedTenant: selectedTenant
+                selectedTenant: selectedTenant,
+                alertData: context.state.alertData
             }
         );
 

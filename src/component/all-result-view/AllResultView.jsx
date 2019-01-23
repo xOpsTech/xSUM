@@ -77,7 +77,6 @@ class AllResultView extends React.Component {
 
     getAllTenantsData(user, context) {
         UIHelper.getAllTenantsData(user, context, context.getAllAlerts);
-        UIHelper.getAllTenantsData(user, context, context.getAllJobs);
     }
 
     getAllAlerts(loggedUserObj, selectedTenant, context) {
@@ -89,25 +88,19 @@ class AllResultView extends React.Component {
         };
         alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
             var alertThresholdsByJob = [];
-            this.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT });
 
             for (var alert of data.alertsData) {
                 alertThresholdsByJob.push({
                     jobId: alert.job.jobId,
-                    criticalThreshold: parseInt(alert.criticalThreshold),
-                    warningThreshold: parseInt(alert.warningThreshold)
+                    criticalThreshold: parseFloat(alert.criticalThreshold),
+                    warningThreshold: parseFloat(alert.warningThreshold)
                 });
             }
+ 
+            this.setState({ isLoading: false, loadingMessage: '', alertData: alertThresholdsByJob });
 
-            this.setState(
-                {
-                    alertData: alertThresholdsByJob
-                }
-            );
-            this.setState({ isLoading: false, loadingMessage: '' });
-
-        })
-
+        });
+        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllJobs);
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
@@ -143,11 +136,19 @@ class AllResultView extends React.Component {
                 })
             }
 
-            context.setState({isLoading: false, loadingMessage: '', jobsWithResults: jobsList,locationMarker: locationsArr});
+            context.setState({isLoading: false, loadingMessage: '',alertData:this.state.alertData, jobsWithResults: jobsList,locationMarker: locationsArr});
         });
     }
 
     getArrangedBarChartData(job, selectedChartIndex) {
+        
+        for (var thresHold of this.state.alertData) {
+            if (thresHold.jobId == job.jobId) {
+              var criticalThreshold = thresHold.criticalThreshold;
+              var warningThreshold = thresHold.warningThreshold;
+            }
+        }
+
         var resultArray = [];
 
         if (job.result.length === 0) {
@@ -178,17 +179,18 @@ class AllResultView extends React.Component {
                 }
 
             } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-                for (var thresHold of this.state.alertData) {
-                    if (thresHold.jobId == job.jobId) {
-
-                        var criticalThreshold = parseInt(thresHold.criticalThreshold)
-                        var warningThreshold = parseInt(thresHold.warningThreshold)
-                    }
+                
+                var responseTime = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
+               
+                if(criticalThreshold === undefined && warningThreshold === undefined){
+                    resultArray.push({
+                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
+                        color: '#eb00ff',
+                        resultID: currentJob.resultID
+                    });
                 }
-
-                var responseTIme = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
-
-                if (responseTIme >= criticalThreshold) {
+                else if (responseTime >= criticalThreshold) {
                     resultArray.push({
                         execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
@@ -196,7 +198,7 @@ class AllResultView extends React.Component {
                         resultID: currentJob.resultID
                     });
                 }
-                else if (responseTIme >= warningThreshold && responseTIme < criticalThreshold) {
+                else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
                     resultArray.push({
                         execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
