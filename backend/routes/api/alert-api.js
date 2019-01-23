@@ -140,7 +140,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
         for (var j = 0; j < jobResults.length; j++) {
 
-            if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
+            if (jobResults[j].response/1000 > parseInt(alertObjData[0].criticalThreshold)) {
 
                 if (alertObjData[0].criticalAlertCount >= emailCriticalAlertCount) {
                     // Send warning alert
@@ -192,7 +192,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                     MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                 }
 
-            } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
+            } else if (jobResults[j].response/1000 > parseInt(alertObjData[0].warningThreshold)) {
 
                 if (alertObjData[0].warningAlertCount >= emailWarningAlertCount) {
                     // Send critical alert
