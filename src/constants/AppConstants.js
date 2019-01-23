@@ -159,6 +159,7 @@ export const URL_NEW_STATE  = 'New';
 export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
 export const DATE_ONLY_FORMAT = 'MM/DD/YYYY';
 export const TIME_ONLY_FORMAT = 'h:mm a';
+export const DATE_TIME_FORMAT = 'MM/DD h:mm a';
 
 export const BROWSER_ARRAY = [
     {value: 'chrome', textValue: 'CHROME'},

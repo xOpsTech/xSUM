@@ -85,8 +85,18 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
                 MongoDB.updateData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, {jobId: jobObj.jobId}, newValueObj);
             }
 
-        } else {
+        } else if (err) {
             console.log('Error in executing the job : ', jobObj.jobId);
+            console.log('Error : ', err);
+
+            var emailBodyToSend = 'Hi ,<br><br>' +
+                                    'The job you have added for <b>' +
+                                    jobObj.siteObject.value +
+                                    '</b> may be not working.<br>' +
+                                    'Please check it again.<br><br>' +
+                                    'Regards,<br>xSUM admin';
+
+            this.sendEmail(jobObj.userEmail, 'Trouble of ping to your site', emailBodyToSend);
         }
 
     })

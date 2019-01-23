@@ -96,7 +96,7 @@ class AllResultView extends React.Component {
                     warningThreshold: parseFloat(alert.warningThreshold)
                 });
             }
- 
+
             this.setState({ isLoading: false, loadingMessage: '', alertData: alertThresholdsByJob });
 
         });
@@ -141,7 +141,7 @@ class AllResultView extends React.Component {
     }
 
     getArrangedBarChartData(job, selectedChartIndex) {
-        
+
         for (var thresHold of this.state.alertData) {
             if (thresHold.jobId == job.jobId) {
               var criticalThreshold = thresHold.criticalThreshold;
@@ -153,7 +153,7 @@ class AllResultView extends React.Component {
 
         if (job.result.length === 0) {
             resultArray.push({
-                execution: moment().format(AppConstants.TIME_ONLY_FORMAT),
+                execution: moment().format(AppConstants.DATE_TIME_FORMAT),
                 responseTime: 0,
                 color: '#eb00ff',
                 resultID: -1
@@ -171,7 +171,7 @@ class AllResultView extends React.Component {
 
                 if (!isResultIdFound) {
                     resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
                         responseTime: currentJob[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
                         color: '#eb00ff',
                         resultID: currentJob.resultID
@@ -179,12 +179,12 @@ class AllResultView extends React.Component {
                 }
 
             } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-                
+
                 var responseTime = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
-               
+
                 if(criticalThreshold === undefined && warningThreshold === undefined){
                     resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
                         color: '#eb00ff',
                         resultID: currentJob.resultID
@@ -192,7 +192,7 @@ class AllResultView extends React.Component {
                 }
                 else if (responseTime >= criticalThreshold) {
                     resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
                         color: '#B22222',
                         resultID: currentJob.resultID
@@ -200,7 +200,7 @@ class AllResultView extends React.Component {
                 }
                 else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
                     resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
                         color: '#FFFF00',
                         resultID: currentJob.resultID
@@ -208,7 +208,7 @@ class AllResultView extends React.Component {
                 }
                 else {
                     resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
+                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
                         color: '#eb00ff',
                         resultID: currentJob.resultID
@@ -274,14 +274,17 @@ class AllResultView extends React.Component {
                     {
                         gridColor: '#FFFFFF',
                         gridAlpha: 0.2,
-                        dashLength: 0
+                        dashLength: 0,
+                        title: 'Response time / second',
+                        autoRotateAngle: 90
                     }
                 ],
                 gridAboveGraphs: true,
                 startDuration: 1,
+                mouseWheelZoomEnabled: true,
                 graphs: [
                     {
-                        balloonText: '[[category]]: <b>[[value]]</b>',
+                        balloonText: '[[category]]: <b>[[value]] seconds</b>',
                         fillAlphas: 0.8,
                         lineAlpha: 0.2,
                         type: 'column',
@@ -289,18 +292,39 @@ class AllResultView extends React.Component {
                         fillColorsField: 'color'
                     }
                 ],
+                chartScrollbar: {
+                    graph: 'g1',
+                    oppositeAxis: false,
+                    offset: 30,
+                    scrollbarHeight: 20,
+                    backgroundAlpha: 0,
+                    selectedBackgroundAlpha: 0.1,
+                    selectedBackgroundColor: '#888888',
+                    graphFillAlpha: 0,
+                    graphLineAlpha: 0.5,
+                    selectedGraphFillAlpha: 0,
+                    selectedGraphLineAlpha: 1,
+                    autoGridCount: false,
+                    color: '#AAAAAA'
+                },
                 chartCursor: {
+                    limitToGraph:'g1',
+                    fullWidth: true,
                     categoryBalloonEnabled: false,
                     cursorAlpha: 0,
-                    zoomable: false
+                    zoomable: true,
+                    valueZoomable: true
                 },
                 categoryField: 'execution',
                 categoryAxis: {
                     gridPosition: 'start',
                     gridAlpha: 0,
                     tickPosition: 'start',
-                    tickLength: 20
+                    tickLength: 20,
+                    autoRotateAngle: 45,
+                    autoRotateCount: 5
                 },
+                maxSelectedTime: 3,
                 export: {
                     enabled: true
                 }

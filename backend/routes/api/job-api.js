@@ -103,10 +103,10 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
             dataTable = AppConstants.PING_RESULT_LIST;
         }
 
-        var yesterDay = moment().subtract(6, 'hours').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+        var backDate = moment().subtract(7, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
         var jobResults = await InfluxDB.getAllDataFor(
             userObj.tenantID,
-            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + yesterDay + "'"
+            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
         );
 
         job.result = jobResults;
