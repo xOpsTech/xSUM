@@ -88,7 +88,6 @@ class AllResultView extends React.Component {
         };
         alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
             var alertThresholdsByJob = [];
-            // this.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT });
 
             for (var alert of data.alertsData) {
                 alertThresholdsByJob.push({
@@ -183,8 +182,8 @@ class AllResultView extends React.Component {
                 
                 var responseTime = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
                
-                if(criticalThreshold == 'undefined' && warningThreshold == 'undefined'){
-                   resultArray.push({
+                if(criticalThreshold === undefined && warningThreshold === undefined){
+                    resultArray.push({
                         execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
                         color: '#eb00ff',
@@ -207,7 +206,7 @@ class AllResultView extends React.Component {
                         resultID: currentJob.resultID
                     });
                 }
-                else{
+                else {
                     resultArray.push({
                         execution: moment(currentJob.time).format(AppConstants.TIME_ONLY_FORMAT),
                         responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
