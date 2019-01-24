@@ -136,7 +136,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
                     var emailBodyToSend = 'Hi ,<br><br>' +
                     'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
-                    'alert is now recoverd <br>'
+                    'Your site is now recoverd <br>'
                     'Regards,<br>xSUM admin';
 
                      Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
