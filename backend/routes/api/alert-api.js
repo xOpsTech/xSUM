@@ -127,22 +127,26 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
             responseArray.push(rsp.response)
             resultArray.push(rsp.resultId)
         }
-       
-        if(responseArray[1]/1000 > alertObjData[0].warningThreshold) {
 
-            if(responseArray[1]/1000>responseArray[0]/1000) {
+        if (alertObjData.length > 0) {
 
-                if(responseArray[0]/1000 < alertObjData[0].warningThreshold) {
+            if(responseArray[1]/1000 > alertObjData[0].warningThreshold) {
+                                                        
+                if(responseArray[1]/1000>responseArray[0]/1000) {
 
-                    var emailBodyToSend = 'Hi ,<br><br>' +
-                    'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
-                    'Your site is now recoverd <br>'
-                    'Regards,<br>xSUM admin';
+                    if(responseArray[0]/1000 < alertObjData[0].warningThreshold) {
 
-                     Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
+                        var emailBodyToSend = 'Hi ,<br><br>' +
+                        'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
+                        'Your site is now recoverd <br>'
+                        'Regards,<br>xSUM admin';
+
+                        Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
+                    }
                 }
             }
         }
+
     });
 }
 
