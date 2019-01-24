@@ -76,6 +76,8 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
 
             databaseName !== AppConstants.DB_NAME
                 && AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
+            databaseName !== AppConstants.DB_NAME
+                && AlertApi.sendRecoveryAlert(databaseName, jobObj);
 
             if (isOneTimeTest) {
                 var newValueObj = {
