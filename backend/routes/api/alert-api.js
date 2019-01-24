@@ -203,12 +203,12 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         }
                     }
 
-                    var jobdata = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
+                    var jobData = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
 
                     if (typeof alertJobs.alerts.critical === 'undefined')
                         alertJobs.alerts.critical = []
                     else
-                        alertJobs.alerts.critical = jobdata[0].alerts.critical
+                        alertJobs.alerts.critical = jobData[0].alerts.critical
 
                     alertJobs.alerts.critical.push({
                         time: jobResults[j].time,
@@ -255,12 +255,12 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         }
                     }
 
-                    var jobdata = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
+                    var jobData = await MongoDB.getAllData(databaseName, AppConstants.DB_JOB_LIST, { jobId: jobResults[j].jobid });
 
                     if (typeof alertJobs.alerts.warning === 'undefined')
                         alertJobs.alerts.warning = []
                     else
-                        alertJobs.alerts.warning = jobdata[0].alerts.warning
+                        alertJobs.alerts.warning = jobData[0].alerts.warning
 
                     alertJobs.alerts.warning.push({
                         time: jobResults[j].time,
