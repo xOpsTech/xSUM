@@ -45,6 +45,7 @@ export const RESPONSE_SUCCESS = 'Success';
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
 export const DATA_MODAL = 'DATA_MODAL';
 export const RESULT_MODAL = 'RESULT_MODAL';
+export const ALERT_MODAL = 'ALERT_MODAL';
 
 // Constants for patterns
 export const NAME_PATTERN       = /[A-Za-z\s]+$/;

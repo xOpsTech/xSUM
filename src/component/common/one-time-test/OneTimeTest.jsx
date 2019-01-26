@@ -28,6 +28,7 @@ class OneTimeTest extends React.Component {
         this.viewResult      = this.viewResult.bind(this);
         this.modalYesClick   = this.modalYesClick.bind(this);
         this.modalNoClick    = this.modalNoClick.bind(this);
+        this.modalOkClick    = this.modalOkClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -49,7 +50,9 @@ class OneTimeTest extends React.Component {
             urlObject : {value:'', error: {}},
             isLoading: false,
             result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''},
-            isModalVisible: false
+            isModalVisible: false,
+            isAlertVisible: false,
+            modalTitle: ''
         };
 
         return initialState;
@@ -126,8 +129,7 @@ class OneTimeTest extends React.Component {
             }
 
         }).catch((error) => {
-            this.setState({isLoading: false});
-            alert(error);
+            this.setState({isLoading: false, isAlertVisible: true, modalTitle: error});
         });
     }
 
@@ -188,12 +190,16 @@ class OneTimeTest extends React.Component {
     }
 
     modalNoClick() {
-        this.setState({isModalVisible:false});
+        this.setState({isModalVisible: false});
         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
     }
 
+    modalOkClick() {
+        this.setState({isAlertVisible: false, modalTitle: ''});
+    }
+
     render() {
-        const {urlObject, result, isLoading, isModalVisible} = this.state;
+        const {urlObject, result, isLoading, isModalVisible, isAlertVisible, modalTitle} = this.state;
         return (
             <Fragment>
                 <ModalContainer
@@ -202,6 +208,11 @@ class OneTimeTest extends React.Component {
                     noClick={this.modalNoClick}
                     isModalVisible={isModalVisible}
                     modalType={AppConstants.CONFIRMATION_MODAL}/>
+                <ModalContainer
+                    title={modalTitle}
+                    okClick={this.modalOkClick}
+                    isModalVisible={isAlertVisible}
+                    modalType={AppConstants.ALERT_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
                 <h3 className="search-text">
                     Run a one-time test

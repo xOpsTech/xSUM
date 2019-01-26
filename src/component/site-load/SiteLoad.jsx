@@ -28,6 +28,7 @@ class SiteAdd extends React.Component {
         this.closeResultModal     = this.closeResultModal.bind(this);
         this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
         this.googleResponseFail    = this.googleResponseFail.bind(this);
+        this.modalOkClick          = this.modalOkClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -55,7 +56,9 @@ class SiteAdd extends React.Component {
             oldUrlResults: [],
             isViewHistoryVisible: false,
             resultObject: null,
-            isResultModalVisible: false
+            isResultModalVisible: false,
+            isAlertVisible: false,
+            alertTitle: ''
         };
 
         return initialState;
@@ -102,7 +105,11 @@ class SiteAdd extends React.Component {
     }
 
     googleResponseFail(response) {
-        alert('Error', response);
+        this.setState({isAlertVisible: true, modalTitle: 'Error'});
+    }
+
+    modalOkClick() {
+        this.setState({isAlertVisible: false, modalTitle: ''});
     }
 
     render() {
@@ -111,11 +118,18 @@ class SiteAdd extends React.Component {
             isViewHistoryVisible,
             oldUrlResults,
             resultObject,
-            isResultModalVisible
+            isResultModalVisible,
+            isAlertVisible,
+            modalTitle
         } = this.state;
 
         return (
             <Fragment>
+                <ModalContainer
+                    title={modalTitle}
+                    okClick={this.modalOkClick}
+                    isModalVisible={isAlertVisible}
+                    modalType={AppConstants.ALERT_MODAL}/>
                 <ModalContainer
                     title={MessageConstants.SEARCH_URL_WARNING_MESSAGE}
                     yesClick={this.modalYesClick}

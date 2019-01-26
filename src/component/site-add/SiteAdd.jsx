@@ -36,6 +36,7 @@ class SiteAdd extends React.Component {
         this.viewResult = this.viewResult.bind(this);
         this.navigateToResultView = this.navigateToResultView.bind(this);
         this.tenantDropDown = this.tenantDropDown.bind(this);
+        this.modalOkClick = this.modalOkClick.bind(this);
 
         // Setting initial state objects
         this.state = this.getInitialState();
@@ -81,6 +82,7 @@ class SiteAdd extends React.Component {
             isRecursiveCheck: true,
             recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
             isModalVisible: false,
+            modalTitle: '',
             siteToResult: null,
             jobName: {value: '', error: {}},
             selectedJobID: null,
@@ -220,7 +222,7 @@ class SiteAdd extends React.Component {
                 jobApi.addJob(url, jobObjectToInsert).then((data) => {
 
                     if (data.error) {
-                        alert(data.error);
+                        this.setState({isModalVisible: true, modalTitle: data.error});
                     } else {
                         this.state.siteList.push(data);
                     }
@@ -329,6 +331,10 @@ class SiteAdd extends React.Component {
         this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
     }
 
+    modalOkClick() {
+        this.setState({isModalVisible: false, modalTitle: ''});
+    }
+
     render() {
         const {
             isLoading,
@@ -341,6 +347,7 @@ class SiteAdd extends React.Component {
             loggedUserObj,
             isRecursiveCheck,
             isModalVisible,
+            modalTitle,
             siteToResult,
             jobName,
             selectedTenant,
@@ -349,6 +356,11 @@ class SiteAdd extends React.Component {
 
         return (
             <Fragment>
+                <ModalContainer
+                    title={modalTitle}
+                    okClick={this.modalOkClick}
+                    isModalVisible={isModalVisible}
+                    modalType={AppConstants.ALERT_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage} />
                 <LeftNav selectedIndex={AppConstants.TESTS_INDEX} isFixedLeftNav={true} />
                 {

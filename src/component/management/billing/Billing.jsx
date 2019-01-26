@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
+import ModalContainer from '../../common/modal-container/ModalContainer';
 import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
@@ -28,6 +29,7 @@ class Billing extends React.Component {
         this.dropDownClick = this.dropDownClick.bind(this);
         this.tenantDropDown = this.tenantDropDown.bind(this);
         this.handlePointsChange = this.handlePointsChange.bind(this);
+        this.modalOkClick = this.modalOkClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -66,7 +68,8 @@ class Billing extends React.Component {
                 pointsRemain: 0,
                 usedPoints: 0
             },
-            selectedTenantIndex: 0
+            selectedTenantIndex: 0,
+            isModalVisible: false
         };
 
         return initialState;
@@ -180,12 +183,16 @@ class Billing extends React.Component {
                 this.setState(
                     {
                         isLoading: false,
-                        loadingMessage: '',
+                        loadingMessage: ''
                     }
                 );
             });
         } else {
-            alert(MessageConstants.CANT_UPDATE_POINTS);
+            this.setState(
+                {
+                    isModalVisible: true
+                }
+            );
         }
 
     }
@@ -241,6 +248,10 @@ class Billing extends React.Component {
         this.handleChange(e, {selectedTenant});
     }
 
+    modalOkClick() {
+        this.setState({isModalVisible: false});
+    }
+
     render() {
         const {
             isLoading,
@@ -249,12 +260,18 @@ class Billing extends React.Component {
             isLeftNavCollapse,
             tenantList,
             selectedTenant,
-            selectedTenantIndex
+            selectedTenantIndex,
+            isModalVisible
         } = this.state;
 
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
+                <ModalContainer
+                    modalType={AppConstants.ALERT_MODAL}
+                    title={MessageConstants.CANT_UPDATE_POINTS}
+                    okClick={this.modalOkClick}
+                    isModalVisible={isModalVisible}/>
                 <LeftNav
                     selectedIndex={AppConstants.BILLING_INDEX}
                     isFixedLeftNav={true}
