@@ -37,6 +37,8 @@ AlertApi.prototype.saveAlert = async function(req, res) {
     } else {
         alertObj.warningAlertCount = 0;
         alertObj.criticalAlertCount = 0;
+        alertObj.failureAlertCount = 0;
+
         await MongoDB.insertData(alertObj.tenantID, AppConstants.ALERT_LIST, alertObj);
         res.send(alertObj);
     }
@@ -148,6 +150,36 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
         }
 
     });
+}
+
+AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
+
+    var queryToGetFailureAlertCount = {
+    'job.jobId': JobObj.jobId
+    }
+    
+    var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetFailureAlertCount);
+
+    var failureAlertCount =  alertObjData[0].failureAlertCount;
+
+    if(failureAlertCount < 5) {
+        failureAlertCount =  alertObjData[0].failureAlertCount + 1
+
+        var objectToUpdate = {
+            failureAlertCount: failureAlertCount
+        }
+
+        MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+      
+        var emailBodyToSend = 'Hi ,<br><br>' +
+                                'The job you have added for <b>' +
+                                JobObj.siteObject.value +
+                                '</b> may be not working.<br>' +
+                                'Please check it again.<br><br>' +
+                                'Regards,<br>xSUM admin';
+
+        Helpers.sendEmail(JobObj.userEmail, 'Trouble of ping to your site', emailBodyToSend);
+    }
 }
 
 AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
