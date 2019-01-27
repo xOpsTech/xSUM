@@ -66,6 +66,10 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
                     }
                 }
 
+                if (tenant.userCountLimit === undefined) {
+                    tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
+                }
+
                 matchedTenants.push(tenant);
                 break;
             }
@@ -133,6 +137,11 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
                     pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
                 }
             }
+
+            if (tenant.userCountLimit === undefined) {
+                tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
+            }
+
         }
 
         res.send(tenantsArray);
@@ -161,7 +170,8 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
         points: {
             totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
             pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
-        }
+        },
+        userCountLimit: AppConstants.DEFAULT_USER_COUNT
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;

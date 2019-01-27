@@ -111,18 +111,23 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
         activationCode: activationCode
     };
 
+    var queryToGetTenantObj = {_id: ObjectId(userObj.tenantID)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
+
     var queryObj = {email: userObj.email};
     var userData = await MongoDB.getAllData(userObj.tenantID, AppConstants.USER_LIST, queryObj);
 
-    if (userData.length > 0) {
+    var userCount = (tenantData[0].userCountLimit) ? tenantData[0].userCountLimit : AppConstants.DEFAULT_USER_COUNT;
+
+    if (tenantData[0].users.length >= userCount) {
+        res.send({message: AppConstants.USER_LIMIT_REACHED});
+    } else if (userData.length > 0) {
         res.send({message: AppConstants.USER_EXISTS});
     } else {
         await MongoDB.insertData(userObj.tenantID, AppConstants.USER_LIST, userInsertObj);
         await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
 
         // Update tenant users array
-        var queryToGetTenantObj = {_id: ObjectId(userObj.tenantID)};
-        var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
         var userArray = tenantData[0].users;
         userArray.push({userID: userInsertObj._id});
         var tenantUpdateObj = {

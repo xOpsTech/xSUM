@@ -69,7 +69,8 @@ class Billing extends React.Component {
                 usedPoints: 0
             },
             selectedTenantIndex: 0,
-            isModalVisible: false
+            isModalVisible: false,
+            modalTitle: ''
         };
 
         return initialState;
@@ -164,9 +165,9 @@ class Billing extends React.Component {
 
         var {selectedTenant, loggedUserObj} = this.state;
 
-        if (selectedTenant.points.pointsRemain >= 0) {
+        if (selectedTenant.points.pointsRemain >= 0
+            && selectedTenant.userList.length <= parseInt(selectedTenant.userCountLimit)) {
             this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATE_TENANT});
-
 
             var tenantSettingsToUpdate = {
                 id: selectedTenant._id,
@@ -174,7 +175,8 @@ class Billing extends React.Component {
                     points: {
                         totalPoints: parseInt(selectedTenant.points.totalPoints),
                         pointsRemain: parseInt(selectedTenant.points.pointsRemain)
-                    }
+                    },
+                    userCountLimit: parseInt(selectedTenant.userCountLimit)
                 }
             };
 
@@ -187,12 +189,10 @@ class Billing extends React.Component {
                     }
                 );
             });
+        } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
+            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
         } else {
-            this.setState(
-                {
-                    isModalVisible: true
-                }
-            );
+            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
         }
 
     }
@@ -221,7 +221,9 @@ class Billing extends React.Component {
                     pointsRemain: stateObject.selectedTenant.points.pointsRemain,
                     usedPoints: parseInt(stateObject.selectedTenant.points.totalPoints) -
                                     parseInt(stateObject.selectedTenant.points.pointsRemain)
-                }
+                },
+                userCountLimit: stateObject.selectedTenant.userCountLimit,
+                userList: stateObject.selectedTenant.userList
             }
         };
         this.setState(selectedTenantObj);
@@ -249,7 +251,7 @@ class Billing extends React.Component {
     }
 
     modalOkClick() {
-        this.setState({isModalVisible: false});
+        this.setState({isModalVisible: false, modalTitle: ''});
     }
 
     render() {
@@ -261,7 +263,8 @@ class Billing extends React.Component {
             tenantList,
             selectedTenant,
             selectedTenantIndex,
-            isModalVisible
+            isModalVisible,
+            modalTitle
         } = this.state;
 
         return (
@@ -269,7 +272,7 @@ class Billing extends React.Component {
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <ModalContainer
                     modalType={AppConstants.ALERT_MODAL}
-                    title={MessageConstants.CANT_UPDATE_POINTS}
+                    title={modalTitle}
                     okClick={this.modalOkClick}
                     isModalVisible={isModalVisible}/>
                 <LeftNav
@@ -342,7 +345,7 @@ class Billing extends React.Component {
                                         <label className="control-label">Total Points</label>
                                     </div>
                                 </div>
-                                <div className="col-sm-9">
+                                <div className="col-sm-3">
                                     <div className="form-group has-feedback label-div">
                                         <input
                                             value={selectedTenant.points.totalPoints}
@@ -359,7 +362,7 @@ class Billing extends React.Component {
                                         <label className="control-label">Remaining Points</label>
                                     </div>
                                 </div>
-                                <div className="col-sm-9">
+                                <div className="col-sm-3">
                                     <div className="form-group has-feedback label-div">
                                         <label className="common-label">
                                             {selectedTenant.points.pointsRemain}
@@ -368,6 +371,38 @@ class Billing extends React.Component {
                                 </div>
                             </div>
                             <PointsViewer selectedTenant={selectedTenant}/>
+                        </div>
+
+                        <div className="row alert-list-wrap-div settings-section">
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column section-head">
+                                    <h4 className="site-add-title">
+                                        Account Users
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Total Users</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-3">
+                                    <div className="form-group has-feedback label-div">
+                                        <input
+                                            value={selectedTenant.userCountLimit}
+                                            onChange={(e) => {
+                                                selectedTenant.userCountLimit = e.target.value;
+                                                this.handleChange(e, selectedTenant);
+                                            }}
+                                            className="form-control"
+                                            type="number"
+                                            id="tenantUserCountInput"
+                                            placeholder="User Count"/>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="row alert-list-wrap-div">
                             {
