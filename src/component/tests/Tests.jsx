@@ -167,7 +167,7 @@ class Tests extends React.Component {
                         <div className="row alert-list-wrap-div">
                             {
                                 (siteList.length > 0)
-                                    ? <table className="table table-borderless">
+                                    ? <table className="table table-bordered">
                                         <thead>
                                             <tr>
                                                 <th>Job Name</th>
@@ -183,28 +183,28 @@ class Tests extends React.Component {
                                                     return (
                                                         <tr className="table-row" key={'siteDetail' + i}>
                                                             <td className="table-cell">
-                                                                <div className="form-group has-feedback label-div">
+                                                                <div className="form-group has-feedback">
                                                                     <label className="alert-label">
                                                                         {site.jobName}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className="form-group has-feedback label-div">
+                                                                <div className="form-group has-feedback">
                                                                     <label className="alert-label">
                                                                         {site.siteObject.value}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className="form-group has-feedback label-div">
+                                                                <div className="form-group has-feedback">
                                                                     <label className="alert-label">
                                                                         {site.browser}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
-                                                                <div className="form-group has-feedback label-div">
+                                                                <div className="form-group has-feedback">
                                                                     <label className="alert-label">
                                                                         {site.recursiveSelect.textValue}
                                                                     </label>
@@ -259,7 +259,7 @@ class Tests extends React.Component {
                                             }
                                         </tbody>
                                     </table>
-                                : <div>No Tests available</div>
+                                : <div className="empty-list-style">No Tests available</div>
                             }
                             {
                                 (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
