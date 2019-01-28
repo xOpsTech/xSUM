@@ -181,7 +181,7 @@ class UserManagementView extends React.Component {
 
         const UserList = () => {
             return (
-                <table className="table table-borderless" id="user-list">
+                <table className="table table-bordered" id="user-list">
                     <thead>
                         <tr>
                             <th>User Email Address</th>
@@ -195,14 +195,14 @@ class UserManagementView extends React.Component {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {user.email}
                                                 </label>
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {UIHelper.getRoleForUserFromTenant(selectedTenant._id, user, true)}
                                                 </label>
@@ -267,7 +267,7 @@ class UserManagementView extends React.Component {
                         'table-container-div ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
-                            <div className="row tenant-select">
+                            <div className="row">
                                 <div className="col-sm-2 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Select Account : </label>

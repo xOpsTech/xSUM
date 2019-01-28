@@ -124,7 +124,7 @@ class TenantsView extends React.Component {
 
         const TenantList = () => {
             return (
-                <table className="table table-borderless" id="tenant-list">
+                <table className="table table-bordered" id="tenant-list">
                     <thead>
                         <tr>
                             <th>Account Name</th>
@@ -140,7 +140,7 @@ class TenantsView extends React.Component {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.name === '')
@@ -151,7 +151,7 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.email === '')
@@ -162,14 +162,14 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {tenant.points.totalPoints}
                                                 </label>
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {tenant.points.pointsRemain}
                                                 </label>
