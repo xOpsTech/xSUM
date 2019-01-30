@@ -5,6 +5,7 @@ var express = require('express'),
 
 var CreateTenants = require('./executables/createInfluxTenants');
 var UpdatePoints = require('./executables/updatePoints');
+var UpdateJobs = require('./executables/updateJobs');
 
 var port = config.PORT;
 var app = express();
@@ -23,6 +24,10 @@ switch (commandArguments[0]) {
     case 'update-points':
         // Update Points
         UpdatePoints.updatePointsInDatabase();
+        break;
+    case 'update-jobs':
+        // Update Jobs
+        UpdateJobs.updateJobsInDatabase();
         break;
     default:
         console.log('Nothing executed');

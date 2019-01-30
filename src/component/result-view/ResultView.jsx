@@ -125,7 +125,7 @@ class ResultView extends React.Component {
                                   <div className="row">
                                       <div className="col-xs-3 result-summary">
                                           <ResultTile tileName="Website"
-                                              value={resultObj.urlValue}/>
+                                              value={resultObj.securityProtocol + resultObj.urlValue}/>
                                           <ResultTile tileName="Date"
                                               value={moment(resultObj.dateTime).format(AppConstants.DATE_ONLY_FORMAT)}/>
                                           <ResultTile tileName="Time"

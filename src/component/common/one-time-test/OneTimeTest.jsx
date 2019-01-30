@@ -29,6 +29,7 @@ class OneTimeTest extends React.Component {
         this.modalYesClick   = this.modalYesClick.bind(this);
         this.modalNoClick    = this.modalNoClick.bind(this);
         this.modalOkClick    = this.modalOkClick.bind(this);
+        this.dropDownClick   = this.dropDownClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -52,7 +53,8 @@ class OneTimeTest extends React.Component {
             result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''},
             isModalVisible: false,
             isAlertVisible: false,
-            modalTitle: ''
+            modalTitle: '',
+            securityProtocol: AppConstants.SECURITY_ARRAY[0].value
         };
 
         return initialState;
@@ -98,7 +100,7 @@ class OneTimeTest extends React.Component {
     }
 
     insertToDB(randomHash) {
-        let {urlObject, loggedUserObj} = this.state;
+        let {urlObject, loggedUserObj, securityProtocol} = this.state;
 
         var url, urlObj;
 
@@ -107,12 +109,17 @@ class OneTimeTest extends React.Component {
             url = Config.API_URL + AppConstants.URL_INSERT_LOGGED_USER_API;
             urlObj = {
                 hashID: randomHash,
-                urlValue: 'http://' + urlObject.value,
-                userEmail: loggedUserObj.email
+                urlValue: urlObject.value,
+                userEmail: loggedUserObj.email,
+                securityProtocol: securityProtocol
             };
         } else {
             url = Config.API_URL + AppConstants.URL_INSERT_API;
-            urlObj = {hashID: randomHash, urlValue: 'http://' + urlObject.value};
+            urlObj = {
+                hashID: randomHash,
+                urlValue: urlObject.value,
+                securityProtocol: securityProtocol
+            };
         }
 
         this.setState({isLoading: true});
@@ -155,7 +162,7 @@ class OneTimeTest extends React.Component {
                             result: {
                                 isResultRecieved: true,
                                 resultID: data[0].resultID,
-                                searchedUrl: data[0].urlValue
+                                searchedUrl: data[0].securityProtocol + data[0].urlValue
                             }
                         });
                     }
@@ -198,8 +205,12 @@ class OneTimeTest extends React.Component {
         this.setState({isAlertVisible: false, modalTitle: ''});
     }
 
+    dropDownClick(stateObject) {
+        this.setState(stateObject);
+    }
+
     render() {
-        const {urlObject, result, isLoading, isModalVisible, isAlertVisible, modalTitle} = this.state;
+        const {urlObject, result, isLoading, isModalVisible, isAlertVisible, modalTitle, securityProtocol} = this.state;
         return (
             <Fragment>
                 <ModalContainer
@@ -218,39 +229,53 @@ class OneTimeTest extends React.Component {
                     Run a one-time test
                 </h3>
                 <form name="site-add-form">
-                    <div className={
-                            'input-group has-feedback ' +
-                            ((urlObject.error.hasError !== undefined)
-                                ? ((urlObject.error.hasError) ? 'has-error' : 'has-success') : '')
-                        }>
-                        {
-                            // <span className="input-group-addon">
-                            //     http://
-                            // </span>
-                        }
-                        <input
-                            value={urlObject.value}
-                            onChange={(e) => this.handleChange(e, {
-                                urlObject: {
-                                    value: e.target.value,
-                                    error: {
-                                        hasError: UIHelper.isUrlHasError(e.target.value),
-                                        name: MessageConstants.URL_ERROR
-                                    }
+                    <div className="row without-margin">
+                        <div className="col-sm-3">
+                            <select className="custom-select"
+                                value={securityProtocol}
+                                onChange={(e) => this.dropDownClick({securityProtocol: e.target.value})}>
+                                {
+                                    AppConstants.SECURITY_ARRAY.map((security, i) => {
+                                        return (
+                                            <option key={'security_' + i} value={security.value}>
+                                                {security.textValue}
+                                            </option>
+                                        );
+                                    })
                                 }
-                            })}
-                            onKeyPress={this.searchKeyPress}
-                            type="text"
-                            disabled={(isLoading)? 'disabled' : ''}
-                            className="form-control"
-                            id="urlObjectInput"
-                            placeholder="ENTER WEBSITE URL"/>
-                        <span className="input-group-addon"
-                            onClick={this.searchClick}>
-                            <i className="glyphicon glyphicon-search"></i>
-                        </span>
+                            </select>
+                        </div>
+                        <div className="col-sm-9">
+                            <div className={
+                                    'input-group has-feedback ' +
+                                    ((urlObject.error.hasError !== undefined)
+                                        ? ((urlObject.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                                <input
+                                    value={urlObject.value}
+                                    onChange={(e) => this.handleChange(e, {
+                                        urlObject: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isUrlHasError(e.target.value),
+                                                name: MessageConstants.URL_ERROR
+                                            }
+                                        }
+                                    })}
+                                    onKeyPress={this.searchKeyPress}
+                                    type="text"
+                                    disabled={(isLoading)? 'disabled' : ''}
+                                    className="form-control"
+                                    id="urlObjectInput"
+                                    placeholder="ENTER WEBSITE URL"/>
+                                <span className="input-group-addon"
+                                    onClick={this.searchClick}>
+                                    <i className="glyphicon glyphicon-search"></i>
+                                </span>
+                            </div>
+                            <ErrorMessageComponent error={urlObject.error}/>
+                        </div>
                     </div>
-                    <ErrorMessageComponent error={urlObject.error}/>
                     {
                         result.isResultRecieved
                             ? <div className="result-container">

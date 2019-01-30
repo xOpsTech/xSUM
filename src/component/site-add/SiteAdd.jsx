@@ -87,7 +87,8 @@ class SiteAdd extends React.Component {
             jobName: {value: '', error: {}},
             selectedJobID: null,
             selectedTenant: {userList: []},
-            selectedLocationID: 0
+            selectedLocationID: 0,
+            securityProtocol: AppConstants.SECURITY_ARRAY[0].value
         };
 
         return initialState;
@@ -137,7 +138,9 @@ class SiteAdd extends React.Component {
                                     value: currentJobObj.recursiveSelect.value,
                                     textValue: currentJobObj.recursiveSelect.textValue
                                 },
-                                selectedJobID: currentJobObj.jobId
+                                selectedJobID: currentJobObj.jobId,
+                                selectedLocationID: currentJobObj.serverLocation.locationid,
+                                securityProtocol: currentJobObj.securityProtocol
                             }
                         );
                         break;
@@ -171,11 +174,11 @@ class SiteAdd extends React.Component {
         var {
             siteObject, browser, testType, scheduleDate,
             isRecursiveCheck, recursiveSelect, jobName,
-            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID
+            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID, securityProtocol
         } = this.state;
 
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
-            siteObject.value = 'http://' + siteObject.value;
+            siteObject.value = siteObject.value;
 
 
             if (selectedJobID) {
@@ -195,7 +198,8 @@ class SiteAdd extends React.Component {
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
-                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID]
+                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
+                    securityProtocol: securityProtocol
                 };
 
                 jobApi.updateJob(url, { job: jobToUpdate }).then(() => {
@@ -215,7 +219,8 @@ class SiteAdd extends React.Component {
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
-                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID]
+                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
+                    securityProtocol: securityProtocol
                 };
                 var url = Config.API_URL + AppConstants.JOB_INSERT_API;
                 this.setState({ isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB });
@@ -351,7 +356,8 @@ class SiteAdd extends React.Component {
             siteToResult,
             jobName,
             selectedTenant,
-            selectedLocationID
+            selectedLocationID,
+            securityProtocol
         } = this.state;
 
         return (
@@ -412,31 +418,50 @@ class SiteAdd extends React.Component {
                                 id="jobNameInput"
                                 placeholder="NAME THIS TEST" />
                         </div>
-                        <div className="form-group">
-                            <div className={
-                                'input-group has-feedback ' +
-                                ((siteObject.error.hasError !== undefined)
-                                    ? ((siteObject.error.hasError) ? 'has-error' : 'has-success') : '')
-                            }>
-
-                                <input
-                                    value={siteObject.value}
-                                    onChange={(e) => this.handleChange(e, {
-                                        siteObject: {
-                                            value: e.target.value,
-                                            error: {
-                                                hasError: UIHelper.isUrlHasError(e.target.value),
-                                                name: MessageConstants.URL_ERROR
-                                            }
-                                        }
-                                    })}
-                                    type="text"
-                                    className="form-control"
-                                    id="urlObjectInput"
-                                    placeholder="ENTER WEBSITE URL" />
+                        <div className="row without-margin">
+                            <div className="col-sm-3">
+                                <select className="custom-select"
+                                    value={securityProtocol}
+                                    onChange={(e) => this.dropDownClick({securityProtocol: e.target.value})}>
+                                    {
+                                        AppConstants.SECURITY_ARRAY.map((security, i) => {
+                                            return (
+                                                <option key={'security_' + i} value={security.value}>
+                                                    {security.textValue}
+                                                </option>
+                                            );
+                                        })
+                                    }
+                                </select>
                             </div>
-                            <ErrorMessageComponent error={siteObject.error} />
+                            <div className="col-sm-9">
+                                <div className="form-group">
+                                    <div className={
+                                        'input-group has-feedback ' +
+                                        ((siteObject.error.hasError !== undefined)
+                                            ? ((siteObject.error.hasError) ? 'has-error' : 'has-success') : '')
+                                    }>
+                                    <input
+                                        value={siteObject.value}
+                                        onChange={(e) => this.handleChange(e, {
+                                            siteObject: {
+                                                value: e.target.value,
+                                                error: {
+                                                    hasError: UIHelper.isUrlHasError(e.target.value),
+                                                    name: MessageConstants.URL_ERROR
+                                                }
+                                            }
+                                        })}
+                                        type="text"
+                                        className="input-group-append form-control"
+                                        id="urlObjectInput"
+                                        placeholder="ENTER WEBSITE URL" />
+                                    </div>
+                                    <ErrorMessageComponent error={siteObject.error} />
+                                </div>
+                            </div>
                         </div>
+
                         <div className="form-group">
                             <select
                                 className="form-control form-control-sm form-group"

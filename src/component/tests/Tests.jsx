@@ -192,7 +192,7 @@ class Tests extends React.Component {
                                                             <td className="table-cell">
                                                                 <div className="form-group has-feedback">
                                                                     <label className="alert-label">
-                                                                        {site.siteObject.value}
+                                                                        {site.securityProtocol + site.siteObject.value}
                                                                     </label>
                                                                 </div>
                                                             </td>

@@ -363,7 +363,7 @@ class Billing extends React.Component {
                                     </div>
                                 </div>
                                 <div className="col-sm-3">
-                                    <div className="form-group has-feedback label-div">
+                                    <div className="form-group has-feedback">
                                         <label className="common-label">
                                             {selectedTenant.points.pointsRemain}
                                         </label>

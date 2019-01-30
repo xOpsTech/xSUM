@@ -64,7 +64,7 @@ exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, s
 
 exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     request({
-        uri: jobObj.urlValue,
+        uri: jobObj.securityProtocol + jobObj.urlValue,
         method: 'GET',
         time: true
     }, (err, resp) => {
@@ -88,9 +88,9 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
             }
 
         } else if (err) {
-           
+
             AlertApi.sendFailureAlert(databaseName, jobObj);
-            
+
         }
 
     })

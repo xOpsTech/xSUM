@@ -255,15 +255,12 @@ class AlertView extends React.Component {
                                 <div className="form-group">
                                     {
                                         (selectedAlertData)
-                                            ? <input
+                                            ? <label className="common-label">
+                                                  {Math.round(selectedAlertData.meanAvg * 1000) / 1000}
+                                              </label>
+                                            : <label
                                                 type="number"
-                                                className="form-control"
-                                                id="responseTimeoutInput"
-                                                disabled
-                                                value={Math.round(selectedAlertData.meanAvg * 1000) / 1000}/>
-                                            : <input
-                                                type="number"
-                                                className="form-control"
+                                                className="common-label"
                                                 id="responseTimeoutInput"
                                                 disabled
                                                 value=""/>
