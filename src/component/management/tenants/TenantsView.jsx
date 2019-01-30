@@ -178,14 +178,7 @@ class TenantsView extends React.Component {
                                         <td>
                                             <Fragment>
                                                 <button
-                                                    className="btn-primary form-control button-inline"
-                                                    onClick={(e) => this.updateTenantClick(e, tenant, i)}
-                                                    title={'Update account details of ' + tenant.name}>
-                                                    <span className="glyphicon button-icon glyphicon-edit">
-                                                    </span>
-                                                </button>
-                                                <button
-                                                    className="btn-danger form-control button-inline"
+                                                    className="btn-danger form-control"
                                                     onClick={(e) => this.removeTenantClick(e, tenant)}
                                                     title={'Remove account of ' + tenant.name}>
                                                     <span className="glyphicon glyphicon-remove button-icon">
@@ -229,16 +222,18 @@ class TenantsView extends React.Component {
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
                             <TenantList/>
-                            <div className="row add-test-section">
-                                <div className="col-sm-2 table-button">
-                                    <button
-                                        className="btn btn-primary form-control button-all-caps-text add-button"
-                                        onClick={this.redirectToAddUser}>
-                                        Add Account
-                                    </button>
-                                </div>
-                                <div className="col-sm-11"></div>
-                            </div>
+                            {
+                                // <div className="row add-test-section">
+                                //     <div className="col-sm-2 table-button">
+                                //         <button
+                                //             className="btn btn-primary form-control button-all-caps-text add-button"
+                                //             onClick={this.redirectToAddUser}>
+                                //             Add Account
+                                //         </button>
+                                //     </div>
+                                //     <div className="col-sm-11"></div>
+                                // </div>
+                            }
                         </div>
                     </div>
                 </div>

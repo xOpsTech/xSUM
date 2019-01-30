@@ -198,37 +198,39 @@ class ProfileView extends React.Component {
                                     </div>
                                 </div>
                                 <div className="col-sm-9">
-                                    <div className="form-group has-feedback label-div">
-                                        <label className="alert-label">
+                                    <div className="form-group has-feedback">
+                                        <label className="common-label">
                                             {loggedUserObj.email}
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Email Password</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-9">
-                                    <div className="form-group">
-                                        <input
-                                            value={profileObj.emailPassword.value}
-                                            onChange={(e) => {
-                                                profileObj.emailPassword = {
-                                                    value: e.target.value
-                                                }
-                                                this.handleChange(e, {profileObj});
-                                            }}
-                                            type="password"
-                                            className="form-control"
-                                            id="passwordInput"
-                                            placeholder="Password"/>
-                                    </div>
-                                </div>
-                            </div>
+                            {
+                                // <div className="row">
+                                //     <div className="col-sm-3 alert-label-column">
+                                //         <div className="form-group label-text">
+                                //             <label className="control-label">Email Password</label>
+                                //         </div>
+                                //     </div>
+                                //     <div className="col-sm-9">
+                                //         <div className="form-group">
+                                //             <input
+                                //                 value={profileObj.emailPassword.value}
+                                //                 onChange={(e) => {
+                                //                     profileObj.emailPassword = {
+                                //                         value: e.target.value
+                                //                     }
+                                //                     this.handleChange(e, {profileObj});
+                                //                 }}
+                                //                 type="password"
+                                //                 className="form-control"
+                                //                 id="passwordInput"
+                                //                 placeholder="Password"/>
+                                //         </div>
+                                //     </div>
+                                // </div>
+                            }
                         </div>
 
                         <div className="row alert-list-wrap-div">
