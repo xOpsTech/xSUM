@@ -115,7 +115,7 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
     var queryObj = {email: userObj.email};
-    var userData = await MongoDB.getAllData(userObj.tenantID, AppConstants.USER_LIST, queryObj);
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
     var userCount = (tenantData[0].userCountLimit) ? tenantData[0].userCountLimit : AppConstants.DEFAULT_USER_COUNT;
 

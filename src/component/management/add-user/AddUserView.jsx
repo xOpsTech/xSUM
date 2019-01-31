@@ -109,10 +109,14 @@ class AddUserView extends React.Component {
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
             var tenantList = [];
             var selectedTenant = context.state.selectedTenant;
+            var selectedTenantIndex = 0;
 
-            for (var i = 0; i < data.length; i++) {
-                var tenant = data[i];
-                tenant.email = {value: data[i].email, error: {}};
+            var selectedTenantID = UIHelper.getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+
+            let i = 0;
+
+            for (let tenant of data) {
+                tenant.email = {value: tenant.email, error: {}};
                 tenant.password = {value: '', error: {}};
                 tenantList.push(tenant);
 
@@ -121,15 +125,17 @@ class AddUserView extends React.Component {
 
                     if (userObj.tenantID === tenant._id) {
                         selectedTenant = tenant;
+                        selectedTenantIndex = i;
                         context.getUsersForTenant(user, tenant);
                     }
 
+                } else if (selectedTenantID && selectedTenantID === tenant._id) {
+                    selectedTenant = tenant;
+                    selectedTenantIndex = i;
                 }
 
-            }
+                i++;
 
-            if (selectedTenant) {
-                selectedTenant = tenantList[0];
             }
 
             context.setState (
@@ -137,7 +143,8 @@ class AddUserView extends React.Component {
                     isLoading: false,
                     loadingMessage: '',
                     tenantList: tenantList,
-                    selectedTenant: selectedTenant
+                    selectedTenant: selectedTenant,
+                    selectedTenantIndex: selectedTenantIndex
                 }
             );
 
