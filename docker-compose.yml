@@ -1,0 +1,37 @@
+version: '3'
+networks:
+  app_net:
+    external:
+      name: "app_net"
+services:
+  mongo:
+    container_name: "mongo"
+    image: "mongo"
+    hostname: "mongo"
+    ports:
+      - "27017:27017"
+    networks:
+      - "app_net"
+  influx:
+    container_name: "influxdb"
+    image: "influxdb"
+    hostname: "influxdb"
+    ports:
+      - "8086:8086"
+    networks:
+      - "app_net"
+  web:
+    build: .
+    ports:
+     - "8000:8000"
+    links:
+      - "mongo"
+      - "influx"
+    depends_on:
+      - "mongo"
+      - "influx"
+    networks: 
+      - "app_net"
+#    command: "./wait-for-it.sh mongo:27017"
+    environment:
+      WAIT_HOSTS: "mongo:27017"
