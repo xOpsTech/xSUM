@@ -328,6 +328,36 @@ class AlertView extends React.Component {
                                 </div>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="col-sm-5 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Failure Alert Limit</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-7">
+                                <div className="form-group">
+                                    {
+                                        (selectedAlertData)
+                                            ? <input
+                                                type="number"
+                                                step="0.1"
+                                                className="form-control"
+                                                id="failureAlertEmailLimit"
+                                                value={selectedAlertData.failureAlertEmailLimit}
+                                                onChange={(e) => {
+                                                    selectedAlertData.failureAlertEmailLimit = e.target.value;
+                                                    this.handleChange(e, selectedAlertData);
+                                                }}/>
+                                            : <input
+                                                type="number"
+                                                className="form-control"
+                                                id="responseTimeoutInput"
+                                                disabled
+                                                value="0"/>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                         <div className="form-group alert-button-div">
                             <button
                                 className="btn btn-primary form-control button-all-caps-text alert-button"

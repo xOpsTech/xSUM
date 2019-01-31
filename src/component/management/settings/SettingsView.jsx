@@ -65,8 +65,7 @@ class SettingsView extends React.Component {
                 name: {value: '', error: {}},
                 alert: {
                     warningAlertCount: { value: 0, error: {}},
-                    criticalAlertCount: { value: 0, error: {}},
-                    failureAlertCount: { value: 0, error: {}},
+                    criticalAlertCount: { value: 0, error: {}}
                 }
             },
             selectedTenantIndex: 0
@@ -96,7 +95,6 @@ class SettingsView extends React.Component {
                 tenant.name = {value: tenant.name, error: {}};
                 tenant.alert.warningAlertCount = {value: tenant.alert.warningAlertCount, error: {}};
                 tenant.alert.criticalAlertCount = {value: tenant.alert.criticalAlertCount, error: {}};
-                tenant.alert.failureAlertCount = {value: tenant.alert.failureAlertCount, error: {}};
                 tenantList.push(tenant);
             }
 
@@ -164,8 +162,7 @@ class SettingsView extends React.Component {
             password: selectedTenant.password.value,
             name: selectedTenant.name.value,
             warningAlertCount: selectedTenant.alert.warningAlertCount.value,
-            criticalAlertCount: selectedTenant.alert.criticalAlertCount.value,
-            failureAlertCount: selectedTenant.alert.failureAlertCount.value
+            criticalAlertCount: selectedTenant.alert.criticalAlertCount.value
         };
 
         var urlToUpdateTenant = Config.API_URL + AppConstants.ADD_TENANT_EMAIL_SETTING_DATA_API;
@@ -203,8 +200,7 @@ class SettingsView extends React.Component {
                 name: {value: stateObject.selectedTenant.name, error: {}},
                 alert: {
                     warningAlertCount: { value: stateObject.selectedTenant.alert.warningAlertCount, error: {}},
-                    criticalAlertCount: { value: stateObject.selectedTenant.alert.criticalAlertCount, error: {}},
-                    failureAlertCount: { value: stateObject.selectedTenant.alert.failureAlertCount, error: {}}
+                    criticalAlertCount: { value: stateObject.selectedTenant.alert.criticalAlertCount, error: {}}
                 }
             }
         };
@@ -368,28 +364,6 @@ class SettingsView extends React.Component {
                                             }}
                                             id="tenantCriticalAlertCount"
                                             placeholder="Critical Alert count" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Email Failure Alert count</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-3">
-                                    <div className="form-group">
-                                        <input
-                                            type="number" value={selectedTenant.alert.failureAlertCount.value}
-                                            className="form-control"
-                                            onChange={(e) => {
-                                                selectedTenant.alert.failureAlertCount = {
-                                                    value: parseInt(e.target.value)
-                                                }
-                                                this.handleChange(e, {selectedTenant});
-                                            }}
-                                            id="tenantFailureAlertCount"
-                                            placeholder="Failure Alert count" />
                                     </div>
                                 </div>
                             </div>
