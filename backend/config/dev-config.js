@@ -1,4 +1,4 @@
-exports.PORT = 5000;
-exports.INFLUXDB_IP = '10.128.0.27';
-exports.MONGODB_IP = 'localhost';
+exports.PORT = 8000;
+exports.INFLUXDB_IP = 'influx';
+exports.MONGODB_IP = 'mongo';
 exports.SERVER_LOCATION_ID = 0;
