@@ -64,7 +64,7 @@ exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, s
 
 exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     request({
-        uri: jobObj.urlValue,
+        uri: jobObj.securityProtocol + jobObj.urlValue,
         method: 'GET',
         time: true
     }, (err, resp) => {
@@ -88,17 +88,9 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
             }
 
         } else if (err) {
-            console.log('Error in executing the job : ', jobObj.jobId);
-            console.log('Error : ', err);
 
-            var emailBodyToSend = 'Hi ,<br><br>' +
-                                    'The job you have added for <b>' +
-                                    jobObj.siteObject.value +
-                                    '</b> may be not working.<br>' +
-                                    'Please check it again.<br><br>' +
-                                    'Regards,<br>xSUM admin';
+            AlertApi.sendFailureAlert(databaseName, jobObj);
 
-            this.sendEmail(jobObj.userEmail, 'Trouble of ping to your site', emailBodyToSend);
         }
 
     })

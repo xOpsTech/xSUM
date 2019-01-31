@@ -44,6 +44,8 @@ JobApi.prototype.handleJobs = function(req, res) {
 JobApi.prototype.insertJob = async function(req, res) {
     var jobObj = req.body;
 
+    var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+
     var jobInsertObj = {
         jobId: jobObj.jobId,
         siteObject: {value: jobObj.siteObject.value},
@@ -54,13 +56,13 @@ JobApi.prototype.insertJob = async function(req, res) {
         recursiveSelect: jobObj.recursiveSelect,
         result: [],
         userEmail: jobObj.userEmail,
-        jobName: jobObj.jobName,
+        jobName: jobName,
         serverLocation: jobObj.serverLocation,
         alerts: {
             critical: [],
             warning: []
-        }
-
+        },
+        securityProtocol: jobObj.securityProtocol
     };
 
     var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
@@ -103,7 +105,7 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
             dataTable = AppConstants.PING_RESULT_LIST;
         }
 
-        var backDate = moment().subtract(7, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
         var jobResults = await InfluxDB.getAllDataFor(
             userObj.tenantID,
             "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
@@ -140,10 +142,14 @@ JobApi.prototype.removeJob = function(req, res) {
 JobApi.prototype.updateJob = function(req, res) {
     var jobObj = req.body.job;
 
+    var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+
     var updateValueObj = {
-        jobName: jobObj.jobName,
+        jobName: jobName,
         siteObject: {value: jobObj.siteObject.value},
-        browser: jobObj.browser
+        browser: jobObj.browser,
+        serverLocation: jobObj.serverLocation,
+        securityProtocol: jobObj.securityProtocol
     };
 
     MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);

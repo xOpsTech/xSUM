@@ -61,7 +61,8 @@ Api.prototype.insertUrlData = async function(req, res) {
             title: 'USA',
             latitude: 36.778259,
             longitude: -119.417931
-        }
+        },
+        securityProtocol: urlObj.securityProtocol
     };
 
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.DB_URL_LIST, urlInsertObj);

@@ -54,7 +54,8 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
                 if (tenant.alert === undefined) {
                     tenant.alert = {
                         warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
-                        criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+                        criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT,
+                        failureAlertCount: AppConstants.EMAIL_FAILURE_ALERT_COUNT
                     }
                 }
 
@@ -63,6 +64,10 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
                         totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
                         pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
                     }
+                }
+
+                if (tenant.userCountLimit === undefined) {
+                    tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
                 }
 
                 matchedTenants.push(tenant);
@@ -121,7 +126,8 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
             if (tenant.alert === undefined) {
                 tenant.alert = {
                     warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
-                    criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+                    criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT,
+                    failureAlertCount: AppConstants.EMAIL_FAILURE_ALERT_COUNT
                 }
             }
 
@@ -131,6 +137,11 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
                     pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
                 }
             }
+
+            if (tenant.userCountLimit === undefined) {
+                tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
+            }
+
         }
 
         res.send(tenantsArray);
@@ -153,12 +164,14 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
         ],
         alert: {
             warningAlertCount: AppConstants.EMAIL_WARNING_ALERT_COUNT,
-            criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+            criticalAlertCount: AppConstants.EMAIL_CRITICAL_ALERT_COUNT,
+            failureAlertCount: AppConstants.EMAIL_FAILURE_ALERT_COUNT
         },
         points: {
             totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
             pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
-        }
+        },
+        userCountLimit: AppConstants.DEFAULT_USER_COUNT
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;
@@ -200,7 +213,8 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
         name: tenantObj.name,
         alert: {
             warningAlertCount: tenantObj.warningAlertCount,
-            criticalAlertCount: tenantObj.criticalAlertCount
+            criticalAlertCount: tenantObj.criticalAlertCount,
+            failureAlertCount: tenantObj.failureAlertCount
         }
     };
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);

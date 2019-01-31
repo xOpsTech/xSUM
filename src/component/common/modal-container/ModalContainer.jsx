@@ -34,6 +34,21 @@ class ModalContainer extends React.Component {
                     </Modal.Body>
                 </Modal>
             );
+        } else if (modalType === AppConstants.ALERT_MODAL) {
+            const {okClick} = this.props;
+            return (
+                <Modal show={isModalVisible}>
+                    <Modal.Body>
+                        <h4>{title}</h4>
+                        <div className="confirm-button-container">
+                            <Button className="btn btn-primary yes-button"
+                                onClick={okClick}>
+                                Ok
+                            </Button>
+                        </div>
+                    </Modal.Body>
+                </Modal>
+            );
         } else if (modalType === AppConstants.DATA_MODAL) {
             const {dataObject, closeClick, viewResult} = this.props;
 

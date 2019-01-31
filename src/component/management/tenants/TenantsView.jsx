@@ -124,7 +124,7 @@ class TenantsView extends React.Component {
 
         const TenantList = () => {
             return (
-                <table className="table table-borderless" id="tenant-list">
+                <table className="table table-bordered" id="tenant-list">
                     <thead>
                         <tr>
                             <th>Account Name</th>
@@ -140,7 +140,7 @@ class TenantsView extends React.Component {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.name === '')
@@ -151,7 +151,7 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {
                                                         (tenant.email === '')
@@ -162,14 +162,14 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {tenant.points.totalPoints}
                                                 </label>
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
+                                            <div className="form-group has-feedback">
                                                 <label className="alert-label">
                                                     {tenant.points.pointsRemain}
                                                 </label>
@@ -178,14 +178,7 @@ class TenantsView extends React.Component {
                                         <td>
                                             <Fragment>
                                                 <button
-                                                    className="btn-primary form-control button-inline"
-                                                    onClick={(e) => this.updateTenantClick(e, tenant, i)}
-                                                    title={'Update account details of ' + tenant.name}>
-                                                    <span className="glyphicon button-icon glyphicon-edit">
-                                                    </span>
-                                                </button>
-                                                <button
-                                                    className="btn-danger form-control button-inline"
+                                                    className="btn-danger form-control"
                                                     onClick={(e) => this.removeTenantClick(e, tenant)}
                                                     title={'Remove account of ' + tenant.name}>
                                                     <span className="glyphicon glyphicon-remove button-icon">
@@ -229,16 +222,18 @@ class TenantsView extends React.Component {
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
                             <TenantList/>
-                            <div className="row add-test-section">
-                                <div className="col-sm-2 table-button">
-                                    <button
-                                        className="btn btn-primary form-control button-all-caps-text add-button"
-                                        onClick={this.redirectToAddUser}>
-                                        Add Account
-                                    </button>
-                                </div>
-                                <div className="col-sm-11"></div>
-                            </div>
+                            {
+                                // <div className="row add-test-section">
+                                //     <div className="col-sm-2 table-button">
+                                //         <button
+                                //             className="btn btn-primary form-control button-all-caps-text add-button"
+                                //             onClick={this.redirectToAddUser}>
+                                //             Add Account
+                                //         </button>
+                                //     </div>
+                                //     <div className="col-sm-11"></div>
+                                // </div>
+                            }
                         </div>
                     </div>
                 </div>

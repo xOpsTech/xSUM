@@ -37,6 +37,8 @@ AlertApi.prototype.saveAlert = async function(req, res) {
     } else {
         alertObj.warningAlertCount = 0;
         alertObj.criticalAlertCount = 0;
+        alertObj.failureAlertCount = 0;
+
         await MongoDB.insertData(alertObj.tenantID, AppConstants.ALERT_LIST, alertObj);
         res.send(alertObj);
     }
@@ -82,7 +84,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
                 criticalThreshold: Helpers.roundValue(alertObjData[0].criticalThreshold, 3),
                 _id: alertObjData[0]._id,
                 warningAlertCount: alertObjData[0].warningAlertCount,
-                criticalAlertCount: alertObjData[0].criticalAlertCount
+                criticalAlertCount: alertObjData[0].criticalAlertCount,
+                failureAlertCount: alertObjData[0].failureAlertCount,
             });
         } else {
             alertsData.push({
@@ -148,6 +151,60 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
         }
 
     });
+}
+
+AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
+
+    var queryToGetFailureAlertCount = {
+    'job.jobId': JobObj.jobId
+    }
+    
+    var queryToGetTenantDetails = { _id: ObjectId(databaseName) };
+
+    //gettenantData to get failureAlertCount
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
+
+    if (tenantData.length > 0) {
+        //give default alert count when alerts are not defnied
+        if (typeof tenantData[0].alert === "undefined") {
+            var failureEmailLimit = AppConstants.EMAIL_FAILURE_ALERT_COUNT
+        }
+        else {
+            var failureEmailLimit = tenantData[0].alert.failureAlertCount;
+        }
+    }
+  
+    var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetFailureAlertCount);
+    var failureAlertCount =  alertObjData[0].failureAlertCount; 
+
+    if(failureAlertCount === 0)
+    {
+        var emailBodyToSend = 'Hi ,<br><br>' +
+        'The job you have added for <b>' +
+        JobObj.siteObject.value +
+        '</b> may be not working.<br>' +
+        'Please check it again.<br><br>' +
+        'Regards,<br>xSUM admin';
+         Helpers.sendEmail(JobObj.userEmail, 'Trouble of ping to your site', emailBodyToSend);
+    }
+
+    if(failureAlertCount >= failureEmailLimit) {
+
+        var objectToUpdate = {
+            failureAlertCount: 0
+        }
+
+        MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+        return;
+    }
+
+    failureAlertCount = failureAlertCount + 1
+
+    var objectToUpdate = {
+        failureAlertCount: failureAlertCount
+    }
+
+    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
 }
 
 AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
