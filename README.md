@@ -1,6 +1,7 @@
 # xSumFE
 
 Goals for xSUM
+
 Provide real-time monitoring of website availability and performance from simulated end user perspective
 Know when there are major problems with a website or web application
 Dig into site performance with waterfall charts and test results to detailed downtime and error reports
@@ -16,3 +17,5 @@ Performance engineers.
 Operation centers - network operations centers, operations command centers
 Operations engineers
 Quality and development engineers
+
+
