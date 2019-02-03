@@ -308,7 +308,7 @@ class ProfileView extends React.Component {
                                                 <div className="form-group">
                                                     <button
                                                         className="btn btn-primary form-control button-all-caps-text" id="password-change"
-                                                        onClick={(e) => this.updateMailClick(e)}>
+                                                        onClick={this.togglePopup.bind(this, "Password")}>
                                                         Change Password
                                                 </button>
                                                 </div>
