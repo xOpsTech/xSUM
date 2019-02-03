@@ -120,6 +120,8 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
 
+    var failureAlertEmailLimit = alertObjData[0].failureAlertEmailLimit;
+
     var queryForLastTwoPingResults = "SELECT * FROM "+AppConstants.PING_RESULT_LIST+" where jobid='" + insertedJobObj.jobId + "' ORDER BY time DESC LIMIT 2";
   
     InfluxDB.getAllDataFor(databaseName, queryForLastTwoPingResults).then((data)=>
@@ -140,21 +142,36 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
             var previousResponseTime = responseArray[1]/1000;
             var currentResponseTime = responseArray[0]/1000;
-
-            if(previousResponseTime > warningThreshold && previousResponseTime > currentResponseTime) {
+            
+            //When site recoverd from Warning stage
+            if(previousResponseTime >= warningThreshold && previousResponseTime > currentResponseTime && previousResponseTime < criticalThreshold) {
                 
                 if(currentResponseTime < warningThreshold) {
 
                     var emailBodyToSend = 'Hi ,<br><br>' +
                         'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
-                        'Your site is now recoverd <br>'
+                        'Your site is now recoverd from Warning State <br>'
                         'Regards,<br>xSUM admin';
 
                     Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
                 }
             }
 
-                                                         
+            //When site recovered from Critical stage
+            if(previousResponseTime >= criticalThreshold && previousResponseTime > currentResponseTime) {
+                
+                if(currentResponseTime < warningThreshold) {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                        'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
+                        'Your site is now recoverd from Critical State <br>'
+                        'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
+                }
+            }
+
+            //When alet goes from Critical to Warning
             if(previousResponseTime >= criticalThreshold && previousResponseTime > currentResponseTime) {
 
                 if(currentResponseTime < criticalThreshold && currentResponseTime >= warningThreshold) {
@@ -168,6 +185,27 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                 }
             }
 
+            //When recoverd from a Failure state
+            if(failureAlertEmailLimit > 0 )
+            {
+                if(currentResponseTime)
+                {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                    'Your site '+insertedJobObj.siteObject.value +' survived from Failure State<br>'+
+                    'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Your Site recovered From Failure State', emailBodyToSend);
+
+                    var objectToUpdate = {
+                        failureAlertCount: 0
+                    }
+            
+                    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+                }
+            }
+
+            //When alert goes from Warning to Critical
             if(currentResponseTime >= criticalThreshold && previousResponseTime < currentResponseTime) {
 
                 if(previousResponseTime >= warningThreshold && previousResponseTime < criticalThreshold) {
