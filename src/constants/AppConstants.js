@@ -38,6 +38,7 @@ export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailD
 export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
 export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
+export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 
 export const RESPONSE_SUCCESS = 'Success';
 

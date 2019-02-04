@@ -11,6 +11,14 @@ InfluxDB.prototype.createDatabase = function(databaseName) {
     influx.createDatabase(databaseName);
 }
 
+InfluxDB.prototype.removeDatabase = function(databaseName) {
+    const influx = new Influx.InfluxDB({
+        host: config.INFLUXDB_IP
+    });
+    console.log('Database has been deleted: ' + databaseName);
+    influx.dropDatabase(databaseName);
+}
+
 InfluxDB.prototype.insertData = function(databaseName, tableName, tagsObj, valuesToInsert) {
     const influx = new Influx.InfluxDB({
         host: config.INFLUXDB_IP,

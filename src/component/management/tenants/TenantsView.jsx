@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
 
+import ModalContainer from '../../common/modal-container/ModalContainer';
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
@@ -19,11 +20,13 @@ class TenantsView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.updateTenantClick = this.updateTenantClick.bind(this);
-        this.removeTenantClick = this.removeTenantClick.bind(this);
-        this.redirectToAddUser = this.redirectToAddUser.bind(this);
+        this.updateTenantClick  = this.updateTenantClick.bind(this);
+        this.removeTenantClick  = this.removeTenantClick.bind(this);
+        this.redirectToAddUser  = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
-        this.tenantDropDown = this.tenantDropDown.bind(this);
+        this.tenantDropDown     = this.tenantDropDown.bind(this);
+        this.modalYesClick      = this.modalYesClick.bind(this);
+        this.modalNoClick       = this.modalNoClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -57,7 +60,10 @@ class TenantsView extends React.Component {
             loggedUserObj: null,
             isLeftNavCollapse: false,
             tenantList: [],
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            isModalVisible: false,
+            modalText: '',
+            tenantToRemove: null
         };
 
         return initialState;
@@ -97,6 +103,12 @@ class TenantsView extends React.Component {
 
     removeTenantClick(e, tenantToRemove) {
         e.preventDefault();
+
+        this.setState({
+            isModalVisible: true,
+            modalText: 'Are you sure you want to delete this account? ' + tenantToRemove.name,
+            tenantToRemove: tenantToRemove
+        });
     }
 
     redirectToAddUser() {
@@ -113,13 +125,44 @@ class TenantsView extends React.Component {
         this.setState(stateObject);
     }
 
+    modalNoClick() {
+        this.setState({isModalVisible: false, modalTitle: '', tenantToRemove: null});
+    }
+
+    modalYesClick() {
+        const {tenantToRemove} = this.state;
+        this.setState(
+            {
+                isModalVisible: false,
+                modalTitle: '',
+                isLoading: true,
+                loadingMessage: MessageConstants.REMOVE_TENANT
+            }
+        );
+
+        var urlToRemoveTenant = Config.API_URL + AppConstants.REMOVING_TENANT_DATA_API;
+        var tenantRemove = {
+            id: tenantToRemove._id
+        }
+        tenantApi.removeTenant(urlToRemoveTenant, tenantRemove).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+        });
+    }
+
     render() {
         const {
             isLoading,
             loadingMessage,
             loggedUserObj,
             isLeftNavCollapse,
-            tenantList
+            tenantList,
+            isModalVisible,
+            modalText
         } = this.state;
 
         const TenantList = () => {
@@ -197,6 +240,12 @@ class TenantsView extends React.Component {
 
         return (
             <Fragment>
+                <ModalContainer
+                    title={modalText}
+                    yesClick={this.modalYesClick}
+                    noClick={this.modalNoClick}
+                    isModalVisible={isModalVisible}
+                    modalType={AppConstants.CONFIRMATION_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <LeftNav
                     selectedIndex={AppConstants.TENANTS_INDEX}

@@ -30,6 +30,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "updateTenantData":
             new TenantApi().updateTenantData(req, res);
             break;
+        case "removeTenantData":
+            new TenantApi().removeTenantData(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -226,6 +229,32 @@ TenantApi.prototype.updateTenantData = async function(req, res) {
     var queryObj = {_id: ObjectId(tenantObj.id)};
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantObj.updateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantObj.updateObj}});
+}
+
+TenantApi.prototype.removeTenantData = async function(req, res) {
+    var tenantObj = req.body;
+
+    // Get tenant data
+    var queryObj = {_id: ObjectId(tenantObj.id)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj);
+
+    // Remove users
+    for (let user of tenantData[0].users) {
+        var queryToRemoveUser = {_id: ObjectId(user.userID)};
+        MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToRemoveUser);
+    }
+
+    // Remove mongo db for relavant tenant
+    await MongoDB.removeDatabase(tenantObj.id);
+
+    // Remove influx db for relavant tenant
+    InfluxDB.removeDatabase(tenantObj.id);
+
+    // Remove tenant
+    var queryToRemoveTenant = {_id: ObjectId(tenantObj.id)};
+    MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToRemoveTenant);
+
+    res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: tenantObj});
 }
 
 module.exports = new TenantApi();
