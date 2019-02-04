@@ -29,7 +29,8 @@ AlertApi.prototype.saveAlert = async function(req, res) {
     if (alertObj._id) {
         var objectToUpdate = {
             warningThreshold: alertObj.warningThreshold,
-            criticalThreshold: alertObj.criticalThreshold
+            criticalThreshold: alertObj.criticalThreshold,
+            failureAlertEmailLimit: alertObj.failureAlertEmailLimit
         };
 
         MongoDB.updateData(alertObj.tenantID, AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
@@ -86,13 +87,14 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
                 warningAlertCount: alertObjData[0].warningAlertCount,
                 criticalAlertCount: alertObjData[0].criticalAlertCount,
                 failureAlertCount: alertObjData[0].failureAlertCount,
+                failureAlertEmailLimit: alertObjData[0].failureAlertEmailLimit
             });
         } else {
             alertsData.push({
                 job: jobObj,
                 meanAvg: Helpers.roundValue(meanAvg/1000, 3),
                 warningThreshold: Helpers.roundValue(warningThreshold / 1000, 3),
-                criticalThreshold: Helpers.roundValue(criticalThreshold / 1000, 3)
+                criticalThreshold: Helpers.roundValue(criticalThreshold / 1000, 3),
             });
         }
 
@@ -133,22 +135,53 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
         if (alertObjData.length > 0) {
 
-            if(responseArray[1]/1000 > alertObjData[0].warningThreshold) {
-                                                        
-                if(responseArray[1]/1000>responseArray[0]/1000) {
+            var warningThreshold = alertObjData[0].warningThreshold;
+            var criticalThreshold = alertObjData[0].criticalThreshold;
 
-                    if(responseArray[0]/1000 < alertObjData[0].warningThreshold) {
+            var previousResponseTime = responseArray[1]/1000;
+            var currentResponseTime = responseArray[0]/1000;
 
-                        var emailBodyToSend = 'Hi ,<br><br>' +
+            if(previousResponseTime > warningThreshold && previousResponseTime > currentResponseTime) {
+                
+                if(currentResponseTime < warningThreshold) {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
                         'The response time for '+insertedJobObj.siteObject.value +' has gone down<br>'+
                         'Your site is now recoverd <br>'
                         'Regards,<br>xSUM admin';
 
-                        Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
-                    }
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Alert Recovered xSUM', emailBodyToSend);
+                }
+            }
+
+                                                         
+            if(previousResponseTime >= criticalThreshold && previousResponseTime > currentResponseTime) {
+
+                if(currentResponseTime < criticalThreshold && currentResponseTime >= warningThreshold) {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                    'The response time for '+insertedJobObj.siteObject.value +' survived from Critical and <br>'+
+                    'Currently in Warning stage <br>'
+                    'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Your Site recovered From Critical to Warning', emailBodyToSend);
+                }
+            }
+
+            if(currentResponseTime >= criticalThreshold && previousResponseTime < currentResponseTime) {
+
+                if(previousResponseTime >= warningThreshold && previousResponseTime < criticalThreshold) {
+
+                    var emailBodyToSend = 'Hi ,<br><br>' +
+                    'The response time for '+insertedJobObj.siteObject.value +' is increased from Warning Stage and now in Critical stage <br>'+
+                     '<br>'
+                    'Regards,<br>xSUM admin';
+
+                    Helpers.sendEmail(insertedJobObj.userEmail, 'Your Sites Response time has increased', emailBodyToSend);
                 }
             }
         }
+       
 
     });
 }
@@ -159,26 +192,12 @@ AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
     'job.jobId': JobObj.jobId
     }
     
-    var queryToGetTenantDetails = { _id: ObjectId(databaseName) };
-
-    //gettenantData to get failureAlertCount
-    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
-
-    if (tenantData.length > 0) {
-        //give default alert count when alerts are not defnied
-        if (typeof tenantData[0].alert === "undefined") {
-            var failureEmailLimit = AppConstants.EMAIL_FAILURE_ALERT_COUNT
-        }
-        else {
-            var failureEmailLimit = tenantData[0].alert.failureAlertCount;
-        }
-    }
-  
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetFailureAlertCount);
     var failureAlertCount =  alertObjData[0].failureAlertCount; 
+    var failureAlertEmailLimit = alertObjData[0].failureAlertEmailLimit; 
 
-    if(failureAlertCount === 0)
-    {
+    if(failureAlertEmailLimit > failureAlertCount) {
+
         var emailBodyToSend = 'Hi ,<br><br>' +
         'The job you have added for <b>' +
         JobObj.siteObject.value +
@@ -186,25 +205,16 @@ AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
         'Please check it again.<br><br>' +
         'Regards,<br>xSUM admin';
          Helpers.sendEmail(JobObj.userEmail, 'Trouble of ping to your site', emailBodyToSend);
-    }
 
-    if(failureAlertCount >= failureEmailLimit) {
+        failureAlertCount = failureAlertCount + 1
 
         var objectToUpdate = {
-            failureAlertCount: 0
+            failureAlertCount: failureAlertCount
         }
 
         MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
-        return;
     }
-
-    failureAlertCount = failureAlertCount + 1
-
-    var objectToUpdate = {
-        failureAlertCount: failureAlertCount
-    }
-
-    MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
+  
 }
 
 AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobObj, executedTime) {
