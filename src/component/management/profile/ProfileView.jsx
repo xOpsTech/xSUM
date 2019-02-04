@@ -163,7 +163,7 @@ class ProfileView extends React.Component {
             profileObj,
             selectedPopup
         } = this.state;
-   
+
         /*
                 <div className="col-sm-9">
                     <div className="form-group">
@@ -203,10 +203,10 @@ class ProfileView extends React.Component {
                         </div>
                 }
 
-                {!this.state.isHidden &&  <ProfilePopup
-            selectedPopup={selectedPopup}
-            closePopup={this.togglePopup.bind(this)}
-          />}
+                {!this.state.isHidden && <ProfilePopup
+                    selectedPopup={selectedPopup}
+                    closePopup={this.togglePopup.bind(this)}
+                />}
                 <div className="site-edit-container">
                     <div className={
                         'table-container-div ' +
@@ -218,6 +218,17 @@ class ProfileView extends React.Component {
                                     <h4 className="site-add-title">
                                         Profile Settings
                                     </h4>
+                                </div>
+                            </div>
+                            <div className="row profile-row">
+                                <div className="col-sm-3 alert-label-column">
+                                    <div className="form-group label-text">
+                                        <label className="control-label">Profile Picture</label>
+                                    </div>
+                                </div>
+                                <div className="col-sm-9" >
+                                    <img className="profile-picture" src="../../../../assets/img/missing.png" />
+                                    <button className="btn btn-primary form-control button-all-caps-text picture-change"> Change Picture </button>
                                 </div>
                             </div>
                             <div className="row profile-row" onClick={this.togglePopup.bind(this, "Name")}>
@@ -269,7 +280,7 @@ class ProfileView extends React.Component {
                                     <p className="profile-label">
                                         Developer
                                      </p>
-                                     <i class="fas fa-edit edit-icon"></i>
+                                    <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
                             <div className="row profile-row" onClick={this.togglePopup.bind(this, "Location")}>
