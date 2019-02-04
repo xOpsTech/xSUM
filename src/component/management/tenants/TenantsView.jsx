@@ -130,7 +130,7 @@ class TenantsView extends React.Component {
     }
 
     modalYesClick() {
-        const {tenantToRemove} = this.state;
+        const {tenantToRemove, loggedUserObj} = this.state;
         this.setState(
             {
                 isModalVisible: false,
@@ -151,6 +151,7 @@ class TenantsView extends React.Component {
                     loadingMessage: '',
                 }
             );
+            this.getAllTenantsData(loggedUserObj, this);
         });
     }
 
@@ -174,7 +175,11 @@ class TenantsView extends React.Component {
                             <th>Account Email</th>
                             <th>Total Points</th>
                             <th>Points Remain</th>
-                            <th></th>
+                            {
+                                (loggedUserObj.isSuperUser)
+                                    ? <th></th>
+                                    : null
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -218,17 +223,21 @@ class TenantsView extends React.Component {
                                                 </label>
                                             </div>
                                         </td>
-                                        <td>
-                                            <Fragment>
-                                                <button
-                                                    className="btn-danger form-control"
-                                                    onClick={(e) => this.removeTenantClick(e, tenant)}
-                                                    title={'Remove account of ' + tenant.name}>
-                                                    <span className="glyphicon glyphicon-remove button-icon">
-                                                    </span>
-                                                </button>
-                                            </Fragment>
-                                        </td>
+                                        {
+                                            (loggedUserObj.isSuperUser)
+                                                ? <td>
+                                                    <Fragment>
+                                                        <button
+                                                            className="btn-danger form-control"
+                                                            onClick={(e) => this.removeTenantClick(e, tenant)}
+                                                            title={'Remove account of ' + tenant.name}>
+                                                            <span className="glyphicon glyphicon-remove button-icon">
+                                                            </span>
+                                                        </button>
+                                                    </Fragment>
+                                                </td>
+                                                : null
+                                        }
                                     </tr>
                                 );
                             })
