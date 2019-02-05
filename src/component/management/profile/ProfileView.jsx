@@ -228,6 +228,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9" >
                                     <img className="profile-picture" src="../../../../assets/img/missing.png" />
+                                    <button className="btn btn-outline-danger form-control button-all-caps-text  picture-change"> Remove Picture </button>
                                     <button className="btn btn-primary form-control button-all-caps-text picture-change"> Change Picture </button>
                                 </div>
                             </div>
