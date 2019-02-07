@@ -359,6 +359,64 @@ class AlertView extends React.Component {
                                 </div>
                             </div>
                         </div>
+                        <div className="row">
+                            <div className="col-sm-5 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Critical Alert Limit</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-7">
+                                <div className="form-group">
+                                    {
+                                        (selectedAlertData)
+                                            ? <input
+                                                type="number"
+                                                className="form-control"
+                                                id="criticalAlertEmailLimitInput"
+                                                value={selectedAlertData.criti}
+                                                onChange={(e) => {
+                                                    selectedAlertData.criticalAlertEmailLimit = e.target.value;
+                                                    this.handleChange(e, selectedAlertData);
+                                                }}/>
+                                            : <input
+                                                type="number"
+                                                className="form-control"
+                                                id="criticalAlertEmailLimitInput"
+                                                disabled
+                                                value="0"/>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-sm-5 alert-label-column">
+                                <div className="form-group label-text">
+                                    <label className="control-label">Warning Alert Limit</label>
+                                </div>
+                            </div>
+                            <div className="col-sm-7">
+                                <div className="form-group">
+                                    {
+                                        (selectedAlertData)
+                                            ? <input
+                                                type="number"
+                                                className="form-control"
+                                                id="warningAlertEmailLimitInput"
+                                                value={selectedAlertData.warningAlertEmailLimit}
+                                                onChange={(e) => {
+                                                    selectedAlertData.warningAlertEmailLimit = e.target.value;
+                                                    this.handleChange(e, selectedAlertData);
+                                                }}/>
+                                            : <input
+                                                type="number"
+                                                className="form-control"
+                                                id="warningAlertEmailLimitInput"
+                                                disabled
+                                                value="0"/>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                         <div className="form-group alert-button-div">
                             <button
                                 className="btn btn-primary form-control button-all-caps-text alert-button"
