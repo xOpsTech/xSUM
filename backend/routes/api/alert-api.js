@@ -74,8 +74,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
         }
 
         var meanAvg = meanCount/jobResults.length;
-        var warningThreshold = meanAvg + 3000; // 5000 in miliseconds
-        var criticalThreshold = meanAvg + 5000;
+        var warningThreshold = (meanAvg) ? (meanAvg + 3000) : 3000; // 5000 in miliseconds
+        var criticalThreshold = (meanAvg) ? (meanAvg + 5000) : 5000;
 
         if (alertObjData.length > 0) {
             alertsData.push({
@@ -121,7 +121,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
 
     var queryForLastTwoPingResults = "SELECT * FROM "+AppConstants.PING_RESULT_LIST+" where jobid='" + insertedJobObj.jobId + "' ORDER BY time DESC LIMIT 2";
-  
+
     InfluxDB.getAllDataFor(databaseName, queryForLastTwoPingResults).then((data)=>
     {
         var dataObj = data.map(values=>({response:values.response,resultId:values.resultID}));
@@ -136,16 +136,16 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
         if (alertObjData.length > 0) {
 
             var failureAlertEmailLimit = alertObjData[0].failureAlertEmailLimit;
-            var failureAlertCount =  alertObjData[0].failureAlertCount; 
+            var failureAlertCount =  alertObjData[0].failureAlertCount;
             var warningThreshold = alertObjData[0].warningThreshold;
             var criticalThreshold = alertObjData[0].criticalThreshold;
 
             var previousResponseTime = responseArray[1]/1000;
             var currentResponseTime = responseArray[0]/1000;
-            
+
             //When site recoverd from Warning stage
             if(previousResponseTime >= warningThreshold && previousResponseTime > currentResponseTime && previousResponseTime < criticalThreshold) {
-                
+
                 if(currentResponseTime < warningThreshold) {
 
                     var emailBodyToSend = 'xSUM alert recovery notification for '+insertedJobObj.jobName+'<br><br>'+
@@ -161,7 +161,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
             //When site recovered from Critical stage
             if(previousResponseTime >= criticalThreshold && previousResponseTime > currentResponseTime) {
-                
+
                 if(currentResponseTime < warningThreshold) {
 
                     var emailBodyToSend = 'xSUM alert recovery notification for '+insertedJobObj.jobName+'<br><br>'+
@@ -208,7 +208,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     var objectToUpdate = {
                         failureAlertCount: 0
                     }
-            
+
                     MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                 }
             }
@@ -239,10 +239,10 @@ AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetFailureAlertCount);
 
     if (alertObjData.length > 0) {
-    
+
         var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetFailureAlertCount);
-        var failureAlertCount =  alertObjData[0].failureAlertCount; 
-        var failureAlertEmailLimit = alertObjData[0].failureAlertEmailLimit; 
+        var failureAlertCount =  alertObjData[0].failureAlertCount;
+        var failureAlertEmailLimit = alertObjData[0].failureAlertEmailLimit;
 
         if(failureAlertEmailLimit > failureAlertCount) {
 
