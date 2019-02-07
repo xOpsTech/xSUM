@@ -181,7 +181,7 @@ class UserManagementView extends React.Component {
 
         const UserList = () => {
             return (
-                <table className="table table-bordered" id="user-list">
+                <table className="table table-striped table-dark" id="user-list">
                     <thead>
                         <tr>
                             <th>User Email Address</th>
@@ -196,14 +196,14 @@ class UserManagementView extends React.Component {
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
                                             <div className="form-group has-feedback">
-                                                <label className="alert-label">
+                                                <label>
                                                     {user.email}
                                                 </label>
                                             </div>
                                         </td>
                                         <td className="table-cell">
                                             <div className="form-group has-feedback">
-                                                <label className="alert-label">
+                                                <label>
                                                     {UIHelper.getRoleForUserFromTenant(selectedTenant._id, user, true)}
                                                 </label>
                                             </div>

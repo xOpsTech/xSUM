@@ -164,10 +164,10 @@ class Tests extends React.Component {
                     <div className={
                         'table-container-div ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                        <div className="row alert-list-wrap-div">
+                        <div className="row alert-list-wrap-div table-responsive">
                             {
                                 (siteList.length > 0)
-                                    ? <table className="table table-bordered">
+                                    ? <table className="table table-striped table-dark">
                                         <thead>
                                             <tr>
                                                 <th>Job Name</th>
@@ -184,28 +184,28 @@ class Tests extends React.Component {
                                                         <tr className="table-row" key={'siteDetail' + i}>
                                                             <td className="table-cell">
                                                                 <div className="form-group has-feedback">
-                                                                    <label className="alert-label">
+                                                                    <label>
                                                                         {site.jobName}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
                                                                 <div className="form-group has-feedback">
-                                                                    <label className="alert-label">
+                                                                    <label>
                                                                         {site.securityProtocol + site.siteObject.value}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
                                                                 <div className="form-group has-feedback">
-                                                                    <label className="alert-label">
+                                                                    <label>
                                                                         {site.browser}
                                                                     </label>
                                                                 </div>
                                                             </td>
                                                             <td className="table-cell">
                                                                 <div className="form-group has-feedback">
-                                                                    <label className="alert-label">
+                                                                    <label>
                                                                         {site.recursiveSelect.textValue}
                                                                     </label>
                                                                 </div>
