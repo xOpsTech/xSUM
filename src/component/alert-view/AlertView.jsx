@@ -125,7 +125,6 @@ class AlertView extends React.Component {
         this.setState({isLoading: true, loadingMessage: MessageConstants.SAVE_ALERT});
         var {loggedUserObj, selectedAlertData, selectedTenant} = this.state;
         selectedAlertData.email = loggedUserObj.email;
-
         selectedAlertData.tenantID = selectedTenant._id;
 
         var urlToSaveAlert = Config.API_URL + AppConstants.SAVE_ALERT_API;
@@ -340,9 +339,8 @@ class AlertView extends React.Component {
                                         (selectedAlertData)
                                             ? <input
                                                 type="number"
-                                                step="0.1"
                                                 className="form-control"
-                                                id="failureAlertEmailLimit"
+                                                id="failureAlertEmailLimitInput"
                                                 value={selectedAlertData.failureAlertEmailLimit}
                                                 onChange={(e) => {
                                                     selectedAlertData.failureAlertEmailLimit = e.target.value;
@@ -351,7 +349,7 @@ class AlertView extends React.Component {
                                             : <input
                                                 type="number"
                                                 className="form-control"
-                                                id="responseTimeoutInput"
+                                                id="failureAlertEmailLimitInput"
                                                 disabled
                                                 value="0"/>
                                     }
