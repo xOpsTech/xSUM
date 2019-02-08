@@ -89,6 +89,19 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
 
         } else if (err) {
 
+            var resultID = crypto.randomBytes(10).toString('hex');
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
+
+            obj = {
+                socket: 0,
+                lookup: 0,
+                connect:0,
+                response:0.000000000,
+                end:0
+
+            }
+            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, obj);
+
             AlertApi.sendFailureAlert(databaseName, jobObj);
 
         }
