@@ -296,7 +296,7 @@ class AllResultView extends React.Component {
                     graph: 'g1',
                     oppositeAxis: false,
                     offset: 30,
-                    scrollbarHeight: 20,
+                    scrollbarHeight: 5,
                     backgroundAlpha: 0,
                     selectedBackgroundAlpha: 0.1,
                     selectedBackgroundColor: '#888888',
