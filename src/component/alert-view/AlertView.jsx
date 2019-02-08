@@ -80,6 +80,11 @@ class AlertView extends React.Component {
         };
         alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
 
+            for (let alertData of data.alertsData) {
+                alertData.oldCriticalThreshold = alertData.criticalThreshold;
+                alertData.oldWarningThreshold = alertData.warningThreshold;
+            }
+
             if (this.props.location.query.alertObj) {
                 var alertObj = JSON.parse(this.props.location.query.alertObj);
 
@@ -254,15 +259,12 @@ class AlertView extends React.Component {
                                 <div className="form-group">
                                     {
                                         (selectedAlertData)
-                                            ? <input
+                                            ? <label className="common-label">
+                                                  {Math.round(selectedAlertData.meanAvg * 1000) / 1000}
+                                              </label>
+                                            : <label
                                                 type="number"
-                                                className="form-control"
-                                                id="responseTimeoutInput"
-                                                disabled
-                                                value={Math.round(selectedAlertData.meanAvg * 1000) / 1000}/>
-                                            : <input
-                                                type="number"
-                                                className="form-control"
+                                                className="common-label"
                                                 id="responseTimeoutInput"
                                                 disabled
                                                 value=""/>
@@ -285,6 +287,7 @@ class AlertView extends React.Component {
                                                 step="0.1"
                                                 className="form-control"
                                                 id="warningThresholdInput"
+                                                placeholder={selectedAlertData.oldWarningThreshold}
                                                 value={selectedAlertData.warningThreshold}
                                                 onChange={(e) => {
                                                     selectedAlertData.warningThreshold = e.target.value;
@@ -316,6 +319,7 @@ class AlertView extends React.Component {
                                                 className="form-control"
                                                 id="criticalThresholdInput"
                                                 value={selectedAlertData.criticalThreshold}
+                                                placeholder={selectedAlertData.oldCriticalThreshold}
                                                 onChange={(e) => {
                                                     selectedAlertData.criticalThreshold = e.target.value;
                                                     this.handleChange(e, selectedAlertData);

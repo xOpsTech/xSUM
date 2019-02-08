@@ -38,6 +38,7 @@ export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailD
 export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
 export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
+export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 
 export const RESPONSE_SUCCESS = 'Success';
 
@@ -45,6 +46,7 @@ export const RESPONSE_SUCCESS = 'Success';
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
 export const DATA_MODAL = 'DATA_MODAL';
 export const RESULT_MODAL = 'RESULT_MODAL';
+export const ALERT_MODAL = 'ALERT_MODAL';
 
 // Constants for patterns
 export const NAME_PATTERN       = /[A-Za-z\s]+$/;
@@ -140,7 +142,7 @@ export const LEFT_NAV_TABS = [
             },
             {
                 index: TENANT_SETTINGS_INDEX,
-                text: 'Account Settings',
+                text: 'Account Management',
                 route: TENANT_SETTINGS_ROUTE
             },
             {
@@ -164,6 +166,11 @@ export const DATE_TIME_FORMAT = 'MM/DD h:mm a';
 export const BROWSER_ARRAY = [
     {value: 'chrome', textValue: 'CHROME'},
     {value: 'firefox', textValue: 'FIREFOX'}
+];
+
+export const SECURITY_ARRAY = [
+    {value: 'https://', textValue: 'https'},
+    {value: 'http://', textValue: 'http'}
 ];
 
 export const PERFORMANCE_TEST_TYPE = 'performace';

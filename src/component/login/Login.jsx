@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
+import ModalContainer from '../common/modal-container/ModalContainer';
 import ErrorIconComponent from '../common/error-icon-component/ErrorIconComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import LogoContainer from '../common/logo-container/LogoContainer';
@@ -28,6 +29,7 @@ class Login extends React.Component {
         this.signUpClick           = this.signUpClick.bind(this);
         this.googleResponseSuccess = this.googleResponseSuccess.bind(this);
         this.googleResponseFail    = this.googleResponseFail.bind(this);
+        this.modalOkClick          = this.modalOkClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -39,7 +41,9 @@ class Login extends React.Component {
             email     : {value:'', error: {}},
             password  : {value:'', error: {}},
             isLogin   : false,
-            loginError: {}
+            loginError: {},
+            isAlertVisible: false,
+            alertTitle: ''
         };
 
         return initialState;
@@ -142,15 +146,24 @@ class Login extends React.Component {
     }
 
     googleResponseFail(response) {
-        alert('You didn\'t select a valid account', response);
+        this.setState({isAlertVisible: true, modalTitle: 'You didn\'t select a valid account'});
+    }
+
+    modalOkClick() {
+        this.setState({isAlertVisible: false, modalTitle: ''});
     }
 
     render() {
-        const {isLogin, loginError, email, password} = this.state;
+        const {isLogin, loginError, email, password, isAlertVisible, modalTitle} = this.state;
 
         // Google secret client id : pQMZvMj2I_sxM6t7HNLYLKr7
         return (
             <Fragment>
+                <ModalContainer
+                    title={modalTitle}
+                    okClick={this.modalOkClick}
+                    isModalVisible={isAlertVisible}
+                    modalType={AppConstants.ALERT_MODAL}/>
                 <LogoContainer/>
                 <div className="login-container-div">
                     <LoadingScreen isDisplay={isLogin} message={MessageConstants.LOGING_MESSAGE}/>

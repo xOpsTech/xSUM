@@ -109,10 +109,14 @@ class AddUserView extends React.Component {
         tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
             var tenantList = [];
             var selectedTenant = context.state.selectedTenant;
+            var selectedTenantIndex = 0;
 
-            for (var i = 0; i < data.length; i++) {
-                var tenant = data[i];
-                tenant.email = {value: data[i].email, error: {}};
+            var selectedTenantID = UIHelper.getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+
+            let i = 0;
+
+            for (let tenant of data) {
+                tenant.email = {value: tenant.email, error: {}};
                 tenant.password = {value: '', error: {}};
                 tenantList.push(tenant);
 
@@ -121,15 +125,17 @@ class AddUserView extends React.Component {
 
                     if (userObj.tenantID === tenant._id) {
                         selectedTenant = tenant;
+                        selectedTenantIndex = i;
                         context.getUsersForTenant(user, tenant);
                     }
 
+                } else if (selectedTenantID && selectedTenantID === tenant._id) {
+                    selectedTenant = tenant;
+                    selectedTenantIndex = i;
                 }
 
-            }
+                i++;
 
-            if (selectedTenant) {
-                selectedTenant = tenantList[0];
             }
 
             context.setState (
@@ -137,7 +143,8 @@ class AddUserView extends React.Component {
                     isLoading: false,
                     loadingMessage: '',
                     tenantList: tenantList,
-                    selectedTenant: selectedTenant
+                    selectedTenant: selectedTenant,
+                    selectedTenantIndex: selectedTenantIndex
                 }
             );
 
@@ -201,51 +208,45 @@ class AddUserView extends React.Component {
 
         var {userObj, selectedTenant, loggedUserObj} = this.state;
 
-        if (loggedUserObj.isEmailPasswordSet) {
+        var undefinedCheck = !(userObj.email.error.hasError === undefined);
+        var errorCheck = !(userObj.email.error.hasError);
 
-            var undefinedCheck = !(userObj.email.error.hasError === undefined);
-            var errorCheck = !(userObj.email.error.hasError);
+        if (undefinedCheck && errorCheck) {
+            this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
+            var userToInsert = {
+                userID: loggedUserObj.id,
+                email: userObj.email.value,
+                password: userObj.password.value,
+                role: userObj.role.value,
+                tenantID: selectedTenant._id,
+                siteURL: Config.API_URL,
+                loggedUserEmail: loggedUserObj.email
+            };
 
-            if (undefinedCheck && errorCheck) {
-                this.setState({isLoading: true, loadingMessage: MessageConstants.ADD_USER});
-                var userToInsert = {
-                    userID: loggedUserObj.id,
-                    email: userObj.email.value,
-                    password: userObj.password.value,
-                    role: userObj.role.value,
-                    tenantID: selectedTenant._id,
-                    siteURL: Config.API_URL,
-                    loggedUserEmail: loggedUserObj.email
-                };
-
-                var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
-                userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
-                    this.setState(
-                        {
-                            isLoading: false,
-                            loadingMessage: '',
-                        }
-                    );
-
-                    if (response.message === AppConstants.RESPONSE_SUCCESS) {
-                        UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
-                    } else {
-                        this.setState({userSaveError: {hasError: true, name: response.message}});
+            var urlToAddUser = Config.API_URL + AppConstants.ADD_USER_API;
+            userApi.registerUser(urlToAddUser, userToInsert).then((response) => {
+                this.setState(
+                    {
+                        isLoading: false,
+                        loadingMessage: '',
                     }
+                );
 
-                });
-            } else {
-
-                if(userObj.email.error.hasError === undefined) {
-                    userObj.email.error.hasError = true;
-                    userObj.email.error.name = MessageConstants.EMAIL_ERROR;
-                    this.setState({userObj});
+                if (response.message === AppConstants.RESPONSE_SUCCESS) {
+                    UIHelper.redirectTo(AppConstants.USER_MANAGMENT_ROUTE, {});
+                } else {
+                    this.setState({userSaveError: {hasError: true, name: response.message}});
                 }
 
+            });
+        } else {
+
+            if(userObj.email.error.hasError === undefined) {
+                userObj.email.error.hasError = true;
+                userObj.email.error.name = MessageConstants.EMAIL_ERROR;
+                this.setState({userObj});
             }
 
-        } else {
-            this.setState({userSaveError: {hasError: true, name: MessageConstants.ADD_USER_TENANT_EMAIL_CONFIG_MESSAGE}});
         }
 
     }
@@ -486,8 +487,8 @@ class AddUserView extends React.Component {
                                 </div>
                             </div>
                             <div className="col-sm-9">
-                                <div className="form-group has-feedback label-div">
-                                    <label className="alert-label">
+                                <div className="form-group has-feedback">
+                                    <label className="alert-label tenant-name">
                                         {(selectedTenant.name) ? selectedTenant.name : '-'}
                                     </label>
                                 </div>

@@ -26,6 +26,24 @@ function connectDB(database) {
     });
 }
 
+MongoDB.prototype.removeDatabase = async function(databaseName) {
+    connectMongoDB(databaseName).then((db) => {
+        var dbo = db.db(databaseName);
+        dbo.dropDatabase(function(error, result) {
+
+            if (error) {
+                console.log('Error in deleting Database : ' + error);
+            } else {
+                console.log('Database deletion success');
+            }
+
+            // After all the operations with db, close it.
+            db.close();
+        });
+
+    });
+}
+
 function getResult(db, databaseName, collectionName, query) {
     return new Promise((resolve) => {
         var dbo = db.db(databaseName);

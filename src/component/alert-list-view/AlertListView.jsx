@@ -164,13 +164,14 @@ class AlertListView extends React.Component {
 
             if (activeAlertCount > 0) {
                 return (
-                    <table className="table table-borderless" id="alert-list">
+                    <table className="table table-striped table-dark" id="alert-list">
                         <thead>
                             <tr>
                                 <th>Alert Name</th>
                                 <th>Warning Threshold</th>
                                 <th>Critical Threshold</th>
                                 <th>Failure Threshold</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -181,29 +182,29 @@ class AlertListView extends React.Component {
                                         return (
                                             <tr className="table-row" key={'siteDetail' + i}>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback label-div">
-                                                        <label className="alert-label">
+                                                    <div className="form-group has-feedback">
+                                                        <label>
                                                             {alert.job.jobName}
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback label-div">
-                                                        <label className="alert-label">
+                                                    <div className="form-group has-feedback">
+                                                        <label>
                                                             {alert.warningThreshold} seconds
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback label-div">
-                                                        <label className="alert-label">
+                                                    <div className="form-group has-feedback">
+                                                        <label>
                                                             {alert.criticalThreshold} seconds
                                                         </label>
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
-                                                    <div className="form-group has-feedback label-div">
-                                                        <label className="alert-label">
+                                                    <div className="form-group has-feedback">
+                                                        <label>
                                                             {alert.failureAlertEmailLimit} seconds
                                                         </label>
                                                     </div>
@@ -267,7 +268,7 @@ class AlertListView extends React.Component {
                     </table>
                 );
             } else {
-                return <div>No Alerts available</div>;
+                return <div className="empty-list-style">No Alerts available</div>;
             }
 
         };

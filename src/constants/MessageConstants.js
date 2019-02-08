@@ -8,6 +8,7 @@ export const FORGOT_PW_PAGE_INVALID_EMAIL_ERROR = 'Email address invalid.';
 export const PASSWORD_RESET_MAIL_SENT = 'Check your email for the password reset code.';
 export const RESET_PASSWORD_SUCCESS = 'Password reset success.';
 export const CANT_UPDATE_POINTS = 'Points can\'t be a negative value';
+export const CANT_UPDATE_USER_COUNT = 'User count can\'t be updated with less amount of users';
 
 export const LOGING_MESSAGE = 'Login...';
 export const REGISTERING_MESSAGE = 'Registering...';
@@ -32,6 +33,7 @@ export const UPDATE_USER = 'Updating a user...';
 export const FETCHING_TENANTS = 'Fetching tenants...';
 export const UPDATE_TENANT = 'Updating tenant...';
 export const UPDATE_PROFILE = 'Updating profile...';
+export const REMOVE_TENANT = 'Removing Account...';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +

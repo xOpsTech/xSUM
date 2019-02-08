@@ -64,7 +64,7 @@ exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, s
 
 exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     request({
-        uri: jobObj.urlValue,
+        uri: jobObj.securityProtocol + jobObj.urlValue,
         method: 'GET',
         time: true
     }, (err, resp) => {
@@ -88,10 +88,11 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
             }
 
         } else if (err) {
+
             var resultID = crypto.randomBytes(10).toString('hex');
             var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
 
-            obg = {
+            obj = {
                 socket: 0,
                 lookup: 0,
                 connect:0,
@@ -99,10 +100,10 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
                 end:0
 
             }
-            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, obg);
-            
+            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, obj);
+
             AlertApi.sendFailureAlert(databaseName, jobObj);
-            
+
         }
 
     })

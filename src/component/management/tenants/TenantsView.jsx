@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
 
+import ModalContainer from '../../common/modal-container/ModalContainer';
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
@@ -19,11 +20,13 @@ class TenantsView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.updateTenantClick = this.updateTenantClick.bind(this);
-        this.removeTenantClick = this.removeTenantClick.bind(this);
-        this.redirectToAddUser = this.redirectToAddUser.bind(this);
+        this.updateTenantClick  = this.updateTenantClick.bind(this);
+        this.removeTenantClick  = this.removeTenantClick.bind(this);
+        this.redirectToAddUser  = this.redirectToAddUser.bind(this);
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
-        this.tenantDropDown = this.tenantDropDown.bind(this);
+        this.tenantDropDown     = this.tenantDropDown.bind(this);
+        this.modalYesClick      = this.modalYesClick.bind(this);
+        this.modalNoClick       = this.modalNoClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -57,7 +60,10 @@ class TenantsView extends React.Component {
             loggedUserObj: null,
             isLeftNavCollapse: false,
             tenantList: [],
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            isModalVisible: false,
+            modalText: '',
+            tenantToRemove: null
         };
 
         return initialState;
@@ -97,6 +103,12 @@ class TenantsView extends React.Component {
 
     removeTenantClick(e, tenantToRemove) {
         e.preventDefault();
+
+        this.setState({
+            isModalVisible: true,
+            modalText: 'Are you sure you want to delete this account? ' + tenantToRemove.name,
+            tenantToRemove: tenantToRemove
+        });
     }
 
     redirectToAddUser() {
@@ -113,25 +125,61 @@ class TenantsView extends React.Component {
         this.setState(stateObject);
     }
 
+    modalNoClick() {
+        this.setState({isModalVisible: false, modalTitle: '', tenantToRemove: null});
+    }
+
+    modalYesClick() {
+        const {tenantToRemove, loggedUserObj} = this.state;
+        this.setState(
+            {
+                isModalVisible: false,
+                modalTitle: '',
+                isLoading: true,
+                loadingMessage: MessageConstants.REMOVE_TENANT
+            }
+        );
+
+        var urlToRemoveTenant = Config.API_URL + AppConstants.REMOVING_TENANT_DATA_API;
+        var tenantRemove = {
+            id: tenantToRemove._id
+        }
+        tenantApi.removeTenant(urlToRemoveTenant, tenantRemove).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+            this.getAllTenantsData(loggedUserObj, this);
+        });
+    }
+
     render() {
         const {
             isLoading,
             loadingMessage,
             loggedUserObj,
             isLeftNavCollapse,
-            tenantList
+            tenantList,
+            isModalVisible,
+            modalText
         } = this.state;
 
         const TenantList = () => {
             return (
-                <table className="table table-borderless" id="tenant-list">
+                <table className="table table-striped table-dark" id="tenant-list">
                     <thead>
                         <tr>
                             <th>Account Name</th>
                             <th>Account Email</th>
                             <th>Total Points</th>
                             <th>Points Remain</th>
-                            <th></th>
+                            {
+                                (loggedUserObj.isSuperUser)
+                                    ? <th></th>
+                                    : null
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -140,8 +188,8 @@ class TenantsView extends React.Component {
                                 return (
                                     <tr className="table-row" key={'userDetail' + i}>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
+                                            <div className="form-group has-feedback">
+                                                <label>
                                                     {
                                                         (tenant.name === '')
                                                             ? AppConstants.NOT_AVAILABLE_TENANT_NAME
@@ -151,8 +199,8 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
+                                            <div className="form-group has-feedback">
+                                                <label>
                                                     {
                                                         (tenant.email === '')
                                                             ? AppConstants.NOT_AVAILABLE_EMAIL
@@ -162,37 +210,34 @@ class TenantsView extends React.Component {
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
+                                            <div className="form-group has-feedback">
+                                                <label>
                                                     {tenant.points.totalPoints}
                                                 </label>
                                             </div>
                                         </td>
                                         <td className="table-cell">
-                                            <div className="form-group has-feedback label-div">
-                                                <label className="alert-label">
+                                            <div className="form-group has-feedback">
+                                                <label>
                                                     {tenant.points.pointsRemain}
                                                 </label>
                                             </div>
                                         </td>
-                                        <td>
-                                            <Fragment>
-                                                <button
-                                                    className="btn-primary form-control button-inline"
-                                                    onClick={(e) => this.updateTenantClick(e, tenant, i)}
-                                                    title={'Update account details of ' + tenant.name}>
-                                                    <span className="glyphicon button-icon glyphicon-edit">
-                                                    </span>
-                                                </button>
-                                                <button
-                                                    className="btn-danger form-control button-inline"
-                                                    onClick={(e) => this.removeTenantClick(e, tenant)}
-                                                    title={'Remove account of ' + tenant.name}>
-                                                    <span className="glyphicon glyphicon-remove button-icon">
-                                                    </span>
-                                                </button>
-                                            </Fragment>
-                                        </td>
+                                        {
+                                            (loggedUserObj.isSuperUser)
+                                                ? <td>
+                                                    <Fragment>
+                                                        <button
+                                                            className="btn-danger form-control"
+                                                            onClick={(e) => this.removeTenantClick(e, tenant)}
+                                                            title={'Remove account of ' + tenant.name}>
+                                                            <span className="glyphicon glyphicon-remove button-icon">
+                                                            </span>
+                                                        </button>
+                                                    </Fragment>
+                                                </td>
+                                                : null
+                                        }
                                     </tr>
                                 );
                             })
@@ -204,6 +249,12 @@ class TenantsView extends React.Component {
 
         return (
             <Fragment>
+                <ModalContainer
+                    title={modalText}
+                    yesClick={this.modalYesClick}
+                    noClick={this.modalNoClick}
+                    isModalVisible={isModalVisible}
+                    modalType={AppConstants.CONFIRMATION_MODAL}/>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
                 <LeftNav
                     selectedIndex={AppConstants.TENANTS_INDEX}
@@ -229,16 +280,18 @@ class TenantsView extends React.Component {
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
                         <div className="row alert-list-wrap-div">
                             <TenantList/>
-                            <div className="row add-test-section">
-                                <div className="col-sm-2 table-button">
-                                    <button
-                                        className="btn btn-primary form-control button-all-caps-text add-button"
-                                        onClick={this.redirectToAddUser}>
-                                        Add Account
-                                    </button>
-                                </div>
-                                <div className="col-sm-11"></div>
-                            </div>
+                            {
+                                // <div className="row add-test-section">
+                                //     <div className="col-sm-2 table-button">
+                                //         <button
+                                //             className="btn btn-primary form-control button-all-caps-text add-button"
+                                //             onClick={this.redirectToAddUser}>
+                                //             Add Account
+                                //         </button>
+                                //     </div>
+                                //     <div className="col-sm-11"></div>
+                                // </div>
+                            }
                         </div>
                     </div>
                 </div>

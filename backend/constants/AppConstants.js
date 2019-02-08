@@ -21,6 +21,7 @@ exports.USER_INACTIVE = 'User account is not activated';
 exports.SUPER_USER_EXISTS = 'User is already in the super user list';
 exports.SUPER_USER_NON_EXISTS = 'User is not in super user list';
 exports.POINT_NOT_ENOUGH_ERROR = 'You can\'t add anymore jobs. Please contact administrator for any help...';
+exports.USER_LIMIT_REACHED = 'You have reached to the user limit for this account. Please contact administrator for any help...';
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
@@ -32,6 +33,7 @@ exports.EMAIL_CRITICAL_ALERT_COUNT = 5;
 exports.EMAIL_FAILURE_ALERT_COUNT = 5;
 
 exports.DEFAULT_POINTS_COUNT = 25000;
+exports.DEFAULT_USER_COUNT = 5;
 
 exports.TOTAL_MILLISECONDS_PER_MONTH = 1000 * 60 * 60 * 24 * 30;
 

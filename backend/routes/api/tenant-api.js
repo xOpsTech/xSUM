@@ -30,6 +30,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "updateTenantData":
             new TenantApi().updateTenantData(req, res);
             break;
+        case "removeTenantData":
+            new TenantApi().removeTenantData(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -64,6 +67,10 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
                         totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
                         pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
                     }
+                }
+
+                if (tenant.userCountLimit === undefined) {
+                    tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
                 }
 
                 matchedTenants.push(tenant);
@@ -133,6 +140,11 @@ TenantApi.prototype.getAllUsersWithTenants = async function(req, res) {
                     pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
                 }
             }
+
+            if (tenant.userCountLimit === undefined) {
+                tenant.userCountLimit = AppConstants.DEFAULT_USER_COUNT;
+            }
+
         }
 
         res.send(tenantsArray);
@@ -161,7 +173,8 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
         points: {
             totalPoints: AppConstants.DEFAULT_POINTS_COUNT,
             pointsRemain: AppConstants.DEFAULT_POINTS_COUNT
-        }
+        },
+        userCountLimit: AppConstants.DEFAULT_USER_COUNT
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;
@@ -216,6 +229,32 @@ TenantApi.prototype.updateTenantData = async function(req, res) {
     var queryObj = {_id: ObjectId(tenantObj.id)};
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantObj.updateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantObj.updateObj}});
+}
+
+TenantApi.prototype.removeTenantData = async function(req, res) {
+    var tenantObj = req.body;
+
+    // Get tenant data
+    var queryObj = {_id: ObjectId(tenantObj.id)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj);
+
+    // Remove users
+    for (let user of tenantData[0].users) {
+        var queryToRemoveUser = {_id: ObjectId(user.userID)};
+        MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToRemoveUser);
+    }
+
+    // Remove mongo db for relavant tenant
+    await MongoDB.removeDatabase(tenantObj.id);
+
+    // Remove influx db for relavant tenant
+    InfluxDB.removeDatabase(tenantObj.id);
+
+    // Remove tenant
+    var queryToRemoveTenant = {_id: ObjectId(tenantObj.id)};
+    MongoDB.deleteOneData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToRemoveTenant);
+
+    res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: tenantObj});
 }
 
 module.exports = new TenantApi();
