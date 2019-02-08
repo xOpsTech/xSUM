@@ -285,7 +285,15 @@ class AlertView extends React.Component {
                                             ? <input
                                                 type="number"
                                                 step="0.1"
-                                                className="form-control"
+                                                className={
+                                                    'form-control ' +
+                                                    (
+                                                        (selectedAlertData.warningThreshold
+                                                            == selectedAlertData.oldWarningThreshold)
+                                                            ? 'defaultText'
+                                                            : ''
+                                                        )
+                                                    }
                                                 id="warningThresholdInput"
                                                 placeholder={selectedAlertData.oldWarningThreshold}
                                                 value={selectedAlertData.warningThreshold}
@@ -316,7 +324,15 @@ class AlertView extends React.Component {
                                             ? <input
                                                 step="0.1"
                                                 type="number"
-                                                className="form-control"
+                                                className={
+                                                    'form-control ' +
+                                                    (
+                                                        (selectedAlertData.criticalThreshold
+                                                            == selectedAlertData.oldCriticalThreshold)
+                                                            ? 'defaultText'
+                                                            : ''
+                                                        )
+                                                    }
                                                 id="criticalThresholdInput"
                                                 value={selectedAlertData.criticalThreshold}
                                                 placeholder={selectedAlertData.oldCriticalThreshold}
