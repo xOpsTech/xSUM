@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
+import LazyLoad from 'react-lazy-load';
 
 import LeftNav from '../common/left-nav/LeftNav';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
@@ -453,7 +454,11 @@ class AllResultView extends React.Component {
                         {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
-                                    return <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>;
+                                    return (
+                                        <LazyLoad height={345} offsetVertical={300}>
+                                            <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>
+                                        </LazyLoad>
+                                    );
                                 })
                                 : null
                         }
