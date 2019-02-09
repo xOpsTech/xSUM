@@ -216,7 +216,7 @@ class Tests extends React.Component {
                                                                         && loggedUserObj.permissions.canCreate)
                                                                         ? <button
                                                                             className="btn-primary
-                                                                                form-control button-inline"
+                                                                                form-control"
                                                                             onClick={
                                                                                 (e) =>
                                                                                     this.updateJobClick(e, site)
@@ -237,7 +237,7 @@ class Tests extends React.Component {
                                                                         && loggedUserObj.permissions.canUpdate)
                                                                         ? <button
                                                                             className="btn-danger
-                                                                                form-control button-inline"
+                                                                                form-control"
                                                                             onClick={
                                                                                 (e) =>
                                                                                     this.removeJobClick(e, site.jobId)

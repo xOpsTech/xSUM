@@ -138,7 +138,9 @@ export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
     return (isTitle) ? toTitleCase(role) : role;
 }
 
-export function getUserData(loggedUserObj, context, callBackFunction) {
+
+// isContinueLoad used for indicate continue the loading screen or not
+export function getUserData(loggedUserObj, context, callBackFunction, isContinueLoad) {
     var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
 
     context.setState({isLoading: true, alertData:context.state.alertData, loadingMessage: MessageConstants.FETCHING_USER});
@@ -148,8 +150,8 @@ export function getUserData(loggedUserObj, context, callBackFunction) {
 
         context.setState (
             {
-                isLoading: false,
-                loadingMessage: '',
+                isLoading: (isContinueLoad) ? isContinueLoad : false,
+                loadingMessage: (isContinueLoad) ? context.state.loadingMessage : '',
                 loggedUserObj,
                 alertData: context.state.alertData
             }
@@ -159,7 +161,7 @@ export function getUserData(loggedUserObj, context, callBackFunction) {
     });
 }
 
-export function getAllTenantsData(user, context, callBackFunction) {
+export function getAllTenantsData(user, context, callBackFunction, isContinueLoad) {
     var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
 
     if (user.isSuperUser) {
@@ -218,8 +220,8 @@ export function getAllTenantsData(user, context, callBackFunction) {
 
         context.setState (
             {
-                isLoading: false,
-                loadingMessage: '',
+                isLoading: (isContinueLoad) ? isContinueLoad : false,
+                loadingMessage: (isContinueLoad) ? context.state.loadingMessage : '',
                 tenantList: tenantList,
                 selectedTenant: selectedTenant,
                 alertData: context.state.alertData

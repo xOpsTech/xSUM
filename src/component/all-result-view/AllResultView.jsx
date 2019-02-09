@@ -72,11 +72,11 @@ class AllResultView extends React.Component {
     }
 
     getLoggedUserData(loggedUserObj) {
-        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+        UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData, true);
     }
 
     getAllTenantsData(user, context) {
-        UIHelper.getAllTenantsData(user, context, context.getAllAlerts);
+        UIHelper.getAllTenantsData(user, context, context.getAllAlerts, true);
     }
 
     getAllAlerts(loggedUserObj, selectedTenant, context) {
@@ -97,10 +97,10 @@ class AllResultView extends React.Component {
                 });
             }
 
-            this.setState({ isLoading: false, loadingMessage: '', alertData: alertThresholdsByJob });
+            this.setState({ alertData: alertThresholdsByJob });
 
         });
-        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllJobs);
+        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllJobs, true);
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
@@ -136,7 +136,15 @@ class AllResultView extends React.Component {
                 })
             }
 
-            context.setState({isLoading: false, loadingMessage: '',alertData:this.state.alertData, jobsWithResults: jobsList,locationMarker: locationsArr});
+            context.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                    alertData: context.state.alertData,
+                    jobsWithResults: jobsList,
+                    locationMarker: locationsArr
+                }
+            );
         });
     }
 
