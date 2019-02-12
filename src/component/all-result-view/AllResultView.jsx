@@ -109,8 +109,13 @@ class AllResultView extends React.Component {
         const socket = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
         socket.on(AppConstants.UPDATE_JOB_RESULTS, (data) => {
 
+            var jobResultsLength = context.state.jobsWithResults[0].result.length;
+            var updatedJobResultsLength = data.jobsList[0].result.length;
+
+            // Check final result executed time
             if (context.state.jobsWithResults.length > 0
-                && context.state.jobsWithResults[0].result.length < data.jobsList[0].result.length) {
+                && context.state.jobsWithResults[0].result[jobResultsLength-1].executedTime
+                    !== data.jobsList[0].result[updatedJobResultsLength-1].executedTime) {
                 this.arrangeDashboardData(data, context);
             }
 
