@@ -48,6 +48,9 @@ export const DATA_MODAL = 'DATA_MODAL';
 export const RESULT_MODAL = 'RESULT_MODAL';
 export const ALERT_MODAL = 'ALERT_MODAL';
 
+// Socket related constants
+export const UPDATE_JOB_RESULTS = 'UpdateJobResults';
+
 // Constants for patterns
 export const NAME_PATTERN       = /[A-Za-z\s]+$/;
 export const URL_PATTERN        = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;

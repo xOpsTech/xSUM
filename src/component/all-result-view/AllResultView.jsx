@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
 import LazyLoad from 'react-lazy-load';
+import socketIOClient from "socket.io-client";
 
 import LeftNav from '../common/left-nav/LeftNav';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
@@ -31,6 +32,7 @@ class AllResultView extends React.Component {
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         this.tenantDropDown       = this.tenantDropDown.bind(this);
+        this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -42,7 +44,6 @@ class AllResultView extends React.Component {
     }
 
     componentWillMount() {
-
         var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
 
         if (siteLoginCookie) {
@@ -105,6 +106,15 @@ class AllResultView extends React.Component {
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
+        const socket = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
+        socket.on(AppConstants.UPDATE_JOB_RESULTS, (data) => {
+
+            if (context.state.jobsWithResults.length > 0
+                && context.state.jobsWithResults[0].result.length < data.jobsList[0].result.length) {
+                this.arrangeDashboardData(data, context);
+            }
+
+        });
         var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_RESULTS_API;
 
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
@@ -112,41 +122,45 @@ class AllResultView extends React.Component {
             tenantID: selectedTenant._id
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
-            var jobsList = [];
-
-            for (let job of data.jobsList) {
-                jobsList.push({
-                    job: job,
-                    result: job.result,
-                    selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
-                    selectedChartIndex: '0',
-                    barChartData: context.getArrangedBarChartData(job, 0)
-                })
-            }
-
-            var locationsArr = [];
-
-            for (let location of data.locations) {
-                locationsArr.push({
-                    svgPath: AppConstants.TARGET_SVG,
-                    zoomLevel: 5,
-                    scale: 2,
-                    title: location.textValue,
-                    latitude: location.latitude,
-                    longitude: location.longitude
-                })
-            }
-
-            context.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    alertData: context.state.alertData,
-                    jobsWithResults: jobsList,
-                    locationMarker: locationsArr
-                }
-            );
+            this.arrangeDashboardData(data, context);
         });
+    }
+
+    arrangeDashboardData(data, context) {
+        var jobsList = [];
+
+        for (let job of data.jobsList) {
+            jobsList.push({
+                job: job,
+                result: job.result,
+                selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
+                selectedChartIndex: '0',
+                barChartData: context.getArrangedBarChartData(job, 0)
+            })
+        }
+
+        var locationsArr = [];
+
+        for (let location of data.locations) {
+            locationsArr.push({
+                svgPath: AppConstants.TARGET_SVG,
+                zoomLevel: 5,
+                scale: 2,
+                title: location.textValue,
+                latitude: location.latitude,
+                longitude: location.longitude
+            })
+        }
+
+        context.setState(
+            {
+                isLoading: false,
+                loadingMessage: '',
+                alertData: context.state.alertData,
+                jobsWithResults: jobsList,
+                locationMarker: locationsArr
+            }
+        );
     }
 
     getArrangedBarChartData(job, selectedChartIndex) {

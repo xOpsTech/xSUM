@@ -5,6 +5,7 @@ var InfluxDB = require('../db/influxdb');
 var MongoDB = require('../db/mongodb');
 var request = require('request');
 var crypto = require('crypto');
+var moment = require('moment');
 
 function Helpers(){};
 
@@ -107,6 +108,43 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
         }
 
     })
+}
+
+exports.getJobsWithLocations = async function(tenantID) {
+    var queryObj = {};
+    var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
+
+    var locationsArr = [];
+
+    for (let job of jobsList) {
+
+        var dataTable = '';
+        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
+        } else {
+            dataTable = AppConstants.PING_RESULT_LIST;
+        }
+
+        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+        var jobResults = await InfluxDB.getAllDataFor(
+            tenantID,
+            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
+        );
+
+        job.result = jobResults;
+
+        var isLocationFound = locationsArr.find(function(locationObj) {
+            return (locationObj.locationid === job.serverLocation.locationid);
+        });
+
+        if (!isLocationFound) {
+            locationsArr.push(job.serverLocation);
+        }
+
+    }
+
+    var listObj = {jobsList: jobsList, locations: locationsArr};
+    return listObj;
 }
 
 exports.roundValue = function(value, decimalPlaces) {

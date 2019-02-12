@@ -170,7 +170,6 @@ class AlertListView extends React.Component {
                                 <th>Alert Name</th>
                                 <th>Warning Threshold</th>
                                 <th>Critical Threshold</th>
-                                <th>Failure Threshold</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -199,13 +198,6 @@ class AlertListView extends React.Component {
                                                     <div className="form-group has-feedback">
                                                         <label>
                                                             {alert.criticalThreshold} seconds
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td className="table-cell">
-                                                    <div className="form-group has-feedback">
-                                                        <label>
-                                                            {alert.failureAlertEmailLimit} seconds
                                                         </label>
                                                     </div>
                                                 </td>

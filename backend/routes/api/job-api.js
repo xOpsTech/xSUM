@@ -91,40 +91,7 @@ JobApi.prototype.getAllJobs = async function(req, res) {
 
 JobApi.prototype.getAllJobsWithResults = async function(req, res) {
     var userObj = req.body;
-    var queryObj = {};
-    var jobsList = await MongoDB.getAllData(userObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
-
-    var locationsArr = [];
-
-    for (let job of jobsList) {
-
-        var dataTable = '';
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
-        } else {
-            dataTable = AppConstants.PING_RESULT_LIST;
-        }
-
-        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
-        var jobResults = await InfluxDB.getAllDataFor(
-            userObj.tenantID,
-            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
-        );
-
-        job.result = jobResults;
-
-        var isLocationFound = locationsArr.find(function(locationObj) {
-            return (locationObj.locationid === job.serverLocation.locationid);
-        });
-
-        if (!isLocationFound) {
-            locationsArr.push(job.serverLocation);
-        }
-
-    }
-
-    var objectToSend = {jobsList: jobsList, locations: locationsArr};
-
+    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID);
     res.send(objectToSend);
 }
 

@@ -43,6 +43,9 @@ exports.ADMIN_ROLE = 'admin';
 exports.CREATE_ROLE = 'create';
 exports.VIEW_ROLE = 'read-only';
 
+// Socket related constants
+exports.UPDATE_JOB_RESULTS = 'UpdateJobResults';
+
 // Resources
 exports.ANY_RESOURCE = 'any-resource';
 
