@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
     });
 
     if (!isTenantFound) {
-        var checkingTime = 2*1000; // Two minutes
+        var checkingTime = 2*1000*60; // Two minutes
         var socketRef = setInterval(async () => {
             var objectToSend = await Helpers.getJobsWithLocations(sentTenantID);
             io.emit(AppConstants.UPDATE_JOB_RESULTS + sentTenantID, objectToSend);
