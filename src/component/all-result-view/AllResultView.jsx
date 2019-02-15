@@ -20,6 +20,8 @@ import * as MessageConstants from '../../constants/MessageConstants';
 import Styles from './AllResultViewStyles.less';
 /* eslint-enable no-unused-vars */
 
+let socketClient;
+
 class AllResultView extends React.Component {
     constructor(props) {
         super(props);
@@ -33,6 +35,7 @@ class AllResultView extends React.Component {
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         this.tenantDropDown       = this.tenantDropDown.bind(this);
         this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
+        this.arrangeSocketData = this.arrangeSocketData.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -106,19 +109,9 @@ class AllResultView extends React.Component {
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
-        const socket = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
-        socket.on(AppConstants.UPDATE_JOB_RESULTS, (data) => {
-
-            var jobResultsLength = context.state.jobsWithResults[0].result.length;
-            var updatedJobResultsLength = data.jobsList[0].result.length;
-
-            // Check final result executed time
-            if (context.state.jobsWithResults.length > 0
-                && context.state.jobsWithResults[0].result[jobResultsLength-1].executedTime
-                    !== data.jobsList[0].result[updatedJobResultsLength-1].executedTime) {
-                this.arrangeDashboardData(data, context);
-            }
-
+        socketClient = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
+        socketClient.on(AppConstants.UPDATE_JOB_RESULTS + selectedTenant._id, (data) => {
+            this.arrangeSocketData(data);
         });
         var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_RESULTS_API;
 
@@ -273,11 +266,27 @@ class AllResultView extends React.Component {
     }
 
     tenantDropDown(stateObject) {
+
+        // Socket off
+        socketClient.disconnect();
+
         this.state.loggedUserObj.isSuperUser &&
             UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
         this.setState(stateObject);
 
         this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+    }
+
+    arrangeSocketData(data) {
+        var jobResultsLength = this.state.jobsWithResults[0].result.length;
+        var updatedJobResultsLength = data.jobsList[0].result.length;
+
+        // Check final result executed time
+        if (this.state.jobsWithResults.length > 0
+            && this.state.jobsWithResults[0].result[jobResultsLength-1].executedTime
+                !== data.jobsList[0].result[updatedJobResultsLength-1].executedTime) {
+            this.arrangeDashboardData(data, this);
+        }
     }
 
     render() {

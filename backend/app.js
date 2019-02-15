@@ -14,17 +14,58 @@ var app = express();
 const server = http.Server(app);
 const io = socketIo(server);
 
+var refArray = [];
+
 io.on('connection', (socket) => {
     console.log('A User connected');
 
-    var checkingTime = 60*1000*2; // Two minutes
+    var sentTenantID = socket.handshake.query['selectedTenantID'];
 
-    setInterval(async () => {
-        var objectToSend = await Helpers.getJobsWithLocations(socket.handshake.query['selectedTenantID']);
-        io.emit(AppConstants.UPDATE_JOB_RESULTS, objectToSend);
-    }, checkingTime);
+    var isTenantFound = refArray.find(function(refObject) {
+        return (refObject.tenantID === sentTenantID);
+    });
 
-    socket.on("disconnect", () => console.log("A User disconnected"));
+    if (!isTenantFound) {
+        var checkingTime = 2*1000; // Two minutes
+        var socketRef = setInterval(async () => {
+            var objectToSend = await Helpers.getJobsWithLocations(sentTenantID);
+            io.emit(AppConstants.UPDATE_JOB_RESULTS + sentTenantID, objectToSend);
+        }, checkingTime);
+
+        var objectOfSocket = {ref: socketRef, tenantID: sentTenantID, userCount: 1};
+
+        refArray.push(objectOfSocket);
+    } else {
+
+        for (let refObj of refArray) {
+
+            if (refObj.tenantID === sentTenantID) {
+                refObj.userCount += 1;
+            }
+
+        }
+    }
+
+    socket.on("disconnect", () => {
+
+        for (let refObj of refArray) {
+            var socketTenant = socket.handshake.query['selectedTenantID'];
+
+            if (refObj.tenantID === socketTenant) {
+                refObj.userCount -= 1;
+
+                if (refObj.userCount < 1) {
+                    var arrayAfterRemove = refArray.filter(obj => obj.tenantID !== socketTenant);
+                    refArray = arrayAfterRemove;
+                    clearInterval(refObj.ref);
+                    break;
+                }
+
+            }
+
+        }
+        console.log("A User disconnected")
+    });
 });
 
 server.listen(port, () => {
