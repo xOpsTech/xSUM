@@ -9,6 +9,8 @@ import SiteAdd from './component/site-add/SiteAdd';
 import SiteLoad from './component/site-load/SiteLoad';
 import ResultView from './component/result-view/ResultView';
 import ResultChartView from './component/result-chart-view/ResultChartView';
+import AllResultPieChartView from './component/all-result-pie-chart-view/AllResultPieChartView';
+import SingleJobResultView from './component/single-job-result-view/SingleJobResultView';
 import AllResultView from './component/all-result-view/AllResultView';
 import AlertView from './component/alert-view/AlertView';
 import Tests from './component/tests/Tests';
@@ -31,6 +33,8 @@ export default (
         <Route path={AppConstants.SITELOAD_ROUTE} component={SiteLoad}/>
         <Route path={AppConstants.SITE_RESULT_ROUTE} component={ResultView}/>
         <Route path={AppConstants.SITE_CHART_RESULT_ROUTE} component={ResultChartView}/>
+        <Route path={AppConstants.ALL_RESULT_CHART_VIEW_ROUTE} component={AllResultPieChartView}/>
+        <Route path={AppConstants.SINGLE_JOB_RESULT_VIEW_ROUTE} component={SingleJobResultView}/>
         <Route path={AppConstants.ALL_RESULT_VIEW_ROUTE} component={AllResultView}/>
         <Route path={AppConstants.TESTS_ROUTE} component={Tests}/>
         <Route path={AppConstants.ALERT_VIEW_ROUTE} component={AlertView}/>

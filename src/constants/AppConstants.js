@@ -12,6 +12,7 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
+export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
@@ -71,6 +72,8 @@ export const SIGN_UP_ROUTE = '/sign-up';
 export const SITE_RESULT_ROUTE = '/resultView';
 export const SITE_CHART_RESULT_ROUTE = '/resultChartView';
 export const ALL_RESULT_VIEW_ROUTE = '/allResultView';
+export const ALL_RESULT_CHART_VIEW_ROUTE = '/allResultChartView';
+export const SINGLE_JOB_RESULT_VIEW_ROUTE = '/singleJobResultView';
 export const ALERT_VIEW_ROUTE = '/alertView';
 export const TESTS_ROUTE = '/tests';
 export const ALERT_LIST_VIEW_ROUTE = '/alertListView';

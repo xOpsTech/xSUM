@@ -147,6 +147,29 @@ exports.getJobsWithLocations = async function(tenantID) {
     return listObj;
 }
 
+exports.getAJobWithLocation = async function(paramObj) {
+    var queryObj = {jobId: paramObj.jobId};
+    var jobsList = await MongoDB.getAllData(paramObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
+
+    var job = jobsList[0];
+
+    var dataTable = '';
+    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+        dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
+    } else {
+        dataTable = AppConstants.PING_RESULT_LIST;
+    }
+
+    var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+    var jobResults = await InfluxDB.getAllDataFor(
+        paramObj.tenantID,
+        "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
+    );
+
+    job.result = jobResults;
+    return job;
+}
+
 exports.roundValue = function(value, decimalPlaces) {
     let num = Math.pow(10, decimalPlaces);
     return Math.round(value * num) / num;
