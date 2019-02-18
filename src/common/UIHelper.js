@@ -1,5 +1,6 @@
 import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
+import moment from 'moment';
 import {randomBytes} from 'crypto';
 
 import userApi from '../api/userApi';
@@ -229,4 +230,89 @@ export function getAllTenantsData(user, context, callBackFunction, isContinueLoa
         );
 
     });
+}
+
+export function getArrangedBarChartData(job, selectedChartIndex, context) {
+
+    for (var thresHold of context.state.alertData) {
+        if (thresHold.jobId == job.jobId) {
+          var criticalThreshold = thresHold.criticalThreshold;
+          var warningThreshold = thresHold.warningThreshold;
+        }
+    }
+
+    var resultArray = [];
+
+    if (job.result.length === 0) {
+        resultArray.push({
+            execution: moment().format(AppConstants.DATE_TIME_FORMAT),
+            responseTime: 0,
+            color: '#eb00ff',
+            resultID: -1
+        });
+        job.pieChartColor = '#eb00ff';
+    }
+
+    for (let currentJob of job.result) {
+
+        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+
+            // Check Result ID exists
+            var isResultIdFound = resultArray.find(function(jobObj) {
+                return jobObj.resultID === currentJob.resultID;
+            });
+
+            if (!isResultIdFound) {
+                resultArray.push({
+                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: currentJob[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    color: '#eb00ff',
+                    resultID: currentJob.resultID
+                });
+                job.pieChartColor = '#eb00ff';
+            }
+
+        } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+
+            var responseTime = roundValueToTwoDecimals(currentJob.response / 1000);
+
+            if(criticalThreshold === undefined && warningThreshold === undefined){
+                resultArray.push({
+                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
+                    color: '#eb00ff',
+                    resultID: currentJob.resultID
+                });
+                job.pieChartColor = '#eb00ff';
+            }
+            else if (responseTime >= criticalThreshold) {
+                resultArray.push({
+                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
+                    color: '#B22222',
+                    resultID: currentJob.resultID
+                });
+                job.pieChartColor = '#B22222';
+            }
+            else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                resultArray.push({
+                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
+                    color: '#FFFF00',
+                    resultID: currentJob.resultID
+                });
+                job.pieChartColor = '#FFFF00';
+            }
+            else {
+                resultArray.push({
+                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
+                    color: '#eb00ff',
+                    resultID: currentJob.resultID
+                });
+                job.pieChartColor = '#eb00ff';
+            }
+        }
+    }
+    return resultArray;
 }

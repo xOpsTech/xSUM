@@ -28,7 +28,6 @@ class AllResultPieChartView extends React.Component {
         this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
         this.getAllAlerts = this.getAllAlerts.bind(this);
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
-        this.getArrangedBarChartData = this.getArrangedBarChartData.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         this.tenantDropDown       = this.tenantDropDown.bind(this);
@@ -128,7 +127,7 @@ class AllResultPieChartView extends React.Component {
                 result: job.result,
                 selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                 selectedChartIndex: '0',
-                barChartData: context.getArrangedBarChartData(job, 0)
+                barChartData: UIHelper.getArrangedBarChartData(job, 0, this)
             })
         }
 
@@ -156,90 +155,11 @@ class AllResultPieChartView extends React.Component {
         );
     }
 
-    getArrangedBarChartData(job, selectedChartIndex) {
-
-        for (var thresHold of this.state.alertData) {
-            if (thresHold.jobId == job.jobId) {
-              var criticalThreshold = thresHold.criticalThreshold;
-              var warningThreshold = thresHold.warningThreshold;
-            }
-        }
-
-        var resultArray = [];
-
-        if (job.result.length === 0) {
-            resultArray.push({
-                execution: moment().format(AppConstants.DATE_TIME_FORMAT),
-                responseTime: 0,
-                color: '#eb00ff',
-                resultID: -1
-            });
-        }
-
-        for (let currentJob of job.result) {
-
-            if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-
-                // Check Result ID exists
-                var isResultIdFound = resultArray.find(function(jobObj) {
-                    return jobObj.resultID === currentJob.resultID;
-                });
-
-                if (!isResultIdFound) {
-                    resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                        responseTime: currentJob[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
-                        color: '#eb00ff',
-                        resultID: currentJob.resultID
-                    });
-                }
-
-            } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-
-                var responseTime = UIHelper.roundValueToTwoDecimals(currentJob.response / 1000);
-
-                if(criticalThreshold === undefined && warningThreshold === undefined){
-                    resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
-                        color: '#eb00ff',
-                        resultID: currentJob.resultID
-                    });
-                }
-                else if (responseTime >= criticalThreshold) {
-                    resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
-                        color: '#B22222',
-                        resultID: currentJob.resultID
-                    });
-                }
-                else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
-                    resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
-                        color: '#FFFF00',
-                        resultID: currentJob.resultID
-                    });
-                }
-                else {
-                    resultArray.push({
-                        execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                        responseTime: UIHelper.roundValueToTwoDecimals(currentJob.response / 1000),
-                        color: '#eb00ff',
-                        resultID: currentJob.resultID
-                    });
-                }
-            }
-        }
-        return resultArray;
-    }
-
     chartDropDownClick(jobIndex, jobWithResult, selectedChartIndex) {
         var jobsList = this.state.jobsWithResults;
         jobWithResult.selectedChartIndex = selectedChartIndex;
         jobWithResult.selectedChart = AppConstants.CHART_TYPES_ARRAY[selectedChartIndex];
-        jobWithResult.barChartData = this.getArrangedBarChartData(jobWithResult, selectedChartIndex);
+        jobWithResult.barChartData = UIHelper.getArrangedBarChartData(jobWithResult, selectedChartIndex, this);
         // Remove old job and add updated job
         jobsList.splice(jobIndex, 1, jobWithResult);
         this.setState({jobsWithResults: jobsList});
@@ -349,19 +269,7 @@ class AllResultPieChartView extends React.Component {
                     categoryBalloonEnabled: false,
                     cursorAlpha: 0,
                     zoomable: true,
-                    valueZoomable: true,
-                    cursorPosition: 'mouse',
-                    listeners: [
-                        {
-                            event:'zoomed',
-                            method: function(ev) {
-                                console.log(ev.start, ev.end)
-                                // // Log last cursor position
-                                // ev.chart.lastCursorPosition = ev.index;
-                            }
-                        }
-                    ],
-                    tabIndex: 3
+                    valueZoomable: true
                 },
                 categoryField: 'execution',
                 categoryAxis: {
@@ -397,7 +305,7 @@ class AllResultPieChartView extends React.Component {
                     }
                 ],
                 colors: [
-                    '#222029', '#eb00ff'
+                    '#222029', props.jobWithResult.job.pieChartColor
                 ],
                 titleField: 'title',
                 valueField: 'value',
@@ -477,7 +385,7 @@ class AllResultPieChartView extends React.Component {
                           </div>
                 }
                 <LeftNav
-                    selectedIndex={AppConstants.ALL_RESULT_VIEW_INDEX}
+                    selectedIndex={AppConstants.ALL_RESULT_CHART_VIEW_INDEX}
                     leftNavStateUpdate={this.leftNavStateUpdate}/>
                 <div className={
                         'all-result-view ' +

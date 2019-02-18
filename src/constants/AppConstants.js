@@ -96,6 +96,7 @@ export const SETTINGS_INDEX = 6;
 export const USER_PROFILE_INDEX = 7;
 export const TENANT_SETTINGS_INDEX = 8;
 export const BILLING_INDEX = 9;
+export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
@@ -105,6 +106,11 @@ export const LEFT_NAV_TABS = [
         index: ALL_RESULT_VIEW_INDEX,
         text: 'Dashboard',
         route: ALL_RESULT_VIEW_ROUTE
+    },
+    {
+        index: ALL_RESULT_CHART_VIEW_INDEX,
+        text: 'Grid View',
+        route: ALL_RESULT_CHART_VIEW_ROUTE
     },
     {
         index: TESTS_INDEX,
