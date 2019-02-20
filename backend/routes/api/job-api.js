@@ -115,22 +115,49 @@ JobApi.prototype.removeJob = function(req, res) {
     res.send(queryToRemoveJob);
 }
 
-JobApi.prototype.updateJob = function(req, res) {
+JobApi.prototype.updateJob = async function(req, res) {
     var jobObj = req.body.job;
 
-    var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+    var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
-    var updateValueObj = {
-        jobName: jobName,
-        siteObject: {value: jobObj.siteObject.value},
-        browser: jobObj.browser,
-        serverLocation: jobObj.serverLocation,
-        securityProtocol: jobObj.securityProtocol
-    };
+    // Total points remain for tenant
+    var totalPointsRemain = tenantData[0].points.pointsRemain;
 
-    MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
+    // Get the job from db
+    var queryObj = {jobId: jobObj.jobId};
+    var jobsList = await MongoDB.getAllData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryObj);
 
-    res.send(jobObj);
+    // Calculate point difference of before and after update job
+    var jobBeforeUpdate = jobsList[0];
+    var pointsUsedBefore = AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobBeforeUpdate.recursiveSelect.value;
+    totalPointsRemain += pointsUsedBefore;
+
+    var pointsUsingAfter = AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobObj.recursiveSelect.value;
+    totalPointsRemain -= pointsUsingAfter;
+
+    if (totalPointsRemain >= 0 ) {
+        var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+
+        var updateValueObj = {
+            jobName: jobName,
+            siteObject: {value: jobObj.siteObject.value},
+            browser: jobObj.browser,
+            serverLocation: jobObj.serverLocation,
+            securityProtocol: jobObj.securityProtocol,
+            recursiveSelect: jobObj.recursiveSelect
+        };
+
+        await MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
+
+        TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false, totalPointsRemain);
+
+        res.send(jobObj);
+    } else {
+        res.send({error: AppConstants.POINT_NOT_ENOUGH_UPDATE_ERROR});
+    }
+
+
 }
 
 JobApi.prototype.startorStopJob = function(req, res) {

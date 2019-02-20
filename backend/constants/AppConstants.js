@@ -21,6 +21,7 @@ exports.USER_INACTIVE = 'User account is not activated';
 exports.SUPER_USER_EXISTS = 'User is already in the super user list';
 exports.SUPER_USER_NON_EXISTS = 'User is not in super user list';
 exports.POINT_NOT_ENOUGH_ERROR = 'You can\'t add anymore jobs. Please contact administrator for any help...';
+exports.POINT_NOT_ENOUGH_UPDATE_ERROR = 'You don\'t have points to update this job. Please contact administrator for any help...';
 exports.USER_LIMIT_REACHED = 'You have reached to the user limit for this account. Please contact administrator for any help...';
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -74,3 +75,12 @@ exports.ACCESS_LIST = [
 // Test types
 exports.PERFORMANCE_TEST_TYPE = 'performace';
 exports.PING_TEST_TYPE = 'ping';
+
+// Execution time frequencies
+exports.RECURSIVE_EXECUTION_ARRAY = [
+    {value: 1000*60*10}, //textValue: 'TEST FREQUENCY - 10 Minutes Intervals'
+    {value: 1000*60} , //textValue: 'TEST FREQUENCY - One Minute Interval'
+    {value: 1000*60*5}, //textValue: 'TEST FREQUENCY - 5 Minutes Intervals'
+    {value: 1000*60*30}, //textValue: 'TEST FREQUENCY - 30 Minutes Intervals'
+    {value: 1000*60*60}, //textValue: 'TEST FREQUENCY - 60 Minutes Intervals'
+];

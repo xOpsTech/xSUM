@@ -180,7 +180,7 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
     return tenantInsertObj;
 }
 
-TenantApi.prototype.updateTenantPoints = async function(jobID, tenantID, isInsert) {
+TenantApi.prototype.updateTenantPoints = async function(jobID, tenantID, isInsert, pointsRemain) {
     var queryObj = {jobId: jobID};
     var jobData = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
 
@@ -188,12 +188,18 @@ TenantApi.prototype.updateTenantPoints = async function(jobID, tenantID, isInser
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
     var totalPointsRemain;
-    if (isInsert) {
-        totalPointsRemain = tenantData[0].points.pointsRemain -
-                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+
+    if (pointsRemain) {
+        totalPointsRemain = pointsRemain;
     } else {
-        totalPointsRemain = tenantData[0].points.pointsRemain +
-                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+        if (isInsert) {
+            totalPointsRemain = tenantData[0].points.pointsRemain -
+                                        (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+        } else {
+            totalPointsRemain = tenantData[0].points.pointsRemain +
+                                            (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobData[0].recursiveSelect.value);
+
+        }
     }
 
     // Update tenant points

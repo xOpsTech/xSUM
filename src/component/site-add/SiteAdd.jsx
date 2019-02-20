@@ -177,9 +177,13 @@ class SiteAdd extends React.Component {
             selectedJobID, loggedUserObj, selectedTenant, selectedLocationID, securityProtocol
         } = this.state;
 
+        // Get recursive object
+        var recursiveSelect = AppConstants.RECURSIVE_EXECUTION_ARRAY.find(function(execution) {
+            return parseInt(execution.value) === parseInt(recursiveSelect.value);
+        });
+
         if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
             siteObject.value = siteObject.value;
-
 
             if (selectedJobID) {
 
@@ -202,8 +206,14 @@ class SiteAdd extends React.Component {
                     securityProtocol: securityProtocol
                 };
 
-                jobApi.updateJob(url, { job: jobToUpdate }).then(() => {
+                jobApi.updateJob(url, { job: jobToUpdate }).then((data) => {
+
+                    if (data.error) {
+                        this.setState({isModalVisible: true, modalTitle: data.error});
+                    }
+
                     this.setState({ isLoading: false, loadingMessage: '' });
+
                 });
             } else {
 
@@ -357,7 +367,8 @@ class SiteAdd extends React.Component {
             jobName,
             selectedTenant,
             selectedLocationID,
-            securityProtocol
+            securityProtocol,
+            recursiveSelect
         } = this.state;
 
         return (
@@ -540,16 +551,18 @@ class SiteAdd extends React.Component {
                         {
                             (isRecursiveCheck)
                                 ? <select
-                                    disabled
-                                    className="form-control form-control-sm form-group">
-                                    {
-                                        //     onChange={(e) => this.dropDownClick(
-                                        //     {recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[e.target.value]})
-                                        // }>
-                                    }
+                                    value={recursiveSelect.value}
+                                    className="form-control form-control-sm form-group"
+                                        onChange={(e) => this.dropDownClick(
+                                        {
+                                            recursiveSelect: {
+                                                value: e.target.value
+                                            }
+                                        })
+                                    }>
                                     {
                                         AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
-                                            return <option key={'execution_' + i} value={i}>
+                                            return <option key={'execution_' + i} value={execution.value}>
                                                 {execution.textValue}
                                             </option>;
                                         })

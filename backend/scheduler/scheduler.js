@@ -15,40 +15,51 @@ var jobTimers = {};
 function Scheduler(){};
 
 Scheduler.prototype.startScheduler = async function() {
-    executeAllJobs();
-    setInterval(
-        () => {
-            executeAllJobs();
-        },
-        1000*60*10
-    );
+
+    for (var executionFrequency of AppConstants.RECURSIVE_EXECUTION_ARRAY) {
+        executeAllJobs(executionFrequency);
+        setInterval(
+            await scheduleJobExecute(executionFrequency),
+            executionFrequency.value
+        );
+    }
+
 }
 
-async function executeAllJobs() {
+async function scheduleJobExecute(executionFrequency) {
+    return function(){
+        executeAllJobs(executionFrequency);
+    };
+}
+
+async function executeAllJobs(executionFrequency) {
     var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
     var currentDateTime = moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT);
 
     console.log('------------Start executing existing jobs for ' + currentDateTime + ' ------------');
     for (let tenant of tenantList) {
-
         var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
 
         for (let job of jobList) {
 
-            if (job.isRecursiveCheck &&
-                job.serverLocation &&
-                parseInt(job.serverLocation.locationid) === config.SERVER_LOCATION_ID) {
+            if (parseInt(job.recursiveSelect.value) === parseInt(executionFrequency.value)) {
 
-                if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-                    executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
-                } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-                    job.urlValue = job.siteObject.value;
-                    job.currentDateTime = currentDateTime;
-                    // Execute ping test
-                    Helpers.executePingJob(String(tenant._id), job, false);
+                if (job.isRecursiveCheck &&
+                    job.serverLocation &&
+                    parseInt(job.serverLocation.locationid) === config.SERVER_LOCATION_ID) {
+
+                    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+                        executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
+                    } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+                        job.urlValue = job.siteObject.value;
+                        job.currentDateTime = currentDateTime;
+                        // Execute ping test
+                        Helpers.executePingJob(String(tenant._id), job, false);
+                    }
+
+                    console.log('Start executing: ', job);
                 }
 
-                console.log('Start executing: ', job);
             }
 
         }
