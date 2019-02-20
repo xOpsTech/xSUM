@@ -347,7 +347,7 @@ class AllResultPieChartView extends React.Component {
                         </div>
                         <div>
                             <h4 className="job-name-div">
-                                Job Name : {props.jobWithResult.job.jobName}
+                                {props.jobWithResult.job.jobName}
                             </h4>
                         </div>
                     </div>
