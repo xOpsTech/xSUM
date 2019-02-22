@@ -111,7 +111,7 @@ JobApi.prototype.removeJob = function(req, res) {
     };
     TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
     MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
-    InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId+ "'");
+    InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId + "'");
     res.send(queryToRemoveJob);
 }
 

@@ -2,6 +2,7 @@ import createHashHistory from 'history/lib/createHashHistory';
 import {useRouterHistory} from 'react-router';
 import moment from 'moment';
 import {randomBytes} from 'crypto';
+import {browserHistory} from 'react-router';
 
 import userApi from '../api/userApi';
 import tenantApi from '../api/tenantApi';
@@ -16,6 +17,11 @@ export function redirectTo(route, data) {
         pathname: route,
         query: data
     });
+}
+
+// Go to previous page in browser history
+export function goToPreviousPage() {
+    browserHistory.goBack();
 }
 
 // Cookies

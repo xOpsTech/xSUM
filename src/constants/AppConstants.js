@@ -192,9 +192,9 @@ export const TEST_TYPE_ARRAY = [
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
-    {value: 1000*60*10, textValue: 'TEST FREQUENCY - 10 Minutes Intervals'},
-    {value: 1000*60, textValue: 'TEST FREQUENCY - One Minute Interval'},
+    {value: 1000*60, textValue: 'TEST FREQUENCY - 1 Minute Interval'},
     {value: 1000*60*5, textValue: 'TEST FREQUENCY - 5 Minutes Intervals'},
+    {value: 1000*60*10, textValue: 'TEST FREQUENCY - 10 Minutes Intervals'},
     {value: 1000*60*30, textValue: 'TEST FREQUENCY - 30 Minutes Intervals'},
     {value: 1000*60*60, textValue: 'TEST FREQUENCY - 60 Minutes Intervals'}
 ];

@@ -80,7 +80,7 @@ class SiteAdd extends React.Component {
             scheduleDate: new Date(),
             loggedUserObj: null,
             isRecursiveCheck: true,
-            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
+            recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[2],
             isModalVisible: false,
             modalTitle: '',
             siteToResult: null,
@@ -210,9 +210,10 @@ class SiteAdd extends React.Component {
 
                     if (data.error) {
                         this.setState({isModalVisible: true, modalTitle: data.error});
+                        this.setState({ isLoading: false, loadingMessage: '' });
+                    } else {
+                        UIHelper.goToPreviousPage();
                     }
-
-                    this.setState({ isLoading: false, loadingMessage: '' });
 
                 });
             } else {
@@ -238,17 +239,12 @@ class SiteAdd extends React.Component {
 
                     if (data.error) {
                         this.setState({isModalVisible: true, modalTitle: data.error});
+                        this.setState({ isLoading: false, loadingMessage: '' });
                     } else {
                         this.state.siteList.push(data);
+                        UIHelper.goToPreviousPage();
                     }
 
-                    this.setState({ isLoading: false, loadingMessage: '' });
-                });
-
-                this.setState({
-                    siteObject: { value: '', error: {} },
-                    recursiveSelect: AppConstants.RECURSIVE_EXECUTION_ARRAY[0],
-                    browser: AppConstants.BROWSER_ARRAY[0].value
                 });
             }
 
@@ -572,18 +568,13 @@ class SiteAdd extends React.Component {
                         }
                         <div className="form-group" id="monitor-test-button-container">
                             <button
-                                className="btn btn-primary form-control half-button button-all-caps-text monitor-test-button"
+                                className="btn btn-primary form-control button-all-caps-text monitor-test-button"
                                 onClick={(e) => this.addJobClick(e)}
                                 {
                                     ...(selectedTenant.points && selectedTenant.points.pointsRemain <= 0) &&
                                     { disabled: true }
                                 }>
-                                Save Test
-                            </button>
-                            <button
-                                className="btn btn-primary form-control half-button button-all-caps-text monitor-test-button"
-                                onClick={(e) => this.navigateToResultView(e)}>
-                                See Results
+                                Save
                             </button>
                         </div>
                         {

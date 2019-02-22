@@ -390,13 +390,6 @@ class AllResultPieChartView extends React.Component {
                 <div className={
                         'all-result-view ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                    {
-                        (locationMarker.length > 0)
-                            ? <div className="row map-container">
-                                  <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
-                              </div>
-                            : <MapContainer height="100%" width="100%" locationMarker={[]}/>
-                    }
                     <div className="row chart-view">
                         {
                             (jobsWithResults.length > 0)
@@ -410,23 +403,6 @@ class AllResultPieChartView extends React.Component {
                                 : null
                         }
                     </div>
-                    {
-                        (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                            ? <div className="row" id="add-test-section">
-                                <div className="col-sm-4"></div>
-                                <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                                    <div className="row">
-                                        Add a test
-                                    </div>
-                                    <div className="row">
-                                        <i className="plus-icon glyphicon glyphicon-plus"></i>
-                                    </div>
-                                </div>
-                                <div className="col-sm-4"></div>
-                              </div>
-                            : null
-                    }
-
                 </div>
             </Fragment>
         );
