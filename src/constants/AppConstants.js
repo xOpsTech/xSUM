@@ -98,19 +98,31 @@ export const TENANT_SETTINGS_INDEX = 8;
 export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 
+// Subsection index array
+export const DASHBOARDS_INDEX = 0;
+export const MANAGEMENT_INDEX = 1;
+
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
 
 export const LEFT_NAV_TABS = [
     {
-        index: ALL_RESULT_VIEW_INDEX,
-        text: 'Dashboard',
-        route: ALL_RESULT_VIEW_ROUTE
-    },
-    {
-        index: ALL_RESULT_CHART_VIEW_INDEX,
-        text: 'Grid View',
-        route: ALL_RESULT_CHART_VIEW_ROUTE
+        index: -1,
+        text: 'Dashboards',
+        route: '',
+        subSectionIndex: DASHBOARDS_INDEX, // Use for store collapse state
+        subSections: [
+            {
+                index: ALL_RESULT_VIEW_INDEX,
+                text: 'Dashboard',
+                route: ALL_RESULT_VIEW_ROUTE
+            },
+            {
+                index: ALL_RESULT_CHART_VIEW_INDEX,
+                text: 'Performance Over Time',
+                route: ALL_RESULT_CHART_VIEW_ROUTE
+            }
+        ]
     },
     {
         index: TESTS_INDEX,
@@ -126,6 +138,7 @@ export const LEFT_NAV_TABS = [
         index: -1,
         text: 'Management',
         route: '',
+        subSectionIndex: MANAGEMENT_INDEX, // Use for store collapse state
         subSections: [
             {
                 index: USER_PROFILE_INDEX,

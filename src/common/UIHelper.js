@@ -11,12 +11,18 @@ import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
 import * as MessageConstants from '../constants/MessageConstants';
 
-// Redirect to login page
-export function redirectTo(route, data) {
+// Redirect to any route
+export function redirectTo(route, data, isRefresh) {
     useRouterHistory(createHashHistory)().push({
         pathname: route,
         query: data
     });
+    isRefresh && window.location.reload();
+}
+
+// Redirect to login page if user not logged in
+export function redirectLogin() {
+    redirectTo(AppConstants.LOGIN_ROUTE, {}, true);
 }
 
 // Go to previous page in browser history
@@ -259,65 +265,54 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
         job.pieChartColor = '#eb00ff';
     }
 
-    for (let currentJob of job.result) {
+    for (let currentResult of job.result) {
 
         if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
 
             // Check Result ID exists
             var isResultIdFound = resultArray.find(function(jobObj) {
-                return jobObj.resultID === currentJob.resultID;
+                return jobObj.resultID === currentResult.resultID;
             });
 
             if (!isResultIdFound) {
                 resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: currentJob[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
+                    responseTime: currentResult[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
                     color: '#eb00ff',
-                    resultID: currentJob.resultID
+                    resultID: currentResult.resultID
                 });
                 job.pieChartColor = '#eb00ff';
             }
 
         } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+            var barColor;
+            var responseTime = roundValueToTwoDecimals(currentResult.response / 1000);
+            var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
+            var tcpConnectTime = roundValueToTwoDecimals(currentResult.connect / 1000);
+            var lastByteRecieveTime = roundValueToTwoDecimals(currentResult.end / 1000);
 
-            var responseTime = roundValueToTwoDecimals(currentJob.response / 1000);
+            if (criticalThreshold === undefined && warningThreshold === undefined){
+                barColor = '#eb00ff';
+            } else if (responseTime >= criticalThreshold) {
+                barColor = '#b22222';
+            } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                barColor = '#ffff00';
+            } else {
+                barColor = '#eb00ff';
+            }
 
-            if(criticalThreshold === undefined && warningThreshold === undefined){
-                resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
-                    color: '#eb00ff',
-                    resultID: currentJob.resultID
-                });
-                job.pieChartColor = '#eb00ff';
-            }
-            else if (responseTime >= criticalThreshold) {
-                resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
-                    color: '#B22222',
-                    resultID: currentJob.resultID
-                });
-                job.pieChartColor = '#B22222';
-            }
-            else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
-                resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
-                    color: '#FFFF00',
-                    resultID: currentJob.resultID
-                });
-                job.pieChartColor = '#FFFF00';
-            }
-            else {
-                resultArray.push({
-                    execution: moment(currentJob.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: roundValueToTwoDecimals(currentJob.response / 1000),
-                    color: '#eb00ff',
-                    resultID: currentJob.resultID
-                });
-                job.pieChartColor = '#eb00ff';
-            }
+            resultArray.push({
+                execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
+                responseTime: responseTime,
+                dnsLookUpTime: dnsLookUpTime,
+                tcpConnectTime: tcpConnectTime,
+                lastByteRecieveTime: lastByteRecieveTime,
+                color: barColor,
+                resultID: currentResult.resultID
+            });
+            job.pieChartColor = barColor;
+
+
         }
     }
     return resultArray;

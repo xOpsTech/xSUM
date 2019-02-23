@@ -53,7 +53,7 @@ class SingleJobResultView extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
             this.getLoggedUserData(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -240,7 +240,7 @@ class SingleJobResultView extends React.Component {
                         gridColor: '#FFFFFF',
                         gridAlpha: 0.2,
                         dashLength: 0,
-                        title: 'Response time / second',
+                        title: 'time / second',
                         autoRotateAngle: 90
                     }
                 ],
@@ -253,7 +253,7 @@ class SingleJobResultView extends React.Component {
                         fillAlphas: 0.8,
                         lineAlpha: 0.2,
                         type: 'column',
-                        valueField: 'responseTime',
+                        valueField: props.fieldToDisplay,
                         fillColorsField: 'color'
                     }
                 ],
@@ -295,7 +295,8 @@ class SingleJobResultView extends React.Component {
                 }
             };
 
-            var lastTestAvg = barChartData[barChartData.length-1] && barChartData[barChartData.length-1].responseTime;
+            var lastTestAvg = barChartData[barChartData.length-1]
+                                    && barChartData[barChartData.length-1][props.fieldToDisplay];
 
             const pieChartConfig = {
                 type: 'pie',
@@ -358,6 +359,11 @@ class SingleJobResultView extends React.Component {
                                 Job Name : {props.jobWithResult.job.jobName}
                             </h4>
                         </div>
+                        <div className="col-sm-5">
+                            <h4 className="job-name-div">
+                                {props.chartTitle}
+                            </h4>
+                        </div>
                     </div>
                     <div className="row">
                         <div className="col-sm-4">
@@ -411,31 +417,41 @@ class SingleJobResultView extends React.Component {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
                                     return (
-                                        <LazyLoad height={345} offsetVertical={300}>
-                                            <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>
-                                        </LazyLoad>
+                                        <div>
+                                            <LazyLoad height={345} offsetVertical={300}>
+                                                <ResultViewContainer
+                                                    jobWithResult={jobWithResult}
+                                                    keyID={i}
+                                                    fieldToDisplay={'responseTime'}
+                                                    chartTitle={'Response Time Chart'}/>
+                                            </LazyLoad>
+                                            <LazyLoad height={345} offsetVertical={300}>
+                                                <ResultViewContainer
+                                                    jobWithResult={jobWithResult}
+                                                    keyID={i}
+                                                    fieldToDisplay={'dnsLookUpTime'}
+                                                    chartTitle={'DNS Time Chart'}/>
+                                            </LazyLoad>
+                                            <LazyLoad height={345} offsetVertical={300}>
+                                                <ResultViewContainer
+                                                    jobWithResult={jobWithResult}
+                                                    keyID={i}
+                                                    fieldToDisplay={'tcpConnectTime'}
+                                                    chartTitle={'TCP Connect Time Chart'}/>
+                                            </LazyLoad>
+                                            <LazyLoad height={345} offsetVertical={300}>
+                                                <ResultViewContainer
+                                                    jobWithResult={jobWithResult}
+                                                    keyID={i}
+                                                    fieldToDisplay={'lastByteRecieveTime'}
+                                                    chartTitle={'Last Byte Recieve Time Chart'}/>
+                                            </LazyLoad>
+                                        </div>
                                     );
                                 })
                                 : null
                         }
                     </div>
-                    {
-                        (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                            ? <div className="row" id="add-test-section">
-                                <div className="col-sm-4"></div>
-                                <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                                    <div className="row">
-                                        Add a test
-                                    </div>
-                                    <div className="row">
-                                        <i className="plus-icon glyphicon glyphicon-plus"></i>
-                                    </div>
-                                </div>
-                                <div className="col-sm-4"></div>
-                              </div>
-                            : null
-                    }
-
                 </div>
             </Fragment>
         );

@@ -52,7 +52,7 @@ class AllResultPieChartView extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
             this.getLoggedUserData(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -386,7 +386,9 @@ class AllResultPieChartView extends React.Component {
                 }
                 <LeftNav
                     selectedIndex={AppConstants.ALL_RESULT_CHART_VIEW_INDEX}
-                    leftNavStateUpdate={this.leftNavStateUpdate}/>
+                    leftNavStateUpdate={this.leftNavStateUpdate}
+                    isSubSectionExpand={true}
+                    subSectionIndex={AppConstants.DASHBOARDS_INDEX}/>
                 <div className={
                         'all-result-view ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
@@ -400,7 +402,7 @@ class AllResultPieChartView extends React.Component {
                                         </LazyLoad>
                                     );
                                 })
-                                : null
+                                : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                         }
                     </div>
                 </div>

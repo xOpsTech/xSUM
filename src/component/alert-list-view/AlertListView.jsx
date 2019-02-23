@@ -44,7 +44,7 @@ class AlertListView extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
             this.getLoggedUserData(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});

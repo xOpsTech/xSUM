@@ -40,7 +40,7 @@ class GrantAccessView extends React.Component {
 
             this.getAllUsers(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -100,7 +100,8 @@ class GrantAccessView extends React.Component {
                     selectedIndex={AppConstants.GRANT_ACCESS_INDEX}
                     isFixedLeftNav={true}
                     leftNavStateUpdate={this.leftNavStateUpdate}
-                    isSubSectionExpand={true}/>
+                    isSubSectionExpand={true}
+                    subSectionIndex={AppConstants.MANAGEMENT_INDEX}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

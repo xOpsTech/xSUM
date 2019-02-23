@@ -47,7 +47,7 @@ class AddUserView extends React.Component {
             this.getAllUserRoles(loggedUserObject);
             this.getLoggedUserData(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -327,7 +327,8 @@ class AddUserView extends React.Component {
                     selectedIndex={AppConstants.USER_MANAGMENT_INDEX}
                     isFixedLeftNav={true}
                     leftNavStateUpdate={this.leftNavStateUpdate}
-                    isSubSectionExpand={true}/>
+                    isSubSectionExpand={true}
+                    subSectionIndex={AppConstants.MANAGEMENT_INDEX}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

@@ -35,6 +35,8 @@ export const UPDATE_TENANT = 'Updating tenant...';
 export const UPDATE_PROFILE = 'Updating profile...';
 export const REMOVE_TENANT = 'Removing Account...';
 
+export const NO_TESTS_AVAILABLE = 'No Tests available';
+
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +
                                    'registration once it has been approved by\n' +
                                    'your system administrator. Once approved\n' + 'you can';

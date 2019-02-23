@@ -46,7 +46,7 @@ class TenantsView extends React.Component {
 
             this.getLoggedUserData(loggedUserObject);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -260,7 +260,8 @@ class TenantsView extends React.Component {
                     selectedIndex={AppConstants.TENANTS_INDEX}
                     isFixedLeftNav={true}
                     leftNavStateUpdate={this.leftNavStateUpdate}
-                    isSubSectionExpand={true}/>
+                    isSubSectionExpand={true}
+                    subSectionIndex={AppConstants.MANAGEMENT_INDEX}/>
                 {
                     (loggedUserObj)
                         ? <NavContainer

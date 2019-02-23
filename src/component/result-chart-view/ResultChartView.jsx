@@ -43,7 +43,7 @@ class ResultChartView extends React.Component {
             this.setState({passedJob});
             this.getResults(passedJob.jobId);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
     }

@@ -21,10 +21,24 @@ class LeftNav extends React.Component {
 
     // Returns initial props
     getInitialState() {
+        var colSubSecStateArray = [];
+
+        // Create collapse state for every subsection in left navigation
+        AppConstants.LEFT_NAV_TABS.map((tab, i) => {
+
+            if (tab.subSections) {
+                colSubSecStateArray.push({
+                    subSectionIndex: tab.subSectionIndex,
+                    isSubSectionExpand: false
+                });
+            }
+
+        });
+
         var initialState = {
             isNavCollapse: false,
-            isSubSectionExpand: false,
-            loggedUserObj: null
+            loggedUserObj: null,
+            colSubSecStateArray: colSubSecStateArray
         };
 
         return initialState;
@@ -39,9 +53,12 @@ class LeftNav extends React.Component {
             UIHelper.getUserData(loggedUserObject, this);
         }
 
-        if (this.props.isSubSectionExpand) {
-            this.setState({isSubSectionExpand: this.props.isSubSectionExpand});
+        if (this.props.isSubSectionExpand && this.props.subSectionIndex !== undefined) {
+            var {colSubSecStateArray} = this.state;
+            colSubSecStateArray[this.props.subSectionIndex].isSubSectionExpand = this.props.isSubSectionExpand;
+            this.setState({colSubSecStateArray: colSubSecStateArray});
         }
+
     }
 
     tabOnClick(e, selectedTab) {
@@ -62,15 +79,17 @@ class LeftNav extends React.Component {
         this.props.leftNavStateUpdate && this.props.leftNavStateUpdate();
     }
 
-    showHideSubSection(e) {
+    showHideSubSection(e, tab) {
         e.preventDefault();
-
-        this.setState({isSubSectionExpand: !this.state.isSubSectionExpand});
+        var {colSubSecStateArray} = this.state;
+        colSubSecStateArray[tab.subSectionIndex].isSubSectionExpand
+                                                        = !colSubSecStateArray[tab.subSectionIndex].isSubSectionExpand;
+        this.setState({colSubSecStateArray: colSubSecStateArray});
     }
 
     render() {
         const {selectedIndex, isFixedLeftNav} = this.props;
-        const {isNavCollapse, isSubSectionExpand, loggedUserObj} = this.state;
+        const {isNavCollapse, loggedUserObj, colSubSecStateArray} = this.state;
 
         if (!isNavCollapse) {
             return (
@@ -87,7 +106,7 @@ class LeftNav extends React.Component {
                             AppConstants.LEFT_NAV_TABS.map((tab, i) => {
 
                                 if (tab.subSections) {
-
+                                    var isSubSectionExpand = colSubSecStateArray[tab.subSectionIndex].isSubSectionExpand;
                                     if ((tab.index === -1
                                         && loggedUserObj
                                         && loggedUserObj.permissions
@@ -96,7 +115,7 @@ class LeftNav extends React.Component {
                                             return (
                                                 <Fragment>
                                                     <button className="tab-with-sub-section"
-                                                        onClick={this.showHideSubSection}>
+                                                        onClick={(e) => this.showHideSubSection(e, tab)}>
                                                         {tab.text}
                                                         <span className={
                                                                 'glyphicon ' +

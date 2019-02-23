@@ -40,7 +40,7 @@ class NavContainer extends React.Component {
         if (siteLoginCookie) {
             UIHelper.redirectTo(AppConstants.ALL_RESULT_VIEW_ROUTE);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
     }
 

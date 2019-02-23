@@ -42,7 +42,7 @@ class ResultView extends React.Component {
 
             this.getResult(this.props.location.query.resultID);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
     }

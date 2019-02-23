@@ -43,7 +43,7 @@ class Tests extends React.Component {
             this.setState({loggedUserObj: loggedUserObject});
             UIHelper.getUserData(loggedUserObject, this, this.getAllTenantsData);
         } else {
-            UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+            UIHelper.redirectLogin();
         }
 
         this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
@@ -259,7 +259,7 @@ class Tests extends React.Component {
                                             }
                                         </tbody>
                                     </table>
-                                : <div className="empty-list-style">No Tests available</div>
+                                : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                             }
                             {
                                 (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
