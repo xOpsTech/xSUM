@@ -405,13 +405,6 @@ class SingleJobResultView extends React.Component {
                 <div className={
                         'all-result-view ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                    {
-                        (locationMarker.length > 0)
-                            ? <div className="row map-container">
-                                  <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
-                              </div>
-                            : <MapContainer height="100%" width="100%" locationMarker={[]}/>
-                    }
                     <div className="row chart-view">
                         {
                             (jobsWithResults.length > 0)
