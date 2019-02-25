@@ -274,14 +274,17 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
 
                 if(previousResponseTime >= warningThreshold && previousResponseTime < criticalThreshold) {
 
-                    var emailBodyToSend = 'Hi ,<br><br>' +
-                    'The response time for '+insertedJobObj.siteObject.value +' is increased from Warning Stage and now in Critical stage <br>'+
-                        '<br>'
-                    'Regards,<br>xSUM admin';
+                    var emailBodyToSend =
+                        'The response time for '+insertedJobObj.siteObject.value +' is increased from Warning Stage and now in Critical stage <br>'+
+                        'Test name: '+insertedJobObj.siteObject.value +'<br>'+
+                        'Alert name: '+insertedJobObj.jobName +'<br>'+
+                        'Alert level: Warning to Critical'+'<br>'+
+                        'Previous Response time: '+previousResponseTime+'<br>'+
+                        'Current Response time: '+currentResponseTime;
 
                     Helpers.sendEmailAs(
                         insertedJobObj.userEmail,
-                        'Your Sites Response time has increased',
+                        'xSUM Alert increased for ' + insertedJobObj.jobName,
                         emailBodyToSend,
                         AppConstants.ALERT_EMAIL_TYPE
                     );
@@ -315,12 +318,11 @@ AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
 
         if(failureAlertEmailLimit > failureAlertCount) {
 
-            var emailBodyToSend = 'Hi ,<br><br>' +
-            'The job you have added for <b>' +
-            JobObj.siteObject.value +
-            '</b> may be not working.<br>' +
-            'Please check it again.<br><br>' +
-            'Regards,<br>xSUM admin';
+            var emailBodyToSend =
+                'Notification of XSUM Failue Alert for '+ JobObj.jobName +'<b>' +
+                'Test name '+ JobObj.siteObject.value +'<b>' +
+                'Alert name: ' + JobObj.jobName +'<br>'+
+                'Response time: 0'
             Helpers.sendEmailAs(
                 JobObj.userEmail,
                 'Trouble of ping to your site',
