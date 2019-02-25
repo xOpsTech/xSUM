@@ -152,10 +152,11 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
         var queryToGetLoggedUser = {email: userObj.loggedUserEmail};
         var loggedUserData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToGetLoggedUser);
 
-        Helpers.sendEmail(
+        Helpers.sendEmailAs(
             userObj.email,
             'Activate your account for XSUM',
-            emailBodyToSend
+            emailBodyToSend,
+            AppConstants.ADMIN_EMAIL_TYPE
         );
 
         res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userInsertObj.email}});

@@ -63,6 +63,48 @@ exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, s
     });
 }
 
+exports.sendEmailAs = function(toMailAddress, subject, html, emailType) {
+    var sendingMail, sendingMailPassword;
+    switch (emailType) {
+        case AppConstants.ADMIN_EMAIL_TYPE:
+            sendingMail = AppConstants.ADMIN_EMAIL_USERNAME;
+            sendingMailPassword = AppConstants.ADMIN_EMAIL_PASSWORD;
+            break;
+        case AppConstants.ALERT_EMAIL_TYPE:
+            sendingMail = AppConstants.ALERT_EMAIL_USERNAME;
+            sendingMailPassword = AppConstants.ALERT_EMAIL_PASSWORD;
+            break;
+        default:
+            sendingMail = '';
+            sendingMailPassword = '';
+            break;
+    }
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: sendingMail,
+            pass: sendingMailPassword
+        }
+    });
+
+    var mailOptions = {
+        from: sendingMail,
+        to: toMailAddress,
+        subject: subject,
+        html: html
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+            //res.send({message: AppConstants.RESPONSE_ERROR});
+        } else {
+            console.log('Email sent: ' + info.response);
+            //res.send({message: AppConstants.RESPONSE_SUCCESS});
+        }
+    });
+}
+
 exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     request({
         uri: jobObj.securityProtocol + jobObj.urlValue,
