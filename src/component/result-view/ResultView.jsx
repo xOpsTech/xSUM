@@ -32,17 +32,33 @@ class ResultView extends React.Component {
 
     componentWillMount() {
 
-        if (this.props.location.query.resultID) {
-            var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+        if (this.props.location.query.urlValue) {
+            this.setState(
+                {
+                    resultObj: {
+                        securityProtocol: this.props.location.query.securityProtocol,
+                        urlValue: this.props.location.query.urlValue,
+                        results: JSON.parse(this.props.location.query.results)
+                    },
+                    locationMarker: JSON.parse(this.props.location.query.locations)
+                }
+            );
 
-            if (siteLoginCookie) {
-                var loggedUserObject = JSON.parse(siteLoginCookie);
-                this.setState({loggedUserObj: loggedUserObject});
+        } else {
+
+            if (this.props.location.query.resultID) {
+                var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+
+                if (siteLoginCookie) {
+                    var loggedUserObject = JSON.parse(siteLoginCookie);
+                    this.setState({loggedUserObj: loggedUserObject});
+                }
+
+                this.getResult(this.props.location.query.resultID);
+            } else {
+                UIHelper.redirectLogin();
             }
 
-            this.getResult(this.props.location.query.resultID);
-        } else {
-            UIHelper.redirectLogin();
         }
 
     }
@@ -78,7 +94,7 @@ class ResultView extends React.Component {
     }
 
     redirectToAddJob() {
-        UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+        UIHelper.goToPreviousPage();
     }
 
     render() {
@@ -133,19 +149,19 @@ class ResultView extends React.Component {
                                           <ResultTile
                                               tileName="First Byte"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.response/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.response/1000) +
                                                   ' seconds'
                                               }/>
                                           <ResultTile
                                               tileName="Last Byte"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.end/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.end/1000) +
                                                   ' seconds'
                                               }/>
                                           <ResultTile
                                               tileName="DNS Resolve"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.lookup/1000) +
                                                   ' seconds'
                                               }/>
                                           <ResultTile
@@ -157,7 +173,7 @@ class ResultView extends React.Component {
                                           <ResultTile
                                               tileName="Socket Req"
                                               value={
-                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.socket/10) +
+                                                  UIHelper.roundValueToTwoDecimals(resultObj.results.socket/1000) +
                                                   ' seconds'
                                               }/>
                                           <div className="row backbutton" onClick={this.redirectToAddJob}>

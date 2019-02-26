@@ -28,13 +28,14 @@ class SingleJobResultView extends React.Component {
 
         this.getJobData           = this.getJobData.bind(this);
         this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
-        this.getAllAlerts = this.getAllAlerts.bind(this);
+        this.getAllAlerts         = this.getAllAlerts.bind(this);
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         this.tenantDropDown       = this.tenantDropDown.bind(this);
         this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
-        this.arrangeSocketData = this.arrangeSocketData.bind(this);
+        this.arrangeSocketData    = this.arrangeSocketData.bind(this);
+        this.barChartBarClick     = this.barChartBarClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -217,6 +218,24 @@ class SingleJobResultView extends React.Component {
 
     }
 
+    barChartBarClick(selectedResultIndex) {
+        var {jobsWithResults} = this.state;
+        var resultToSend = {
+            results: JSON.stringify(jobsWithResults[0].job.result[selectedResultIndex])
+        };
+        resultToSend.securityProtocol = jobsWithResults[0].job.securityProtocol;
+        resultToSend.urlValue = jobsWithResults[0].job.siteObject.value;
+        resultToSend.locations = JSON.stringify([{
+            svgPath: AppConstants.TARGET_SVG,
+            zoomLevel: 5,
+            scale: 2,
+            title: jobsWithResults[0].job.serverLocation.textValue,
+            latitude: jobsWithResults[0].job.serverLocation.latitude,
+            longitude: jobsWithResults[0].job.serverLocation.longitude
+        }]);
+        UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, resultToSend);
+    }
+
     render() {
         const {
             isLoading,
@@ -240,7 +259,7 @@ class SingleJobResultView extends React.Component {
                         gridColor: '#FFFFFF',
                         gridAlpha: 0.2,
                         dashLength: 0,
-                        title: 'time / second',
+                        title: 'time in seconds',
                         autoRotateAngle: 90
                     }
                 ],
@@ -292,7 +311,15 @@ class SingleJobResultView extends React.Component {
                 maxSelectedTime: 3,
                 export: {
                     enabled: true
-                }
+                },
+                listeners: [
+                    {
+                        event: 'clickGraphItem',
+                        method: function(e) {
+                            props.barChartBarClick(e.item.index);
+                        }
+                    }
+                ]
             };
 
             var lastTestAvg = barChartData[barChartData.length-1]
@@ -401,7 +428,9 @@ class SingleJobResultView extends React.Component {
                 }
                 <LeftNav
                     selectedIndex={AppConstants.ALL_RESULT_CHART_VIEW_INDEX}
-                    leftNavStateUpdate={this.leftNavStateUpdate}/>
+                    leftNavStateUpdate={this.leftNavStateUpdate}
+                    isSubSectionExpand={true}
+                    subSectionIndex={AppConstants.DASHBOARDS_INDEX}/>
                 <div className={
                         'all-result-view ' +
                         ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
@@ -416,28 +445,32 @@ class SingleJobResultView extends React.Component {
                                                     jobWithResult={jobWithResult}
                                                     keyID={i}
                                                     fieldToDisplay={'responseTime'}
-                                                    chartTitle={'Response Time Chart'}/>
+                                                    chartTitle={'Response Time'}
+                                                    barChartBarClick={this.barChartBarClick}/>
                                             </LazyLoad>
                                             <LazyLoad height={345} offsetVertical={300}>
                                                 <ResultViewContainer
                                                     jobWithResult={jobWithResult}
                                                     keyID={i}
                                                     fieldToDisplay={'dnsLookUpTime'}
-                                                    chartTitle={'DNS Time Chart'}/>
+                                                    chartTitle={'DNS Time'}
+                                                    barChartBarClick={this.barChartBarClick}/>
                                             </LazyLoad>
                                             <LazyLoad height={345} offsetVertical={300}>
                                                 <ResultViewContainer
                                                     jobWithResult={jobWithResult}
                                                     keyID={i}
                                                     fieldToDisplay={'tcpConnectTime'}
-                                                    chartTitle={'TCP Connect Time Chart'}/>
+                                                    chartTitle={'TCP Connect Time'}
+                                                    barChartBarClick={this.barChartBarClick}/>
                                             </LazyLoad>
                                             <LazyLoad height={345} offsetVertical={300}>
                                                 <ResultViewContainer
                                                     jobWithResult={jobWithResult}
                                                     keyID={i}
                                                     fieldToDisplay={'lastByteRecieveTime'}
-                                                    chartTitle={'Last Byte Recieve Time Chart'}/>
+                                                    chartTitle={'Last Byte Recieve Time'}
+                                                    barChartBarClick={this.barChartBarClick}/>
                                             </LazyLoad>
                                         </div>
                                     );

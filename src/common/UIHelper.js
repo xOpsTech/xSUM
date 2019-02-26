@@ -290,6 +290,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
             var tcpConnectTime = roundValueToTwoDecimals(currentResult.connect / 1000);
             var lastByteRecieveTime = roundValueToTwoDecimals(currentResult.end / 1000);
+            var socketTime = roundValueToTwoDecimals(currentResult.socket / 1000);
 
             if (criticalThreshold === undefined && warningThreshold === undefined){
                 barColor = '#eb00ff';
@@ -307,6 +308,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
                 dnsLookUpTime: dnsLookUpTime,
                 tcpConnectTime: tcpConnectTime,
                 lastByteRecieveTime: lastByteRecieveTime,
+                socketTime: socketTime,
                 color: barColor,
                 resultID: currentResult.resultID
             });

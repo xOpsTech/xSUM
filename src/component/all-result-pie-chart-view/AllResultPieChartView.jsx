@@ -310,8 +310,8 @@ class AllResultPieChartView extends React.Component {
                 titleField: 'title',
                 valueField: 'value',
                 labelRadius: 5,
-                radius: '42%',
-                innerRadius: '70%',
+                radius: '30%',
+                innerRadius: '60%',
                 labelText: '[[title]]',
                 export: {
                     enabled: true
@@ -319,7 +319,7 @@ class AllResultPieChartView extends React.Component {
             };
 
             return (
-                <div className="col-sm-4 col-lg-3">
+                <div className="col-sm-3 col-lg-2">
                     <div className="pie-chart">
                     <div className="row">
                         <div className="col-sm-4">
@@ -355,7 +355,7 @@ class AllResultPieChartView extends React.Component {
                         <div>
                             <div className="row pie-chart-clicking"
                                 onClick={(e) => this.jobPieChartClick(props.jobWithResult)}>
-                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+                                <AmCharts.React style={{width: '100%', height: '120px'}} options={pieChartConfig}/>
                             </div>
                             <div className="row pie-chart-heading">
                                 Last Test Average
