@@ -28,13 +28,14 @@ class AllResultView extends React.Component {
 
         this.getAllJobs           = this.getAllJobs.bind(this);
         this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
-        this.getAllAlerts = this.getAllAlerts.bind(this);
+        this.getAllAlerts         = this.getAllAlerts.bind(this);
         this.chartDropDownClick   = this.chartDropDownClick.bind(this);
         this.redirectToAddJob     = this.redirectToAddJob.bind(this);
         this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
         this.tenantDropDown       = this.tenantDropDown.bind(this);
         this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
-        this.arrangeSocketData = this.arrangeSocketData.bind(this);
+        this.arrangeSocketData    = this.arrangeSocketData.bind(this);
+        this.barChartBarClick     = this.barChartBarClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -209,6 +210,24 @@ class AllResultView extends React.Component {
         }
     }
 
+    barChartBarClick(selectedResultIndex) {
+        var {jobsWithResults} = this.state;
+        var resultToSend = {
+            results: JSON.stringify(jobsWithResults[0].job.result[selectedResultIndex])
+        };
+        resultToSend.securityProtocol = jobsWithResults[0].job.securityProtocol;
+        resultToSend.urlValue = jobsWithResults[0].job.siteObject.value;
+        resultToSend.locations = JSON.stringify([{
+            svgPath: AppConstants.TARGET_SVG,
+            zoomLevel: 5,
+            scale: 2,
+            title: jobsWithResults[0].job.serverLocation.textValue,
+            latitude: jobsWithResults[0].job.serverLocation.latitude,
+            longitude: jobsWithResults[0].job.serverLocation.longitude
+        }]);
+        UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, resultToSend);
+    }
+
     render() {
         const {
             isLoading,
@@ -284,7 +303,15 @@ class AllResultView extends React.Component {
                 maxSelectedTime: 3,
                 export: {
                     enabled: true
-                }
+                },
+                listeners: [
+                    {
+                        event: 'clickGraphItem',
+                        method: function(e) {
+                            props.barChartBarClick(e.item.index);
+                        }
+                    }
+                ]
             };
 
             var lastTestAvg = barChartData[barChartData.length-1] && barChartData[barChartData.length-1].responseTime;
@@ -406,7 +433,10 @@ class AllResultView extends React.Component {
                                 ? jobsWithResults.map((jobWithResult, i) => {
                                     return (
                                         <LazyLoad height={345} offsetVertical={300}>
-                                            <ResultViewContainer jobWithResult={jobWithResult} keyID={i}/>
+                                            <ResultViewContainer
+                                                jobWithResult={jobWithResult}
+                                                keyID={i}
+                                                barChartBarClick={this.barChartBarClick}/>
                                         </LazyLoad>
                                     );
                                 })
