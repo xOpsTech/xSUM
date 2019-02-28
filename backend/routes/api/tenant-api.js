@@ -89,7 +89,15 @@ TenantApi.prototype.insertTenantData = async function(userID) {
             {
                 userID: userID
             }
-        ]
+        ],
+        alert: {
+            warning_alert_limit:AppConstants.EMAIL_WARNING_ALERT_COUNT,
+            critical_alert_limit:AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+        },
+        jobs: {
+            critical: [],
+            warning: []
+        }
     };
     await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, tenantInsertObj);
     return tenantInsertObj;
@@ -101,7 +109,11 @@ TenantApi.prototype.addTenantEmailData = async function(req, res) {
     var tenantUpdateObj = {
         email: tenantObj.email,
         password: tenantObj.password,
-        name: tenantObj.name
+        name: tenantObj.name,
+        alert: {
+            warning_alert_limit:tenantObj.warning_alert_limit,
+            critical_alert_limit:tenantObj.critical_alert_limit
+        }
     };
     MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj, tenantUpdateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: {email: tenantUpdateObj.email}});

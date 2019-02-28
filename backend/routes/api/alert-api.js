@@ -112,6 +112,22 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
         'job.jobId': insertedJobObj.jobId
     };
 
+    var queryToGetTenantDetails = { email: insertedJobObj.userEmail };
+
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantDetails);
+    var tenantId = tenantData[0]._id
+
+    //give default alert count when alerts are not defnied
+    if (typeof tenantData[0].alert === "undefined") {
+        var emailCriticalAlertCount = AppConstants.EMAIL_CRITICAL_ALERT_COUNT
+        var emailWarningAlertCount = AppConstants.EMAIL_WARNING_ALERT_COUNT
+    }
+
+    else {
+        var emailCriticalAlertCount = tenantData[0].alert.critical_alert_limit;
+        var emailWarningAlertCount = tenantData[0].alert.warning_alert_limit;
+    }
+
     var alertObjData = await MongoDB.getAllData(databaseName, AppConstants.ALERT_LIST, queryToGetJobAlert);
 
     if (alertObjData.length > 0) {
@@ -120,8 +136,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
             if (jobResults[j].mean/1000 > parseInt(alertObjData[0].criticalThreshold)) {
 
-                if (alertObjData[0].criticalAlertCount >= AppConstants.EMAIL_CRITICAL_ALERT_COUNT) {
-
+                if (alertObjData[0].criticalAlertCount >= emailCriticalAlertCount) {
                     // Send warning alert
                     var emailBodyToSend = 'Hi ,<br><br>' +
                                             'The job you have added for <b>' +
@@ -136,10 +151,31 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         criticalAlertCount: 0
                     };
 
+                    var alertJobs = {
+                        jobs: {
+                            critical: [],
+                            warning: [],
+                        }
+                    }
+
+                    if(typeof alertJobs.jobs.critical === 'undefined')
+                        alertJobs.jobs.critical=[]
+                    else
+                        alertJobs.jobs.critical = tenantData[0].jobs.critical
+                 
+                    alertJobs.jobs.critical.push({
+                        jobid: jobResults[j].jobid,
+                        time: jobResults[j].time,
+                        resultID: jobResults[j].resultID,
+                        status: "critical",
+                    })
+
+                    //add job details status wise for the tenantLIST
+                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, { _id: tenantId }, alertJobs);
+
                     MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                     break;
                 } else {
-
                     // Increase critical count
                     var objectToUpdate = {
                         criticalAlertCount: alertObjData[0].criticalAlertCount + 1
@@ -150,8 +186,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
             } else if (jobResults[j].mean/1000 > parseInt(alertObjData[0].warningThreshold)) {
 
-                if (alertObjData[0].warningAlertCount >= AppConstants.EMAIL_WARNING_ALERT_COUNT) {
-
+                if (alertObjData[0].warningAlertCount >= emailWarningAlertCount) {
                     // Send critical alert
                     var emailBodyToSend = 'Hi ,<br><br>' +
                                             'The job you have added for <b>' +
@@ -166,10 +201,30 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                         warningAlertCount: 0
                     };
 
+                    var alertJobs = {
+                        jobs: {
+                            critical: [],
+                            warning: [],
+                        }
+                    }
+
+                    if(typeof alertJobs.jobs.critical === 'undefined')
+                    alertJobs.jobs.warning=[]
+                    else
+                    alertJobs.jobs.warning = tenantData[0].jobs.warning
+                   
+                    alertJobs.jobs.warning.push({
+                        jobid: jobResults[j].jobid,
+                        time: jobResults[j].time,
+                        resultID: jobResults[j].resultID,
+                        status: "warning",
+                    })
+                    //add job details status wise for the tenantLIST
+                    MongoDB.updateData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, { _id: tenantId }, alertJobs);
+
                     MongoDB.updateData(databaseName, AppConstants.ALERT_LIST, {'job.jobId': alertObjData[0].job.jobId}, objectToUpdate);
                     break;
                 } else {
-
                     // Increase warning count
                     var objectToUpdate = {
                         warningAlertCount: alertObjData[0].warningAlertCount + 1
