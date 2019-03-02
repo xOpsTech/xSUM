@@ -67,7 +67,7 @@ async function manageSockets(socket, io, refArray, isTenantAndJob, sentTenantID,
             objectOfSocket = {ref: socketRef, tenantID: sentTenantID, jobID: sentJobID, userCount: 1};
         } else {
             socketRef = setInterval(async () => {
-                var objectToSend = await Helpers.getJobsWithLocations(sentTenantID);
+                var objectToSend = await Helpers.getJobsWithLocations(sentTenantID, false);
                 io.emit(AppConstants.UPDATE_JOB_RESULTS + sentTenantID, objectToSend);
             }, checkingTime);
 

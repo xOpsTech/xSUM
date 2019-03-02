@@ -28,13 +28,14 @@ UpdateJobs.prototype.updateJobsInDatabase = async function() {
         for (let job of jobList) {
             var siteURL = job.siteObject.value.replace(/http:\/\//g, '');
 
-            if (job.securityProtocol === undefined) {
+            if (job.isShow === undefined) {
                 var queryObj = {_id: ObjectId(job._id)};
                 var jobUpdateObj = {
-                    securityProtocol: 'http://',
-                    siteObject: {
-                        value: siteURL
-                    }
+                    //securityProtocol: 'http://',
+                    //siteObject: {
+                    //    value: siteURL
+                    //},
+                    isShow: true
                 };
                 MongoDB.updateData(String(tenant._id), AppConstants.DB_JOB_LIST, queryObj, jobUpdateObj);
                 console.log('Update job: ', job)

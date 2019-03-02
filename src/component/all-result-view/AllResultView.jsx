@@ -113,7 +113,7 @@ class AllResultView extends React.Component {
         socketClient.on(AppConstants.UPDATE_JOB_RESULTS + selectedTenant._id, (data) => {
             this.arrangeSocketData(data);
         });
-        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_RESULTS_API;
+        var urlToGetJobs = Config.API_URL + AppConstants.AVAILABLE_JOBS_GET_WITH_RESULTS_API;
 
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         var objectToRetrieve = {

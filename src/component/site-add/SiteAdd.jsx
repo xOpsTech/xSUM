@@ -532,7 +532,7 @@ class SiteAdd extends React.Component {
                                     value={scheduleDate}/>
                                         <div className="col-auto my-1">
                                         <div className="form-check">
-                                            <input className="form-check-input recursive-checkbox"
+                                            <input className="form-check-input checkbox-style"
                                                 type="checkbox"
                                                 id="recursiveCheck"
                                                 value={isRecursiveCheck}

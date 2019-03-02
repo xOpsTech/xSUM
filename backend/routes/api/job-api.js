@@ -30,6 +30,9 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAllJobsWithResults":
             new JobApi().getAllJobsWithResults(req, res);
             break;
+        case "getVisibleJobsWithResults":
+            new JobApi().getVisibleJobsWithResults(req, res);
+            break;
         case "getAJobWithResults":
             new JobApi().getAJobWithResults(req, res);
             break;
@@ -38,6 +41,9 @@ JobApi.prototype.handleJobs = function(req, res) {
             break;
         case "updateJob":
             new JobApi().updateJob(req, res);
+            break;
+        case "updateJobs":
+            new JobApi().updateJobs(req, res);
             break;
         default:
             res.send("no data");
@@ -65,6 +71,7 @@ JobApi.prototype.insertJob = async function(req, res) {
             critical: [],
             warning: []
         },
+        isShow: true,
         securityProtocol: jobObj.securityProtocol
     };
 
@@ -94,7 +101,13 @@ JobApi.prototype.getAllJobs = async function(req, res) {
 
 JobApi.prototype.getAllJobsWithResults = async function(req, res) {
     var userObj = req.body;
-    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID);
+    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, false);
+    res.send(objectToSend);
+}
+
+JobApi.prototype.getVisibleJobsWithResults = async function(req, res) {
+    var userObj = req.body;
+    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, true);
     res.send(objectToSend);
 }
 
@@ -157,7 +170,19 @@ JobApi.prototype.updateJob = async function(req, res) {
         res.send({error: AppConstants.POINT_NOT_ENOUGH_UPDATE_ERROR});
     }
 
+}
 
+JobApi.prototype.updateJobs = async function(req, res) {
+    var updateObject = req.body;
+
+    for (let jobToUpdate of updateObject.jobList) {
+        var updateValueObj = {
+            isShow: jobToUpdate.isShow
+        };
+        await MongoDB.updateData(updateObject.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobToUpdate.jobId}, updateValueObj);
+    }
+
+    res.send(updateObject);
 }
 
 JobApi.prototype.startorStopJob = function(req, res) {

@@ -20,6 +20,7 @@ export const FETCHING_JOBS = 'Fetching Jobs...';
 export const FETCHING_RESULT = 'Fetching Result...';
 export const REMOVING_A_JOB = 'Removing a Job...';
 export const UPDATING_A_JOB = 'Updating a Job...';
+export const UPDATING_JOBS = 'Updating Jobs...';
 export const START_A_JOB = 'Starting a Job...';
 export const SAVE_ALERT = 'Saving alert data...';
 export const FETCHING_ALERT = 'Fetching alerts...';

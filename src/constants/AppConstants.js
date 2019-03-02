@@ -12,10 +12,12 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
+export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibleJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
+export const JOBS_UPDATE_API = '/handleJobs?action=updateJobs';
 export const GET_RESULT_API = '/handleResults?action=getResult';
 export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJob';
 
@@ -85,6 +87,7 @@ export const ADD_USER_ROUTE = '/add-user';
 export const USER_PROFILE_ROUTE = '/user-profile';
 export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
 export const BILLING_ROUTE = '/billing';
+export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -97,6 +100,7 @@ export const USER_PROFILE_INDEX = 7;
 export const TENANT_SETTINGS_INDEX = 8;
 export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
+export const DASHBOARD_CONFIG_INDEX = 11;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
@@ -174,6 +178,11 @@ export const LEFT_NAV_TABS = [
                 index: BILLING_INDEX,
                 text: 'Billing',
                 route: BILLING_ROUTE
+            },
+            {
+                index: DASHBOARD_CONFIG_INDEX,
+                text: 'Dashboard Config',
+                route: DASHBOARD_CONFIG_ROUTE
             }
         ]
     }
@@ -217,6 +226,12 @@ export const CHART_TYPES_ARRAY = [
     {value: 'max', textValue: 'Max Value Chart'},
     {value: 'mean', textValue: 'Mean Value Chart'},
     {value: 'median', textValue: 'Median Value Chart'}
+];
+
+export const NO_OF_JOBS_ARRAY = [
+    {value: '5', textValue: '5 Jobs'},
+    {value: '10', textValue: '10 Jobs'},
+    {value: '15', textValue: '15 Jobs'}
 ];
 
 export const GOOGLE_MAP_KEY = 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk';

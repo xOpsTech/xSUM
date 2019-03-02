@@ -152,8 +152,15 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     })
 }
 
-exports.getJobsWithLocations = async function(tenantID) {
-    var queryObj = {};
+exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
+    var queryObj;
+
+    if (isNeedShowTest) {
+        queryObj = {isShow: true};
+    } else {
+        queryObj = {};
+    }
+
     var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
 
     var locationsArr = [];
