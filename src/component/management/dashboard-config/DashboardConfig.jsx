@@ -33,6 +33,8 @@ class DashboardConfig extends React.Component {
         this.modalOkClick       = this.modalOkClick.bind(this);
         this.getAllJobs         = this.getAllJobs.bind(this);
         this.getAllAlerts       = this.getAllAlerts.bind(this);
+        this.selectAllJobs      = this.selectAllJobs.bind(this);
+        this.isAllJobsSelected  = this.isAllJobsSelected.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -75,7 +77,8 @@ class DashboardConfig extends React.Component {
             selectedTenantIndex: 0,
             isModalVisible: false,
             modalTitle: '',
-            jobNumValue: parseInt(AppConstants.NO_OF_JOBS_ARRAY[0].value)
+            jobNumValue: parseInt(AppConstants.NO_OF_JOBS_ARRAY[0].value),
+            isAllJobsSelected: false
         };
 
         return initialState;
@@ -121,12 +124,29 @@ class DashboardConfig extends React.Component {
             tenantID: selectedTenant._id
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
+            var isAllJobsSelected = this.isAllJobsSelected(data);
+
             context.setState({
                 jobList: data,
                 isLoading: false,
-                loadingMessage: ''
+                loadingMessage: '',
+                isAllJobsSelected: isAllJobsSelected
             });
         });
+    }
+
+    isAllJobsSelected(jobList) {
+        var isAllJobsSelected = true;
+
+        for (let job of jobList) {
+
+            if (!job.isShow) {
+                isAllJobsSelected = false;
+                break;
+            }
+
+        }
+        return isAllJobsSelected;
     }
 
     handleChange(e, stateObj) {
@@ -213,6 +233,16 @@ class DashboardConfig extends React.Component {
         this.handleChange(e, {selectedTenant});
     }
 
+    selectAllJobs() {
+        var {isAllJobsSelected, jobList} = this.state;
+
+        for (let job of jobList) {
+            job.isShow = !isAllJobsSelected;
+        }
+
+        this.setState({isAllJobsSelected: !isAllJobsSelected, jobList: jobList});
+    }
+
     modalOkClick() {
         this.setState({isModalVisible: false, modalTitle: ''});
     }
@@ -229,7 +259,8 @@ class DashboardConfig extends React.Component {
             selectedTenantIndex,
             isModalVisible,
             modalTitle,
-            jobNumValue
+            jobNumValue,
+            isAllJobsSelected
         } = this.state;
 
         const JobSelectorContainer = (props) => {
@@ -241,12 +272,12 @@ class DashboardConfig extends React.Component {
                         <div className="form-group">
                             <input className="form-check-input checkbox-style"
                                 type="checkbox"
-                                id="recursiveCheck"
                                 checked={job.isShow}
                                 onChange={
                                     (e) => {
                                         job.isShow = !job.isShow;
-                                        this.handleChange(e, {jobList: jobList});
+                                        var isAllJobsSelected = this.isAllJobsSelected(jobList);
+                                        this.handleChange(e, {jobList: jobList, isAllJobsSelected: isAllJobsSelected});
                                     }}/>
                         </div>
                     </div>
@@ -342,6 +373,30 @@ class DashboardConfig extends React.Component {
                             </div>
 
                             <div className="row">
+                                <div className="row">
+                                    <div className="col-sm-1 alert-label-column">
+                                        <div className="form-group">
+                                            <input className="form-check-input checkbox-style"
+                                                type="checkbox"
+                                                checked={isAllJobsSelected}
+                                                onChange={
+                                                    (e) => {
+                                                        this.selectAllJobs(e);
+                                                    }}/>
+                                        </div>
+                                    </div>
+                                    <div className="col-sm-11">
+                                        <div className="form-group label-text">
+                                            <label className="control-label">
+                                                {
+                                                    (isAllJobsSelected)
+                                                        ? 'All jobs are selected'
+                                                        : 'Click to select all jobs'
+                                                }
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 {
                                     (jobList.length > 0)
                                         ? jobList.map((job, i) => {
