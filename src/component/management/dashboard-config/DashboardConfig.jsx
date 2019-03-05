@@ -330,39 +330,41 @@ class DashboardConfig extends React.Component {
                         </div>
 
                         <div className="row alert-list-wrap-div settings-section">
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column section-head">
-                                    <h4 className="site-add-title">
-                                        Job Configuration
-                                    </h4>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Number of Jobs (Visible in Dashboard)</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-9">
-                                    <div className="form-group">
-                                        <select className="form-control form-control-sm form-group"
-                                            value={jobNumValue}
-                                            onChange={(e) => this.dropDownClick(
-                                                {
-                                                    jobNumValue: parseInt(e.target.value)
-                                                })
-                                            }>
-                                            {
-                                                AppConstants.NO_OF_JOBS_ARRAY.map((jobNum) => {
-                                                    return <option key={'jobNum_' + jobNum.value} value={jobNum.value}>
-                                                                {jobNum.textValue}
-                                                           </option>;
-                                                })
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                            {
+                                // <div className="row">
+                                //     <div className="col-sm-3 alert-label-column section-head">
+                                //         <h4 className="site-add-title">
+                                //             Job Configuration
+                                //         </h4>
+                                //     </div>
+                                // </div>
+                                // <div className="row">
+                                //     <div className="col-sm-3 alert-label-column">
+                                //         <div className="form-group label-text">
+                                //             <label className="control-label">Number of Jobs (Visible in Dashboard)</label>
+                                //         </div>
+                                //     </div>
+                                //     <div className="col-sm-9">
+                                //         <div className="form-group">
+                                //             <select className="form-control form-control-sm form-group"
+                                //                 value={jobNumValue}
+                                //                 onChange={(e) => this.dropDownClick(
+                                //                     {
+                                //                         jobNumValue: parseInt(e.target.value)
+                                //                     })
+                                //                 }>
+                                //                 {
+                                //                     AppConstants.NO_OF_JOBS_ARRAY.map((jobNum) => {
+                                //                         return <option key={'jobNum_' + jobNum.value} value={jobNum.value}>
+                                //                                     {jobNum.textValue}
+                                //                                </option>;
+                                //                     })
+                                //                 }
+                                //             </select>
+                                //         </div>
+                                //     </div>
+                                // </div>
+                            }
 
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column section-head">
