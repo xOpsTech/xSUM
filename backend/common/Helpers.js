@@ -114,11 +114,10 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
         if (resp) {
             console.log('Successfully executed the job : ', jobObj.jobId);
             var resultID = crypto.randomBytes(10).toString('hex');
-            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime: jobObj.currentDateTime };
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
-
             databaseName !== AppConstants.DB_NAME
-                && AlertApi.sendEmailAsAlert(databaseName, jobObj, tagsObj.executedTime);
+                && AlertApi.sendEmailAsAlert(databaseName, jobObj, resp.timings, resultID, tagsObj);
             databaseName !== AppConstants.DB_NAME
                 && AlertApi.sendRecoveryAlert(databaseName, jobObj);
 
@@ -133,7 +132,7 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
         } else if (err) {
 
             var resultID = crypto.randomBytes(10).toString('hex');
-            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime:jobObj.currentDateTime };
+            var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime: jobObj.currentDateTime };
 
             obj = {
                 socket: 0,
@@ -146,7 +145,6 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
             InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, obj);
 
             AlertApi.sendFailureAlert(databaseName, jobObj);
-
         }
 
     })
