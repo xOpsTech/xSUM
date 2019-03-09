@@ -296,9 +296,11 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             var lastByteRecieveTime = roundValueToTwoDecimals(currentResult.end / 1000);
             var socketTime = roundValueToTwoDecimals(currentResult.socket / 1000);
 
+            var dateCompare = moment(currentResult.executedTime).isAfter(savedDateTime);
+
             if (criticalThreshold === undefined && warningThreshold === undefined){
                 barColor = '#eb00ff';
-            } else if (savedDateTime !== undefined && dateCompare) {
+            } else if (savedDateTime === undefined || dateCompare) {
 
                 if (responseTime >= criticalThreshold) {
                     barColor = '#b22222';
