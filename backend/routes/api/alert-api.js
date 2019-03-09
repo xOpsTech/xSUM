@@ -3,6 +3,7 @@ var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
 var Helpers = require('../../common/Helpers');
 var {ObjectId} = require('mongodb');
+var moment = require('moment');
 var crypto = require('crypto');
 
 function AlertApi(){};
@@ -26,6 +27,7 @@ AlertApi.prototype.handleAlertData = function(req, res) {
 
 AlertApi.prototype.saveAlert = async function(req, res) {
     var alertObj = req.body;
+    var currentDateTime = moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT);
 
     if (alertObj._id) {
         var objectToUpdate = {
@@ -34,7 +36,9 @@ AlertApi.prototype.saveAlert = async function(req, res) {
 
             failureAlertEmailLimit: parseInt(alertObj.failureAlertEmailLimit),
             criticalAlertEmailLimit: parseInt(alertObj.criticalAlertEmailLimit),
-            warningAlertEmailLimit: parseInt(alertObj.warningAlertEmailLimit)
+            warningAlertEmailLimit: parseInt(alertObj.warningAlertEmailLimit),
+
+            savedDateTime: currentDateTime
         };
 
         MongoDB.updateData(alertObj.tenantID, AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
@@ -50,6 +54,8 @@ AlertApi.prototype.saveAlert = async function(req, res) {
         alertObj.failureAlertEmailLimit = AppConstants.DEF_EMAIL_FAILURE_ALERT_COUNT;
         alertObj.criticalAlertEmailLimit = AppConstants.DEF_EMAIL_CRITICAL_ALERT_COUNT;
         alertObj.warningAlertEmailLimit = AppConstants.DEF_EMAIL_WARNING_ALERT_COUNT;
+
+        alertObj.savedDateTime = currentDateTime;
 
         await MongoDB.insertData(alertObj.tenantID, AppConstants.ALERT_LIST, alertObj);
         res.send(alertObj);
@@ -104,7 +110,9 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
 
                 failureAlertEmailLimit: alertObjData[0].failureAlertEmailLimit,
                 criticalAlertEmailLimit: alertObjData[0].criticalAlertEmailLimit,
-                warningAlertEmailLimit: alertObjData[0].warningAlertEmailLimit
+                warningAlertEmailLimit: alertObjData[0].warningAlertEmailLimit,
+
+                savedDateTime: alertObjData[0].savedDateTime
             });
         } else {
             alertsData.push({

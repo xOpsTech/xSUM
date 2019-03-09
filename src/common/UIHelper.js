@@ -245,12 +245,16 @@ export function getAllTenantsData(user, context, callBackFunction, isContinueLoa
 }
 
 export function getArrangedBarChartData(job, selectedChartIndex, context) {
+    var savedDateTime, criticalThreshold, warningThreshold;
 
     for (var thresHold of context.state.alertData) {
+
         if (thresHold.jobId == job.jobId) {
-          var criticalThreshold = thresHold.criticalThreshold;
-          var warningThreshold = thresHold.warningThreshold;
+            criticalThreshold = thresHold.criticalThreshold;
+            warningThreshold = thresHold.warningThreshold;
+            savedDateTime = thresHold.savedDateTime;
         }
+
     }
 
     var resultArray = [];
@@ -294,10 +298,14 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
 
             if (criticalThreshold === undefined && warningThreshold === undefined){
                 barColor = '#eb00ff';
-            } else if (responseTime >= criticalThreshold) {
-                barColor = '#b22222';
-            } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
-                barColor = '#ffff00';
+            } else if (savedDateTime !== undefined && dateCompare) {
+
+                if (responseTime >= criticalThreshold) {
+                    barColor = '#b22222';
+                } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                    barColor = '#ffff00';
+                }
+
             } else {
                 barColor = '#eb00ff';
             }

@@ -95,11 +95,16 @@ class SingleJobResultView extends React.Component {
             var alertThresholdsByJob = [];
 
             for (var alert of data.alertsData) {
-                alertThresholdsByJob.push({
-                    jobId: alert.job.jobId,
-                    criticalThreshold: parseFloat(alert.criticalThreshold),
-                    warningThreshold: parseFloat(alert.warningThreshold)
-                });
+
+                if (alert._id) {
+                    alertThresholdsByJob.push({
+                        jobId: alert.job.jobId,
+                        criticalThreshold: parseFloat(alert.criticalThreshold),
+                        warningThreshold: parseFloat(alert.warningThreshold),
+                        savedDateTime: alert.savedDateTime
+                    });
+                }
+
             }
 
             this.setState({ alertData: alertThresholdsByJob });
