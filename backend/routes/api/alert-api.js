@@ -404,19 +404,19 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                 objectToUpdate = {
                     criticalMailCount: 0
                 };
+
+                var emailBodyToSend = 'Notification of xSUM Critical Alert for ' + insertedJobObj.siteObject.value + '<br>' +
+                                        'Test name: ' + insertedJobObj.jobName + '<br>' +
+                                        'Alert threshold: ' + Helpers.roundValue(alertObjData[0].criticalThreshold, 3) + 'seconds<br>' +
+                                        'Response time: ' + Helpers.roundValue(result.response/1000, 3) + 'seconds<br>';
+
+                Helpers.sendEmailAs(
+                    insertedJobObj.userEmail,
+                    'xSUM Critical Alert for ' + insertedJobObj.siteObject.value,
+                    emailBodyToSend,
+                    AppConstants.ALERT_EMAIL_TYPE
+                );
             }
-
-            var emailBodyToSend = 'Notification of xSUM Critical Alert for ' + insertedJobObj.siteObject.value + '<br>' +
-                                    'Test name: ' + insertedJobObj.jobName + '<br>' +
-                                    'Alert threshold: ' + Helpers.roundValue(alertObjData[0].criticalThreshold, 3) + 'seconds<br>' +
-                                    'Response time: ' + Helpers.roundValue(result.response/1000, 3) + 'seconds<br>';
-
-            Helpers.sendEmailAs(
-                insertedJobObj.userEmail,
-                'xSUM Critical Alert for ' + insertedJobObj.siteObject.value,
-                emailBodyToSend,
-                AppConstants.ALERT_EMAIL_TYPE
-            );
 
             MongoDB.updateData(
                 databaseName,
@@ -440,20 +440,21 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                 objectToUpdate = {
                     warningMailCount: 0
                 };
+
+                // Send warning alert
+                var emailBodyToSend = 'Notification of xSUM Warning Alert for ' + insertedJobObj.siteObject.value + '<br>' +
+                                        'Test name: ' + insertedJobObj.jobName + '<br>' +
+                                        'Alert threshold: ' + Helpers.roundValue(alertObjData[0].warningThreshold, 3) + 'seconds<br>' +
+                                        'Response time: ' + Helpers.roundValue(result.response/1000, 3) + 'seconds<br>';
+
+                Helpers.sendEmailAs(
+                    insertedJobObj.userEmail,
+                    'xSUM Warning Alert for ' + insertedJobObj.siteObject.value,
+                    emailBodyToSend,
+                    AppConstants.ALERT_EMAIL_TYPE
+                );
+
             }
-
-            // Send warning alert
-            var emailBodyToSend = 'Notification of xSUM Warning Alert for ' + insertedJobObj.siteObject.value + '<br>' +
-                                    'Test name: ' + insertedJobObj.jobName + '<br>' +
-                                    'Alert threshold: ' + Helpers.roundValue(alertObjData[0].warningThreshold, 3) + 'seconds<br>' +
-                                    'Response time: ' + Helpers.roundValue(result.response/1000, 3) + 'seconds<br>';
-
-            Helpers.sendEmailAs(
-                insertedJobObj.userEmail,
-                'xSUM Warning Alert for ' + insertedJobObj.siteObject.value,
-                emailBodyToSend,
-                AppConstants.ALERT_EMAIL_TYPE
-            );
 
             MongoDB.updateData(
                 databaseName,
