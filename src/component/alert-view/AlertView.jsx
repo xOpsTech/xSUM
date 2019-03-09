@@ -393,7 +393,7 @@ class AlertView extends React.Component {
                                                 type="number"
                                                 className="form-control"
                                                 id="criticalAlertEmailLimitInput"
-                                                value={selectedAlertData.criti}
+                                                value={selectedAlertData.criticalAlertEmailLimit}
                                                 onChange={(e) => {
                                                     selectedAlertData.criticalAlertEmailLimit = e.target.value;
                                                     this.handleChange(e, selectedAlertData);
