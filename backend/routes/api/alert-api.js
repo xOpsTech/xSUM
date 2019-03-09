@@ -406,15 +406,14 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                 };
             }
 
-            var emailBodyToSend = 'Hi ,<br><br>' +
-                                    'The job you have added for <b>' +
-                                    insertedJobObj.siteObject.value +
-                                    '</b> is having high respnse time.<br><br>' +
-                                    'Regards,<br>xSUM admin';
+            var emailBodyToSend = 'Notification of xSUM Critical Alert for ' + insertedJobObj.siteObject.value + '<br>' +
+                                    'Test name: ' + insertedJobObj.jobName + '<br>' +
+                                    'Alert threshold: ' + parseInt(alertObjData[0].criticalThreshold) + 'seconds<br>' +
+                                    'Response time: ' + result.response/1000 + 'seconds<br>';
 
             Helpers.sendEmailAs(
                 insertedJobObj.userEmail,
-                'Critical Alert from xSUM',
+                'xSUM Critical Alert for ' + insertedJobObj.siteObject.value,
                 emailBodyToSend,
                 AppConstants.ALERT_EMAIL_TYPE
             );
@@ -443,16 +442,15 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
                 };
             }
 
-            // Send critical alert
-            var emailBodyToSend = 'Hi ,<br><br>' +
-                                    'The job you have added for <b>' +
-                                    insertedJobObj.siteObject.value +
-                                    '</b> is having high respnse time.<br><br>' +
-                                    'Regards,<br>xSUM admin';
+            // Send warning alert
+            var emailBodyToSend = 'Notification of xSUM Warning Alert for ' + insertedJobObj.siteObject.value + '<br>' +
+                                    'Test name: ' + insertedJobObj.jobName + '<br>' +
+                                    'Alert threshold: ' + parseInt(alertObjData[0].warningThreshold) + 'seconds<br>' +
+                                    'Response time: ' + result.response/1000 + 'seconds<br>';
 
             Helpers.sendEmailAs(
                 insertedJobObj.userEmail,
-                'Warning Alert from xSUM',
+                'xSUM Warning Alert for ' + insertedJobObj.siteObject.value,
                 emailBodyToSend,
                 AppConstants.ALERT_EMAIL_TYPE
             );

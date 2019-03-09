@@ -142,19 +142,18 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
                           + '&tenantID=' + userObj.tenantID;
 
         // Send warning alert
-        var emailBodyToSend = 'Hi ,<br><br>' +
-                                'Your email address is registered in XSUM Site <br>' +
-                                'Please click <a href="' + activateURL +
-                                '">XSUM Site</a> to activate your account <br>' +
-                                'Your password is <b>' + userPasswordBeforEncript + '<b> <br>'
-                                'Regards,<br>xSUM admin';
+        var emailBodyToSend =  'Administrator has invited you to join the ' + userObj.email + ' account on xSUM.<br>' +
+                                'You can activate your account here. ' +
+                                'If this link does not work try cutting and pasting the following link into your browser: <br>' +
+                                '<a href="' + activateURL + '">' + activateURL + '</a> <br>' +
+                                'Your temporary password is: <b>' + userPasswordBeforEncript + '<b> <br>';
 
         var queryToGetLoggedUser = {email: userObj.loggedUserEmail};
         var loggedUserData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryToGetLoggedUser);
 
         Helpers.sendEmailAs(
             userObj.email,
-            'Activate your account for XSUM',
+            'Welcome to xSUM',
             emailBodyToSend,
             AppConstants.ADMIN_EMAIL_TYPE
         );
