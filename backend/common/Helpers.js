@@ -80,7 +80,10 @@ exports.sendEmailAs = function(toMailAddress, subject, html, emailType) {
             break;
     }
     var transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        requireTLS: true,
         auth: {
             user: sendingMail,
             pass: sendingMailPassword

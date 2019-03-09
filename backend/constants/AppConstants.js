@@ -31,7 +31,7 @@ exports.EMAIL_PASSWORD = 'xsum@9871az';
 
 exports.ADMIN_EMAIL_USERNAME = 'admin@xsum.xops.it';
 exports.ADMIN_EMAIL_PASSWORD = 'Fwx$HA!4JC7H58npenXHkH3xh$v%zW6w';
-exports.ALERT_EMAIL_USERNAME = 'alert@xsum.xops.it';
+exports.ALERT_EMAIL_USERNAME = 'alerts@xsum.xops.it';
 exports.ALERT_EMAIL_PASSWORD = 'kXC$ug6&2U&UHT8a*^@Q6mwz6HxAZ&V8';
 
 exports.ADMIN_EMAIL_TYPE = 'admin';
