@@ -118,7 +118,12 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
             console.log('Successfully executed the job : ', jobObj.jobId);
             var resultID = crypto.randomBytes(10).toString('hex');
             var tagsObj = { jobid: jobObj.jobId, resultID: resultID, executedTime: jobObj.currentDateTime };
-            InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
+
+            // Insert data for single user test
+            databaseName === AppConstants.DB_NAME
+                && InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, resp.timings);
+
+            // sendEmailAsAlert method calls the insert method to put results in influx db
             databaseName !== AppConstants.DB_NAME
                 && AlertApi.sendEmailAsAlert(databaseName, jobObj, resp.timings, resultID, tagsObj);
             databaseName !== AppConstants.DB_NAME

@@ -3,6 +3,7 @@ var MongoDB = require('../../db/mongodb');
 var InfluxDB = require('../../db/influxdb');
 var Helpers = require('../../common/Helpers');
 var {ObjectId} = require('mongodb');
+var crypto = require('crypto');
 
 function AlertApi(){};
 
@@ -467,10 +468,8 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
 
     }
 
-    // Drop already added result and insert again
-    InfluxDB.removeData(databaseName, "DROP SERIES FROM pageLoadTime WHERE resultID='" + resultID + "'");
     tagsObj.resultStatus = resultStatus;
-    InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, result);
+    await InfluxDB.insertData(databaseName, AppConstants.PING_RESULT_LIST, tagsObj, result);
 }
 
 module.exports = new AlertApi();
