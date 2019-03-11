@@ -290,7 +290,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             }
 
         } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-            var barColor;
+            var barColor = '#eb00ff';
             var responseTime = roundValueToTwoDecimals(currentResult.response / 1000);
             var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
             var tcpConnectTime = roundValueToTwoDecimals(currentResult.connect / 1000);
