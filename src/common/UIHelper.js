@@ -6,6 +6,7 @@ import {browserHistory} from 'react-router';
 
 import userApi from '../api/userApi';
 import tenantApi from '../api/tenantApi';
+import jobApi from '../api/jobApi';
 
 import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
@@ -328,4 +329,37 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
         }
     }
     return resultArray;
+}
+
+// Save jobs visibility
+export function saveJobsVisibility(jobList, selectedTenant, context) {
+    if (jobList.length > 0) {
+        let jobsToUpdate = [];
+
+        for (let job of jobList) {
+
+            // Check for undefined of isShow in job object
+            jobsToUpdate.push({jobId: job.jobId, isShow: (job.isShow) ? job.isShow : false});
+        }
+        context.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_JOBS});
+
+        var updateObject = {
+            jobList: jobsToUpdate,
+            tenantID: selectedTenant._id
+        };
+
+        var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
+        jobApi.updateJob(urlToUpdateJobs, updateObject).then((response) => {
+            context.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: ''
+                }
+            );
+        });
+    } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
+        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
+    } else {
+        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
+    }
 }

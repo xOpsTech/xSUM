@@ -3,8 +3,10 @@ import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
 import LazyLoad from 'react-lazy-load';
 import socketIOClient from "socket.io-client";
+import {OverlayTrigger, Popover} from 'react-bootstrap';
 
 import LeftNav from '../common/left-nav/LeftNav';
+import ListSelector from '../common/list-selector/ListSelector';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import MapContainer from '../common/map-container/MapContainer';
@@ -26,16 +28,19 @@ class AllResultView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.getAllJobs           = this.getAllJobs.bind(this);
-        this.redirectToSiteLoad   = this.redirectToSiteLoad.bind(this);
-        this.getAllAlerts         = this.getAllAlerts.bind(this);
-        this.chartDropDownClick   = this.chartDropDownClick.bind(this);
-        this.redirectToAddJob     = this.redirectToAddJob.bind(this);
-        this.leftNavStateUpdate   = this.leftNavStateUpdate.bind(this);
-        this.tenantDropDown       = this.tenantDropDown.bind(this);
-        this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
-        this.arrangeSocketData    = this.arrangeSocketData.bind(this);
-        this.barChartBarClick     = this.barChartBarClick.bind(this);
+        this.getAllAvailableJobs        = this.getAllAvailableJobs.bind(this);
+        this.getAllJobs                 = this.getAllJobs.bind(this);
+        this.redirectToSiteLoad         = this.redirectToSiteLoad.bind(this);
+        this.getAllAlerts               = this.getAllAlerts.bind(this);
+        this.chartDropDownClick         = this.chartDropDownClick.bind(this);
+        this.redirectToAddJob           = this.redirectToAddJob.bind(this);
+        this.leftNavStateUpdate         = this.leftNavStateUpdate.bind(this);
+        this.tenantDropDown             = this.tenantDropDown.bind(this);
+        this.arrangeDashboardData       = this.arrangeDashboardData.bind(this);
+        this.arrangeSocketData          = this.arrangeSocketData.bind(this);
+        this.barChartBarClick           = this.barChartBarClick.bind(this);
+        this.updateDataList             = this.updateDataList.bind(this);
+        this.saveJobListVisibilityClick = this.saveJobListVisibilityClick.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -67,6 +72,7 @@ class AllResultView extends React.Component {
             loadingMessage: '',
             loggedUserObj: null,
             jobsWithResults: [],
+            jobList: [],
             locationMarker: [],
             alertData: [],
             isLeftNavCollapse: false,
@@ -109,10 +115,11 @@ class AllResultView extends React.Component {
 
             this.setState({ alertData: alertThresholdsByJob });
         });
-        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllJobs, true);
+        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllAvailableJobs, true);
+        this.getAllJobs(loggedUserObj, selectedTenant, this);
     }
 
-    getAllJobs(loggedUserObj, selectedTenant, context) {
+    getAllAvailableJobs(loggedUserObj, selectedTenant, context) {
         socketClient = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
         socketClient.on(AppConstants.UPDATE_JOB_RESULTS + selectedTenant._id, (data) => {
             this.arrangeSocketData(data);
@@ -125,6 +132,22 @@ class AllResultView extends React.Component {
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
             this.arrangeDashboardData(data, context);
+        });
+    }
+
+    getAllJobs(loggedUserObj, selectedTenant, context) {
+        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_API;
+
+        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        var objectToRetrieve = {
+            tenantID: selectedTenant._id
+        };
+        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
+            context.setState({
+                jobList: data,
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
     }
 
@@ -199,7 +222,7 @@ class AllResultView extends React.Component {
             UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
         this.setState(stateObject);
 
-        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+        this.getAllAvailableJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
     }
 
     arrangeSocketData(data) {
@@ -232,6 +255,33 @@ class AllResultView extends React.Component {
         UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, resultToSend);
     }
 
+    updateDataList(isAll, isShow, selectedIndex) {
+        const {jobList} = this.state;
+
+        if (isAll) {
+
+            for (let job of jobList) {
+                job.isShow = isShow;
+            }
+            this.setState({jobList: jobList});
+
+        } else {
+
+            if (selectedIndex !== undefined) {
+                jobList[selectedIndex].isShow = isShow;
+                this.setState({jobList: jobList});
+            }
+
+        }
+
+    }
+
+    saveJobListVisibilityClick(e) {
+        e.preventDefault();
+        var {selectedTenant, loggedUserObj, jobList} = this.state;
+        UIHelper.saveJobsVisibility(jobList, selectedTenant, this);
+    }
+
     render() {
         const {
             isLoading,
@@ -240,7 +290,8 @@ class AllResultView extends React.Component {
             jobsWithResults,
             locationMarker,
             alertData,
-            isLeftNavCollapse
+            isLeftNavCollapse,
+            jobList
         } = this.state;
 
         const ResultViewContainer = (props) => {
@@ -399,6 +450,24 @@ class AllResultView extends React.Component {
             );
         };
 
+        const DropDownPopOver = (props) => {
+            return(
+                <Popover {...props} className="drop-down list-drop-down">
+                    {props.children}
+                </Popover>
+            );
+        };
+        const ListPopOver = (
+            <DropDownPopOver>
+                <ListSelector
+                    dataList={jobList}
+                    updateDataList={this.updateDataList}
+                    loggedUserObj={loggedUserObj}
+                    isSaveButtonVisible={true}
+                    saveButtonClick={this.saveJobListVisibilityClick}/>
+            </DropDownPopOver>
+        );
+
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -427,7 +496,20 @@ class AllResultView extends React.Component {
                     {
                         (locationMarker.length > 0)
                             ? <div className="row map-container">
-                                  <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
+                                <div className="col-sm-11">
+                                    <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
+                                </div>
+                                <div className="col-sm-1">
+                                    <OverlayTrigger
+                                        trigger="click" rootClose
+                                        placement="bottom"
+                                        overlay={ListPopOver}>
+                                        <button
+                                            className="btn btn-primary btn-sm settings-button">
+                                            <i className="settings-icon glyphicon glyphicon-cog"></i>
+                                        </button>
+                                    </OverlayTrigger>
+                                </div>
                               </div>
                             : <MapContainer height="100%" width="100%" locationMarker={[]}/>
                     }
@@ -443,7 +525,7 @@ class AllResultView extends React.Component {
                                                 barChartBarClick={this.barChartBarClick}/>
                                         </LazyLoad>
                                     );
-                                })
+                                  })
                                 : null
                         }
                     </div>

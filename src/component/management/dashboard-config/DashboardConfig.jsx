@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import ModalContainer from '../../common/modal-container/ModalContainer';
+import ListSelector from '../../common/list-selector/ListSelector';
 import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
@@ -35,6 +36,7 @@ class DashboardConfig extends React.Component {
         this.getAllAlerts       = this.getAllAlerts.bind(this);
         this.selectAllJobs      = this.selectAllJobs.bind(this);
         this.isAllJobsSelected  = this.isAllJobsSelected.bind(this);
+        this.updateDataList     = this.updateDataList.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -156,39 +158,8 @@ class DashboardConfig extends React.Component {
 
     saveSettingsClick(e) {
         e.preventDefault();
-
         var {selectedTenant, loggedUserObj, jobList} = this.state;
-
-        if (jobList.length > 0) {
-            let jobsToUpdate = [];
-
-            for (let job of jobList) {
-
-                // Check for undefined of isShow in job object
-                jobsToUpdate.push({jobId: job.jobId, isShow: (job.isShow) ? job.isShow : false});
-            }
-            this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_JOBS});
-
-            var updateObject = {
-                jobList: jobsToUpdate,
-                tenantID: selectedTenant._id
-            };
-
-            var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
-            jobApi.updateJob(urlToUpdateJobs, updateObject).then((response) => {
-                this.setState(
-                    {
-                        isLoading: false,
-                        loadingMessage: ''
-                    }
-                );
-            });
-        } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
-            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
-        } else {
-            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
-        }
-
+        UIHelper.saveJobsVisibility(jobList, selectedTenant, this);
     }
 
     redirectToAddUser() {
@@ -245,6 +216,27 @@ class DashboardConfig extends React.Component {
 
     modalOkClick() {
         this.setState({isModalVisible: false, modalTitle: ''});
+    }
+
+    updateDataList(isAll, isShow, selectedIndex) {
+        const {jobList} = this.state;
+
+        if (isAll) {
+
+            for (let job of jobList) {
+                job.isShow = isShow;
+            }
+            this.setState({jobList: jobList});
+
+        } else {
+
+            if (selectedIndex !== undefined) {
+                jobList[selectedIndex].isShow = isShow;
+                this.setState({jobList: jobList});
+            }
+
+        }
+
     }
 
     render() {
@@ -375,37 +367,46 @@ class DashboardConfig extends React.Component {
                             </div>
 
                             <div className="row">
-                                <div className="row">
-                                    <div className="col-sm-1 alert-label-column">
-                                        <div className="form-group">
-                                            <input className="form-check-input checkbox-style"
-                                                type="checkbox"
-                                                checked={isAllJobsSelected}
-                                                onChange={
-                                                    (e) => {
-                                                        this.selectAllJobs(e);
-                                                    }}/>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-11">
-                                        <div className="form-group label-text">
-                                            <label className="control-label">
-                                                {
-                                                    (isAllJobsSelected)
-                                                        ? 'All jobs are selected'
-                                                        : 'Click to select all jobs'
-                                                }
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 {
+                                    // <div className="row">
+                                    //     <div className="col-sm-1 alert-label-column">
+                                    //         <div className="form-group">
+                                    //             <input className="form-check-input checkbox-style"
+                                    //                 type="checkbox"
+                                    //                 checked={isAllJobsSelected}
+                                    //                 onChange={
+                                    //                     (e) => {
+                                    //                         this.selectAllJobs(e);
+                                    //                     }}/>
+                                    //         </div>
+                                    //     </div>
+                                    //     <div className="col-sm-11">
+                                    //         <div className="form-group label-text">
+                                    //             <label className="control-label">
+                                    //                 {
+                                    //                     (isAllJobsSelected)
+                                    //                         ? 'All jobs are selected'
+                                    //                         : 'Click to select all jobs'
+                                    //                 }
+                                    //             </label>
+                                    //         </div>
+                                    //     </div>
+                                    // </div>
+                                }
+                                {
+                                    // (jobList.length > 0)
+                                    //     ? jobList.map((job, i) => {
+                                    //         return (
+                                    //             <JobSelectorContainer job={job} index={i}/>
+                                    //         );
+                                    //     })
+                                    //     : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                                     (jobList.length > 0)
-                                        ? jobList.map((job, i) => {
-                                            return (
-                                                <JobSelectorContainer job={job} index={i}/>
-                                            );
-                                        })
+                                        ? <ListSelector
+                                            dataList={jobList}
+                                            isSaveButtonVisible={false}
+                                            updateDataList={this.updateDataList}/>
                                         : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                                 }
 
