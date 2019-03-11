@@ -59,14 +59,13 @@ UserApi.prototype.registerUserData = async function(req, res) {
     } else {
         userObj.password = '';
     }
-
     var userInsertObj = {
         email: userObj.email,
         password: userObj.password,
+        timestamp: Date(),
         isActive: true,
         tenants: []
     };
-
     var queryObj = {email: userObj.email};
     var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 

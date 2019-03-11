@@ -34,16 +34,16 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /.(js|jsx)$/,
-                enforce: 'pre',
-                exclude: /node_modules/,
-                use: [
-                        {
-                            loader: "eslint-loader",
-                        }
-                    ],
-            },
+            // {
+            //     test: /.(js|jsx)$/,
+            //     enforce: 'pre',
+            //     exclude: /node_modules/,
+            //     use: [
+            //             {
+            //                 loader: "eslint-loader",
+            //             }
+            //         ],
+            // },
             {
                 test: /\.(js|jsx)$/,
                 exclude: /(node_modules|__tests__)/,
@@ -66,7 +66,7 @@ module.exports = {
                         "css-loader",
                         "less-loader",
                      ],
-                     
+
             },
             { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
             {
