@@ -138,15 +138,12 @@ class AllResultView extends React.Component {
     getAllJobs(loggedUserObj, selectedTenant, context) {
         var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_API;
 
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
             context.setState({
-                jobList: data,
-                isLoading: false,
-                loadingMessage: ''
+                jobList: data
             });
         });
     }
