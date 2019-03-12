@@ -8,6 +8,7 @@ var {ObjectId} = require('mongodb');
 var SuperUserApi = require('./super-user-api');
 const AccessControl = require('accesscontrol');
 const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
+var moment = require('moment');
 
 var TenantApi = require('./tenant-api');
 
@@ -59,14 +60,13 @@ UserApi.prototype.registerUserData = async function(req, res) {
     } else {
         userObj.password = '';
     }
-
     var userInsertObj = {
         email: userObj.email,
         password: userObj.password,
+        timestamp: moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT),
         isActive: true,
         tenants: []
     };
-
     var queryObj = {email: userObj.email};
     var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
 
