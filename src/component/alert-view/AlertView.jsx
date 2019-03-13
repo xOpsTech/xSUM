@@ -56,7 +56,8 @@ class AlertView extends React.Component {
             alertsData: [],
             selectedAlertData: null,
             selectedAlertIndex: 0,
-            selectedTenant: {userList: []}
+            selectedTenant: {userList: []},
+            defaultAlertData: []
         };
 
         return initialState;
@@ -80,7 +81,7 @@ class AlertView extends React.Component {
         };
         alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
 
-            for (let alertData of data.alertsData) {
+            for (let alertData of data.defaultAlerts) {
                 alertData.oldCriticalThreshold = alertData.criticalThreshold;
                 alertData.oldWarningThreshold = alertData.warningThreshold;
             }
@@ -103,7 +104,7 @@ class AlertView extends React.Component {
             } else {
                 this.setState(
                     {
-                        selectedAlertData: data.alertsData[0]
+                        selectedAlertData: data.defaultAlerts[0]
                     }
                 );
 
@@ -118,7 +119,8 @@ class AlertView extends React.Component {
                 {
                     isLoading: false,
                     loadingMessage: '',
-                    alertsData: data.alertsData
+                    alertsData: data.alertsData,
+                    defaultAlertData: data.defaultAlerts
                 }
             );
         });
@@ -169,12 +171,13 @@ class AlertView extends React.Component {
             loadingMessage,
             alertsData,
             selectedAlertData,
-            selectedAlertIndex
+            selectedAlertIndex,
+            defaultAlertData
         } = this.state;
 
         const JobNameDropDown = () => {
 
-            if (alertsData.length === 0) {
+            if (defaultAlertData.length === 0) {
                 return (
                     <select  className="form-control form-group alert-drop-down">
                         <option>
@@ -194,7 +197,7 @@ class AlertView extends React.Component {
                             })
                         }>
                         {
-                            alertsData.map((alert, i) => {
+                            defaultAlertData.map((alert, i) => {
                                 return (
                                     <option key={'execution_' + i} value={i}>
                                         {alert.job.jobName}
@@ -441,7 +444,7 @@ class AlertView extends React.Component {
                             <button
                                 className="btn btn-primary form-control button-all-caps-text alert-button"
                                 onClick={(e) => this.saveAlrt(e)}
-                                {...(alertsData.length === 0) && {disabled: true}}>
+                                {...(defaultAlertData.length === 0) && {disabled: true}}>
                                 Save
                             </button>
                         </div>
