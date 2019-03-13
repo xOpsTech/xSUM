@@ -192,7 +192,7 @@ class AlertView extends React.Component {
                         className="form-control form-group alert-drop-down"
                         onChange={(e) => this.dropDownClick(
                             {
-                                selectedAlertData: alertsData[e.target.value],
+                                selectedAlertData: defaultAlertData[e.target.value],
                                 selectedAlertIndex: e.target.value
                             })
                         }>

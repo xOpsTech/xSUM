@@ -41,7 +41,7 @@ AlertApi.prototype.saveAlert = async function(req, res) {
             savedDateTime: currentDateTime
         };
 
-        MongoDB.updateData(alertObj.tenantID, AppConstants.ALERT_LIST, {'job.jobId': alertObj.job.jobId}, objectToUpdate);
+        MongoDB.updateData(alertObj.tenantID, AppConstants.ALERT_LIST, {_id: ObjectId(alertObj._id)}, objectToUpdate);
         res.send(alertObj);
     } else {
         alertObj.jobId = alertObj.job.jobId;
@@ -210,7 +210,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     MongoDB.updateData(
                         databaseName,
                         AppConstants.ALERT_LIST,
-                        {'job.jobId': alertObj.job.jobId},
+                        {_id: ObjectId(alertObj._id)},
                         objectToUpdate
                     );
                 }
@@ -243,7 +243,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     MongoDB.updateData(
                         databaseName,
                         AppConstants.ALERT_LIST,
-                        {'job.jobId': alertObj.job.jobId},
+                        {_id: ObjectId(alertObj._id)},
                         objectToUpdate
                     );
                 }
@@ -277,7 +277,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     MongoDB.updateData(
                         databaseName,
                         AppConstants.ALERT_LIST,
-                        {'job.jobId': alertObj.job.jobId},
+                        {_id: ObjectId(alertObj._id)},
                         objectToUpdate
                     );
                 }
@@ -309,7 +309,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     MongoDB.updateData(
                         databaseName,
                         AppConstants.ALERT_LIST,
-                        {'job.jobId': alertObj.job.jobId},
+                        {_id: ObjectId(alertObj._id)},
                         objectToUpdate
                     );
                 }
@@ -344,7 +344,7 @@ AlertApi.prototype.sendRecoveryAlert = async function(databaseName, insertedJobO
                     MongoDB.updateData(
                         databaseName,
                         AppConstants.ALERT_LIST,
-                        {'job.jobId': alertObj.job.jobId},
+                        {_id: ObjectId(alertObj._id)},
                         objectToUpdate
                     );
                 }
@@ -385,7 +385,7 @@ AlertApi.prototype.sendFailureAlert = async function(databaseName, JobObj) {
             MongoDB.updateData(
                 databaseName,
                 AppConstants.ALERT_LIST,
-                {'job.jobId': alertObj.job.jobId},
+                {_id: ObjectId(alertObj._id)},
                 objectToUpdate
             );
         }
@@ -438,7 +438,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
             MongoDB.updateData(
                 databaseName,
                 AppConstants.ALERT_LIST,
-                {'job.jobId': insertedJobObj.jobId},
+                {_id: ObjectId(alertObj._id)},
                 objectToUpdate
             );
 
@@ -476,7 +476,7 @@ AlertApi.prototype.sendEmailAsAlert = async function(databaseName, insertedJobOb
             MongoDB.updateData(
                 databaseName,
                 AppConstants.ALERT_LIST,
-                {'job.jobId': insertedJobObj.jobId},
+                {_id: ObjectId(alertObj._id)},
                 objectToUpdate
             );
 
