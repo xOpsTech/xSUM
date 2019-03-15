@@ -241,7 +241,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9" >
                                     <p className="profile-label">
-                                        Jane Smith
+                                    {loggedUserObj.name}
                                     </p>
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
@@ -267,7 +267,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9">
                                     <p className="profile-label">
-                                        xOps
+                                    {loggedUserObj.company}
                                     </p>
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
@@ -280,7 +280,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9">
                                     <p className="profile-label">
-                                        Developer
+                                    {loggedUserObj.title}
                                      </p>
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
@@ -293,7 +293,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9">
                                     <p className="profile-label">
-                                        Earth
+                                    {loggedUserObj.location}
                                     </p>
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
@@ -306,7 +306,7 @@ class ProfileView extends React.Component {
                                 </div>
                                 <div className="col-sm-9">
                                     <p className="profile-label">
-                                        GMT +- ?
+                                    {loggedUserObj.timeZone}
                                     </p>
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>

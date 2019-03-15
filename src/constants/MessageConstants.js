@@ -2,6 +2,7 @@ export const NAME_ERROR = 'Invalid Job Name';
 export const URL_ERROR = 'Url is invalid.';
 export const EMAIL_ERROR = 'Email address invalid.';
 export const INVALID_PASSWORD_ERROR = 'Password invalid - password must be at least 6 characters.';
+export const REQUIRED_FILED = 'This field is required'
 export const PASSWORD_CONFIRM_MATCH_ERROR = 'Password and confirm password must match.';
 export const EMPTY_ERROR = 'This field can\'t be empty.';
 export const FORGOT_PW_PAGE_INVALID_EMAIL_ERROR = 'Email address invalid.';

@@ -374,7 +374,7 @@ class AllResultView extends React.Component {
                         </div>
                         <div className="col-sm-3">
                             <h4 className="job-name-div">
-                                Job Name : {props.jobWithResult.job.jobName}
+                            Job Name : {props.jobWithResult.job.jobName}
                             </h4>
                         </div>
                     </div>
@@ -383,9 +383,9 @@ class AllResultView extends React.Component {
                             <div className="row">
                                 <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
                             </div>
-                            <div className="row pie-chart-heading">
+                            {/* <div className="row pie-chart-heading">
                                 Last Test Average
-                            </div>
+                            </div> */}
                         </div>
                         <div className="col-sm-8">
                             <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>

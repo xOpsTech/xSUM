@@ -52,6 +52,7 @@ UserApi.prototype.handleUserData = function(req, res) {
 }
 
 UserApi.prototype.registerUserData = async function(req, res) {
+    
     var userObj = req.body;
 
     if (userObj.password) {
@@ -62,6 +63,11 @@ UserApi.prototype.registerUserData = async function(req, res) {
 
     var userInsertObj = {
         email: userObj.email,
+        name: userObj.name,
+        company: userObj.company,
+        title: userObj.title,
+        location: userObj.location,
+        timeZone:userObj.timeZone,
         password: userObj.password,
         isActive: true,
         tenants: []
@@ -94,6 +100,7 @@ UserApi.prototype.registerUserData = async function(req, res) {
 }
 
 UserApi.prototype.addInActiveUserData = async function(req, res) {
+    
     var userObj = req.body;
 
     var activationCode = crypto.randomBytes(30).toString('hex');
@@ -102,6 +109,11 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
 
     var userInsertObj = {
         email: userObj.email,
+        name: userObj.name,
+        company: userObj.company,
+        title: userObj.title,
+        location: userObj.location,
+        timeZone:userObj.timeZone,
         password: userObj.password,
         isActive: false,
         tenants: [{
@@ -164,6 +176,7 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
 }
 
 UserApi.prototype.updateUserData = async function(req, res) {
+    
     var userObj = req.body;
 
     var queryObjToGetUsers = {email: userObj.email};
