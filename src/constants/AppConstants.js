@@ -12,6 +12,7 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
+export const JOBS_GET_WITH_A_RESULT_API = '/handleJobs?action=getAllJobsWithAResult';
 export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibleJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
