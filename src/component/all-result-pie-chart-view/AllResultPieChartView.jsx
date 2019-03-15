@@ -112,7 +112,7 @@ class AllResultPieChartView extends React.Component {
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
-        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_RESULTS_API;
+        var urlToGetJobs = Config.API_URL + AppConstants.JOBS_GET_WITH_A_RESULT_API;
 
         context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
         var objectToRetrieve = {
@@ -226,70 +226,6 @@ class AllResultPieChartView extends React.Component {
 
         const ResultViewContainer = (props) => {
             const {barChartData} = props.jobWithResult;
-            const barChartConfig = {
-                color: '#fff',
-                type: 'serial',
-                theme: 'light',
-                dataProvider: barChartData,
-                valueAxes: [
-                    {
-                        gridColor: '#FFFFFF',
-                        gridAlpha: 0.2,
-                        dashLength: 0,
-                        title: 'Response time / second',
-                        autoRotateAngle: 90
-                    }
-                ],
-                gridAboveGraphs: true,
-                startDuration: 1,
-                mouseWheelZoomEnabled: true,
-                graphs: [
-                    {
-                        balloonText: '[[category]]: <b>[[value]] seconds</b>',
-                        fillAlphas: 0.8,
-                        lineAlpha: 0.2,
-                        type: 'column',
-                        valueField: 'responseTime',
-                        fillColorsField: 'color'
-                    }
-                ],
-                chartScrollbar: {
-                    graph: 'g1',
-                    oppositeAxis: false,
-                    offset: 30,
-                    scrollbarHeight: 5,
-                    backgroundAlpha: 0,
-                    selectedBackgroundAlpha: 0.1,
-                    selectedBackgroundColor: '#888888',
-                    graphFillAlpha: 0,
-                    graphLineAlpha: 0.5,
-                    selectedGraphFillAlpha: 0,
-                    selectedGraphLineAlpha: 1,
-                    autoGridCount: false,
-                    color: '#AAAAAA'
-                },
-                chartCursor: {
-                    limitToGraph:'g1',
-                    fullWidth: true,
-                    categoryBalloonEnabled: false,
-                    cursorAlpha: 0,
-                    zoomable: true,
-                    valueZoomable: true
-                },
-                categoryField: 'execution',
-                categoryAxis: {
-                    gridPosition: 'start',
-                    gridAlpha: 0,
-                    tickPosition: 'start',
-                    tickLength: 20,
-                    autoRotateAngle: 45,
-                    autoRotateCount: 5
-                },
-                maxSelectedTime: 3,
-                export: {
-                    enabled: true
-                }
-            };
 
             var lastTestAvg = barChartData[barChartData.length-1] && barChartData[barChartData.length-1].responseTime;
 
