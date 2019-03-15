@@ -31,10 +31,16 @@ class SignUp extends React.Component {
 
     // Returns initial props
     getInitialState() {
+
         var initialState = {
             isSignup        : false,
             regError        : {},
             email           : {value:'', error: {}},
+            name            : {value:'', error: {}},
+            company         : {value:'', error: {}},
+            title           : {value:'', error: {}},
+            location        : {value:'', error: {}},
+            timeZone        : {value:'', error: {}},
             password        : {value:'', error: {}},
             confirmPassword : {value:'', error: {}},
         };
@@ -78,7 +84,7 @@ class SignUp extends React.Component {
     signUpClick(e) {
         e.preventDefault();
 
-        const {email, password, confirmPassword} = this.state;
+        const {email, password, confirmPassword, name, company, title, location, timeZone } = this.state;
 
         var undefinedCheck = !(email.error.hasError === undefined ||
                              password.error.hasError === undefined ||
@@ -95,8 +101,13 @@ class SignUp extends React.Component {
             var url = Config.API_URL + AppConstants.USER_ADD_API;
 
             var userData = {
-                email   : email.value,
-                password: password.value
+                email     : email.value,
+                name      : name.value,
+                company   : company.value,
+                title     : title.value,
+                location  : location.value,
+                timeZone  : timeZone.value,
+                password  : password.value
             };
 
             userApi.registerUser(url, userData).then((response) => {
@@ -127,6 +138,66 @@ class SignUp extends React.Component {
                 });
             }
 
+            if(name.error.hasError === undefined) {
+                this.setState({
+                    name: {
+                        value: name.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.REQUIRED_FILED
+                        }
+                    }
+                });
+            }
+
+            if(company.error.hasError === undefined) {
+                this.setState({
+                    company: {
+                        value: company.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.REQUIRED_FILED
+                        }
+                    }
+                });
+            }
+
+            if(title.error.hasError === undefined) {
+                this.setState({
+                    title: {
+                        value: title.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.REQUIRED_FILED
+                        }
+                    }
+                });
+            }
+
+            if(location.error.hasError === undefined) {
+                this.setState({
+                    location: {
+                        value: location.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.REQUIRED_FILED
+                        }
+                    }
+                });
+            }
+
+            if(timeZone.error.hasError === undefined) {
+                this.setState({
+                    timeZone: {
+                        value: timeZone.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.REQUIRED_FILED
+                        }
+                    }
+                });
+            }
+
             if(password.error.hasError === undefined) {
                 this.setState({
                     password: {
@@ -151,7 +222,7 @@ class SignUp extends React.Component {
     }
 
     render() {
-        const {email, isSignup, regError, password, confirmPassword} = this.state;
+        const {email, name, company, title, location, timeZone, isSignup, regError, password, confirmPassword} = this.state;
 
         return (
             <Fragment>
@@ -162,6 +233,7 @@ class SignUp extends React.Component {
                     <form
                         name="login-form"
                         method="post">
+
                         <div className={
                             'form-group has-feedback email-input-div ' +
                             ((email.error.hasError !== undefined)
@@ -190,6 +262,131 @@ class SignUp extends React.Component {
 
                         <div className={
                                 'form-group has-feedback ' +
+                                ((name.error.hasError !== undefined)
+                                    ? ((name.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="nameInput"
+                                onChange={(e) => {
+                                    this.handleChange({
+                                        name: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.REQUIRED_FILED
+                                            }
+                                        }
+                                    });
+                                }}
+                                placeholder="FULL NAME"/>
+                            <ErrorIconComponent error={name.error}/>
+                            <ErrorMessageComponent error={name.error}/>
+                        </div>
+
+                        <div className={
+                                'form-group has-feedback ' +
+                                ((company.error.hasError !== undefined)
+                                    ? ((company.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="companyInput"
+                                onChange={(e) => {
+                                    this.handleChange({
+                                        company: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.REQUIRED_FILED
+                                            }
+                                        }
+                                    });
+                                }}
+                                placeholder="COMPANY"/>
+                            <ErrorIconComponent error={company.error}/>
+                            <ErrorMessageComponent error={company.error}/>
+                        </div>
+
+                        <div className={
+                                'form-group has-feedback ' +
+                                ((title.error.hasError !== undefined)
+                                    ? ((title.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="titleInput"
+                                onChange={(e) => {
+                                    this.handleChange({
+                                        title: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.REQUIRED_FILED
+                                            }
+                                        }
+                                    });
+                                }}
+                                placeholder="TITLE"/>
+                            <ErrorIconComponent error={title.error}/>
+                            <ErrorMessageComponent error={title.error}/>
+                        </div>
+
+                        <div className={
+                                'form-group has-feedback ' +
+                                ((location.error.hasError !== undefined)
+                                    ? ((location.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="locationInput"
+                                onChange={(e) => {
+                                    this.handleChange({
+                                        location: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.REQUIRED_FILED
+                                            }
+                                        }
+                                    });
+                                }}
+                                placeholder="LOCATION"/>
+                            <ErrorIconComponent error={location.error}/>
+                            <ErrorMessageComponent error={location.error}/>
+                        </div>
+
+                        <div className={
+                                'form-group has-feedback ' +
+                                ((timeZone.error.hasError !== undefined)
+                                    ? ((timeZone.error.hasError) ? 'has-error' : 'has-success') : '')
+                                }>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="timezoneInput"
+                                onChange={(e) => {
+                                    this.handleChange({
+                                        timeZone: {
+                                            value: e.target.value,
+                                            error: {
+                                                hasError: UIHelper.isNameHasError(e.target.value),
+                                                name: MessageConstants.REQUIRED_FILED
+                                            }
+                                        }
+                                    });
+                                }}
+                                placeholder="TIMEZONE"/>
+                            <ErrorIconComponent error={timeZone.error}/>
+                            <ErrorMessageComponent error={timeZone.error}/>
+                        </div>
+
+                        <div className={
+                                'form-group has-feedback ' +
                                 ((password.error.hasError !== undefined)
                                     ? ((password.error.hasError) ? 'has-error' : 'has-success') : '')
                                 }>
@@ -201,10 +398,11 @@ class SignUp extends React.Component {
                                 onChange={(e) => {
                                     this.passwordCheck(e.target.value, confirmPassword.value);
                                 }}
-                                placeholder="PASSWORD"/>
+                                placeholder="PASSWORD "/>
                             <ErrorIconComponent error={password.error}/>
                             <ErrorMessageComponent error={password.error}/>
                         </div>
+
                         <div className={
                                 'form-group has-feedback ' +
                                 ((confirmPassword.error.hasError !== undefined)
@@ -221,6 +419,7 @@ class SignUp extends React.Component {
                                 placeholder="CONFIRM PASSWORD"/>
                             <ErrorIconComponent error={confirmPassword.error}/>
                         </div>
+
                         <ErrorMessageComponent error={regError}/>
                         <div className="form-group">
                             <button
