@@ -210,8 +210,10 @@ export const SECURITY_ARRAY = [
 
 export const PERFORMANCE_TEST_TYPE = 'performace';
 export const PING_TEST_TYPE = 'ping';
+export const SCRIPT_TEST_TYPE = 'script';
 export const TEST_TYPE_ARRAY = [
-    {value: PING_TEST_TYPE, textValue: 'PING TEST'}
+    {value: PING_TEST_TYPE, textValue: 'PING TEST'},
+    {value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST'}
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [

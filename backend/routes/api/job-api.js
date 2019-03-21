@@ -10,6 +10,7 @@ var Helpers = require('../../common/Helpers');
 var AlertApi = require('./alert-api');
 var TenantApi = require('./tenant-api');
 var {ObjectId} = require('mongodb');
+var fileSystem = require('file-system');
 
 var jobTimers = {};
 
@@ -77,6 +78,29 @@ JobApi.prototype.insertJob = async function(req, res) {
         isShow: true,
         securityProtocol: jobObj.securityProtocol
     };
+
+    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+        let scriptFilePath = 'scripts/tenantid-' + jobObj.tenantID + '/jobid-' + jobObj.jobId;
+        let fileName = '/script-1.js';
+        jobInsertObj.scriptPath = scriptFilePath + fileName;
+        jobInsertObj.scriptValue = jobObj.scriptValue;
+        fileSystem.mkdir(scriptFilePath, {recursive: true}, (err) => {
+
+            if (err) {
+                console.log('Error in creating directories' + scriptFilePath, err);
+                throw err;
+            } else {
+
+                fileSystem.writeFile(scriptFilePath + fileName, jobObj.scriptValue, (err) => {
+                    if (err) {
+                        console.log('Error in creating file' + fileName, err);
+                        throw err;
+                    }
+                });
+            }
+
+        });
+    }
 
     var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
@@ -159,13 +183,25 @@ JobApi.prototype.getAJobWithResults = async function(req, res) {
     res.send(job);
 }
 
-JobApi.prototype.removeJob = function(req, res) {
+JobApi.prototype.removeJob = async function(req, res) {
     var jobObj = req.body;
     var queryToRemoveJob = {
         jobId: jobObj.jobId
     };
-    TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
-    MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
+
+    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+
+        fileSystem.unlink(jobObj.scriptPath, (err) => {
+            if (err) {
+                console.log('Error in removing file' + jobObj.scriptPath, err);
+                throw err;
+            }
+        });
+
+    }
+
+    await TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
+    await MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
     InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId + "'");
     res.send(queryToRemoveJob);
 }
@@ -200,8 +236,20 @@ JobApi.prototype.updateJob = async function(req, res) {
             browser: jobObj.browser,
             serverLocation: jobObj.serverLocation,
             securityProtocol: jobObj.securityProtocol,
-            recursiveSelect: jobObj.recursiveSelect
+            recursiveSelect: jobObj.recursiveSelect,
+            testType: jobObj.testType,
+            scriptValue: jobObj.scriptValue
         };
+
+        if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+
+            fileSystem.writeFile(jobObj.scriptPath, jobObj.scriptValue, (err) => {
+                if (err) {
+                    console.log('Error in updating file' + fileName, err);
+                    throw err;
+                }
+            });
+        }
 
         await MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
 

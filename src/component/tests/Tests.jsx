@@ -95,7 +95,7 @@ class Tests extends React.Component {
         });
     }
 
-    removeJobClick(e, jobIdToRemove) {
+    removeJobClick(e, job) {
         e.preventDefault();
 
         const {selectedTenant} = this.state;
@@ -103,12 +103,14 @@ class Tests extends React.Component {
         this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
         var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
         var objectToRemove = {
-            jobId: jobIdToRemove,
-            tenantID: selectedTenant._id
+            jobId: job.jobId,
+            tenantID: selectedTenant._id,
+            scriptPath: job.scriptPath,
+            testType: job.testType
         };
         jobApi.removeJob(url, objectToRemove).then(() => {
             let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
-                return siteObject.jobId !== jobIdToRemove;
+                return siteObject.jobId !== job.jobId;
             });
             this.setState({siteList: arrayAfterRemove, isLoading: false, loadingMessage: ''});
         });
@@ -240,7 +242,7 @@ class Tests extends React.Component {
                                                                                 form-control"
                                                                             onClick={
                                                                                 (e) =>
-                                                                                    this.removeJobClick(e, site.jobId)
+                                                                                    this.removeJobClick(e, site)
                                                                             }
                                                                             title={
                                                                                 'Remove job of ' + site.siteObject.value

@@ -92,6 +92,7 @@ exports.ACCESS_LIST = [
 // Test types
 exports.PERFORMANCE_TEST_TYPE = 'performace';
 exports.PING_TEST_TYPE = 'ping';
+exports.SCRIPT_TEST_TYPE = 'script';
 
 // Execution time frequencies
 exports.RECURSIVE_EXECUTION_ARRAY = [

@@ -6,6 +6,7 @@ var MongoDB = require('../db/mongodb');
 var request = require('request');
 var crypto = require('crypto');
 var moment = require('moment');
+var cmd = require('node-cmd');
 
 function Helpers(){};
 
@@ -156,6 +157,46 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
         }
 
     })
+}
+
+exports.executeScriptJob = function(databaseName, collectionName, jobToExecute) {
+    var resultID = crypto.randomBytes(10).toString('hex');
+    var locationTitle = jobToExecute.serverLocation.textValue;
+    var locationLatitude = jobToExecute.serverLocation.latitude;
+    var locationLongitude = jobToExecute.serverLocation.longitude;
+
+    var curDateMilliSec = new Date().getTime();
+    //Send process request to sitespeed
+    var commandStr = 'sudo docker run --shm-size=1g --rm -v' +
+        ' "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:8.7.5 --preScript ' + jobToExecute.scriptPath + ' -n 1' +
+        ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
+        ' --browser ' + jobToExecute.browser +
+        ' --influxdb.tags "jobid=' + jobToExecute.jobId + ',resultID=' + resultID +
+        ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude +
+        ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" ' +
+        jobToExecute.securityProtocol + jobToExecute.siteObject.value;
+    cmd.get(
+        commandStr,
+        async function(err, data, stderr) {
+            jobToExecute.result.push({resultID: resultID, executedDate: new Date()});
+            var newValueObj = {
+                result: jobToExecute.result
+            };
+
+            if (err) {
+                console.log('Error in executing the job : ', jobToExecute.jobId);
+                console.log('Error : ', err);
+            } else if (stderr) {
+                console.log('STD Error in executing the job : ', jobToExecute.jobId);
+                console.log('STD Error : ', stderr);
+            } else {
+                console.log('Successfully executed the job : ', jobToExecute.jobId);
+            }
+
+            //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
+            //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
+        }
+    );
 }
 
 exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
