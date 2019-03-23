@@ -137,8 +137,27 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
 
 JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
     var userObj = req.body;
-    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, false);
-    res.send(objectToSend);
+    var tenantID = userObj.tenantID;
+    var queryObj = {testType: AppConstants.SCRIPT_TEST_TYPE};
+
+    var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
+    var locationsArr = [];
+
+    for (let job of jobsList) {
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
+
+        var isLocationFound = locationsArr.find(function(locationObj) {
+            return (locationObj.locationid === job.serverLocation.locationid);
+        });
+
+        if (!isLocationFound) {
+            locationsArr.push(job.serverLocation);
+        }
+
+    }
+
+    var listObj = {jobsList: jobsList, locations: locationsArr};
+    res.send(listObj);
 }
 
 JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
@@ -168,27 +187,8 @@ JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
 
 JobApi.prototype.getVisibleJobsWithResults = async function(req, res) {
     var userObj = req.body;
-    var tenantID = userObj.tenantID;
-    var queryObj = {testType: AppConstants.SCRIPT_TEST_TYPE};
-
-    var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
-    var locationsArr = [];
-
-    for (let job of jobsList) {
-        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
-
-        var isLocationFound = locationsArr.find(function(locationObj) {
-            return (locationObj.locationid === job.serverLocation.locationid);
-        });
-
-        if (!isLocationFound) {
-            locationsArr.push(job.serverLocation);
-        }
-
-    }
-
-    var listObj = {jobsList: jobsList, locations: locationsArr};
-    res.send(listObj);
+    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, true);
+    res.send(objectToSend);
 }
 
 JobApi.prototype.getAJobWithResults = async function(req, res) {
