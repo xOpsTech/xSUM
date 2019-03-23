@@ -264,7 +264,7 @@ exports.getAJobWithLocation = async function(paramObj) {
 
 exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
     var dataTable = '';
-    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE || job.testType === AppConstants.SCRIPT_TEST_TYPE) {
         dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
     } else {
         dataTable = AppConstants.PING_RESULT_LIST;
