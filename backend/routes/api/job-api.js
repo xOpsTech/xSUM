@@ -31,8 +31,11 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAllJobsWithResults":
             new JobApi().getAllJobsWithResults(req, res);
             break;
-        case "getAllJobsWithAResult":
-            new JobApi().getAllJobsWithAResult(req, res);
+        case "getAllScriptJobsWithResults":
+            new JobApi().getAllScriptJobsWithResults(req, res);
+            break;
+        case "getAllJobsWithLastResult":
+            new JobApi().getAllJobsWithLastResult(req, res);
             break;
         case "getVisibleJobsWithResults":
             new JobApi().getVisibleJobsWithResults(req, res);
@@ -132,30 +135,22 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
     res.send(objectToSend);
 }
 
-JobApi.prototype.getAllJobsWithAResult = async function(req, res) {
+JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
+    var userObj = req.body;
+    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, false);
+    res.send(objectToSend);
+}
+
+JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var userObj = req.body;
     var tenantID = userObj.tenantID;
-    var queryObj = {};
+    var queryObj = {testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
 
     var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
     var locationsArr = [];
 
     for (let job of jobsList) {
-
-        var dataTable = '';
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
-        } else {
-            dataTable = AppConstants.PING_RESULT_LIST;
-        }
-
-        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
-        var jobResults = await InfluxDB.getAllDataFor(
-            tenantID,
-            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "' ORDER BY time DESC LIMIT 1"
-        );
-
-        job.result = jobResults;
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -173,8 +168,27 @@ JobApi.prototype.getAllJobsWithAResult = async function(req, res) {
 
 JobApi.prototype.getVisibleJobsWithResults = async function(req, res) {
     var userObj = req.body;
-    var objectToSend = await Helpers.getJobsWithLocations(userObj.tenantID, true);
-    res.send(objectToSend);
+    var tenantID = userObj.tenantID;
+    var queryObj = {testType: AppConstants.SCRIPT_TEST_TYPE};
+
+    var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
+    var locationsArr = [];
+
+    for (let job of jobsList) {
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
+
+        var isLocationFound = locationsArr.find(function(locationObj) {
+            return (locationObj.locationid === job.serverLocation.locationid);
+        });
+
+        if (!isLocationFound) {
+            locationsArr.push(job.serverLocation);
+        }
+
+    }
+
+    var listObj = {jobsList: jobsList, locations: locationsArr};
+    res.send(listObj);
 }
 
 JobApi.prototype.getAJobWithResults = async function(req, res) {

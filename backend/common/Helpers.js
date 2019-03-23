@@ -226,9 +226,9 @@ exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var queryObj;
 
     if (isNeedShowTest) {
-        queryObj = {isShow: true};
+        queryObj = {isShow: true, testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
     } else {
-        queryObj = {};
+        queryObj = {testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
     }
 
     var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
@@ -236,21 +236,7 @@ exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-
-        var dataTable = '';
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
-        } else {
-            dataTable = AppConstants.PING_RESULT_LIST;
-        }
-
-        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
-        var jobResults = await InfluxDB.getAllDataFor(
-            tenantID,
-            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
-        );
-
-        job.result = jobResults;
+        job.result = await this.getJobResultsBackDate(tenantID, job, false);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -272,6 +258,11 @@ exports.getAJobWithLocation = async function(paramObj) {
 
     var job = jobsList[0];
 
+    job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false);
+    return job;
+}
+
+exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
     var dataTable = '';
     if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
         dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
@@ -280,13 +271,15 @@ exports.getAJobWithLocation = async function(paramObj) {
     }
 
     var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+    var queryToGetResults = "SELECT * FROM " + dataTable +
+                            " where jobid='" + job.jobId + "' and time >= '" + backDate + "'" +
+                            ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
     var jobResults = await InfluxDB.getAllDataFor(
-        paramObj.tenantID,
-        "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "'"
+        tenantID,
+        queryToGetResults
     );
 
-    job.result = jobResults;
-    return job;
+    return jobResults;
 }
 
 exports.roundValue = function(value, decimalPlaces) {
