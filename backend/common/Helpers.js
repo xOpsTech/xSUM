@@ -226,9 +226,9 @@ exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var queryObj;
 
     if (isNeedShowTest) {
-        queryObj = {isShow: true, testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
+        queryObj = {isShow: true};
     } else {
-        queryObj = {testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
+        queryObj = {};
     }
 
     var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);

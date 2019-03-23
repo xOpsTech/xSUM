@@ -272,7 +272,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
 
     for (let currentResult of job.result) {
 
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE || job.testType === AppConstants.SCRIPT_TEST_TYPE) {
 
             // Check Result ID exists
             var isResultIdFound = resultArray.find(function(jobObj) {
@@ -324,8 +324,6 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
                 resultID: currentResult.resultID
             });
             job.pieChartColor = barColor;
-
-
         }
     }
     return resultArray;

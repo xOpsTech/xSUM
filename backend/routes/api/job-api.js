@@ -163,7 +163,7 @@ JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
 JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var userObj = req.body;
     var tenantID = userObj.tenantID;
-    var queryObj = {testType: {$ne: AppConstants.SCRIPT_TEST_TYPE}};
+    var queryObj = {};
 
     var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
     var locationsArr = [];
