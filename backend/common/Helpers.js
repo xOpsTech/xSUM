@@ -259,25 +259,65 @@ exports.getAJobWithLocation = async function(paramObj) {
     var job = jobsList[0];
 
     job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false);
+
     return job;
 }
 
 exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
-    var dataTable = '';
-    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE || job.testType === AppConstants.SCRIPT_TEST_TYPE) {
-        dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
+    var dataTables = [];
+    if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+        dataTables.push(AppConstants.PERFORMANCE_RESULT_LIST);
+    } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE) {
+        dataTables.push({tableName: AppConstants.PERFORMANCE_RESULT_LIST, fieldToFetch: 'mean',fieldToReturn: 'response', isPageTimingsCheck: true});
+        dataTables.push({tableName: AppConstants.PAGE_DOWNLOAD_TIME_RESULT_LIST, fieldToFetch: 'mean', fieldToReturn: 'downloadTime', isPageTimingsCheck: true});
+        dataTables.push({tableName: AppConstants.SERVER_RESPONSE_TIME_LIST, fieldToFetch: 'mean', fieldToReturn: 'serverResponseTime', isPageTimingsCheck: true});
+        dataTables.push({tableName: AppConstants.BACKEND_TIME_LIST, fieldToFetch: 'mean', fieldToReturn: 'backEndTime', isPageTimingsCheck: true});
     } else {
-        dataTable = AppConstants.PING_RESULT_LIST;
+        dataTables.push(AppConstants.PING_RESULT_LIST);
     }
 
-    var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
-    var queryToGetResults = "SELECT * FROM " + dataTable +
-                            " where jobid='" + job.jobId + "' and time >= '" + backDate + "'" +
-                            ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
-    var jobResults = await InfluxDB.getAllDataFor(
-        tenantID,
-        queryToGetResults
-    );
+    var jobResults;
+
+    if (dataTables.length > 1) {
+        var tableResults = [];
+        for (let dataTable of dataTables) {
+            var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+            var queryToGetResults = "SELECT * FROM " + dataTable.tableName +
+                                    " where jobid='" + job.jobId + "' and time >= '" + backDate +
+                                    ((dataTable.isPageTimingsCheck) ? "' and pageTimings='" + dataTable.tableName + "'" : "" ) +
+                                    ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
+            var eachTableResults = await InfluxDB.getAllDataFor(
+                tenantID,
+                queryToGetResults
+            );
+
+            if (tableResults.length === 0) {
+                for (let jobResult of eachTableResults) {
+                    let resultObj = {
+                        time: jobResult.time,
+                        resultID: jobResult.resultID
+                    };
+                    resultObj[dataTable.fieldToReturn] = jobResult[dataTable.fieldToFetch];
+                    tableResults.push(resultObj);
+                }
+            } else {
+                for (let jobResultIndex in tableResults) {
+                    tableResults[jobResultIndex][dataTable.fieldToReturn] = eachTableResults[jobResultIndex][dataTable.fieldToFetch];
+                }
+            }
+
+        }
+        jobResults = tableResults;
+    } else {
+        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+        var queryToGetResults = "SELECT * FROM " + dataTables[0] +
+                                " where jobid='" + job.jobId + "' and time >= '" + backDate + "'" +
+                                ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
+        var jobResults = await InfluxDB.getAllDataFor(
+            tenantID,
+            queryToGetResults
+        );
+    }
 
     return jobResults;
 }

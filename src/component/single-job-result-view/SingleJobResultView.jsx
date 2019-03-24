@@ -443,42 +443,82 @@ class SingleJobResultView extends React.Component {
                         {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
-                                    return (
-                                        <div>
-                                            <LazyLoad height={345} offsetVertical={300}>
-                                                <ResultViewContainer
-                                                    jobWithResult={jobWithResult}
-                                                    keyID={i}
-                                                    fieldToDisplay={'responseTime'}
-                                                    chartTitle={'Response Time'}
-                                                    barChartBarClick={this.barChartBarClick}/>
-                                            </LazyLoad>
-                                            <LazyLoad height={345} offsetVertical={300}>
-                                                <ResultViewContainer
-                                                    jobWithResult={jobWithResult}
-                                                    keyID={i}
-                                                    fieldToDisplay={'dnsLookUpTime'}
-                                                    chartTitle={'DNS Time'}
-                                                    barChartBarClick={this.barChartBarClick}/>
-                                            </LazyLoad>
-                                            <LazyLoad height={345} offsetVertical={300}>
-                                                <ResultViewContainer
-                                                    jobWithResult={jobWithResult}
-                                                    keyID={i}
-                                                    fieldToDisplay={'tcpConnectTime'}
-                                                    chartTitle={'TCP Connect Time'}
-                                                    barChartBarClick={this.barChartBarClick}/>
-                                            </LazyLoad>
-                                            <LazyLoad height={345} offsetVertical={300}>
-                                                <ResultViewContainer
-                                                    jobWithResult={jobWithResult}
-                                                    keyID={i}
-                                                    fieldToDisplay={'lastByteRecieveTime'}
-                                                    chartTitle={'Last Byte Recieve Time'}
-                                                    barChartBarClick={this.barChartBarClick}/>
-                                            </LazyLoad>
-                                        </div>
-                                    );
+                                    if (jobWithResult.job.testType === AppConstants.SCRIPT_TEST_TYPE) {
+                                        return (
+                                            <div>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'responseTime'}
+                                                        chartTitle={'Response Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'pageDownLoadTime'}
+                                                        chartTitle={'Page Download Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'serverResponseTime'}
+                                                        chartTitle={'Server Response Times'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'backEndTime'}
+                                                        chartTitle={'Backend Times'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                            </div>
+                                        );
+                                    } else if (jobWithResult.job.testType === AppConstants.PING_TEST_TYPE) {
+                                        return (
+                                            <div>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'responseTime'}
+                                                        chartTitle={'Response Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'dnsLookUpTime'}
+                                                        chartTitle={'DNS Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'tcpConnectTime'}
+                                                        chartTitle={'TCP Connect Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                                <LazyLoad height={345} offsetVertical={300}>
+                                                    <ResultViewContainer
+                                                        jobWithResult={jobWithResult}
+                                                        keyID={i}
+                                                        fieldToDisplay={'lastByteRecieveTime'}
+                                                        chartTitle={'Last Byte Recieve Time'}
+                                                        barChartBarClick={this.barChartBarClick}/>
+                                                </LazyLoad>
+                                            </div>
+                                        );
+                                    }
+
                                 })
                                 : null
                         }

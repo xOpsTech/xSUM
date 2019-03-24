@@ -282,7 +282,10 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             if (!isResultIdFound) {
                 resultArray.push({
                     execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: currentResult[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    responseTime: roundValueToTwoDecimals(currentResult.response/1000),
+                    pageDownLoadTime: roundValueToTwoDecimals(currentResult.downloadTime),
+                    serverResponseTime: roundValueToTwoDecimals(currentResult.serverResponseTime/1000),
+                    backEndTime: roundValueToTwoDecimals(currentResult.backEndTime/1000),
                     color: '#eb00ff',
                     resultID: currentResult.resultID
                 });

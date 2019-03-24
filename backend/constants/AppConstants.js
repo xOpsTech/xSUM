@@ -9,6 +9,9 @@ exports.SUPER_USER_LIST = 'superUserList';
 
 // InfluxDB Datatables
 exports.PERFORMANCE_RESULT_LIST = 'pageLoadTime';
+exports.PAGE_DOWNLOAD_TIME_RESULT_LIST = 'pageDownloadTime';
+exports.SERVER_RESPONSE_TIME_LIST = 'serverResponseTime';
+exports.BACKEND_TIME_LIST = 'backEndTime';
 exports.PING_RESULT_LIST   = 'pingResults';
 
 exports.RESPONSE_SUCCESS = 'Success';
