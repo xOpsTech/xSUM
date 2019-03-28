@@ -8,6 +8,8 @@ import LeftNav from '../common/left-nav/LeftNav';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
 import MapContainer from '../common/map-container/MapContainer';
+import ResultViewContainer from '../common/result-view-container/ResultViewContainer';
+import ScriptTestResult from '../common/script-test-result/ScriptTestResult';
 import jobApi from '../../api/jobApi';
 import alertApi from '../../api/alertApi';
 
@@ -252,168 +254,6 @@ class SingleJobResultView extends React.Component {
             isLeftNavCollapse
         } = this.state;
 
-        const ResultViewContainer = (props) => {
-            const {barChartData} = props.jobWithResult;
-            const barChartConfig = {
-                color: '#fff',
-                type: 'serial',
-                theme: 'light',
-                dataProvider: barChartData,
-                valueAxes: [
-                    {
-                        gridColor: '#FFFFFF',
-                        gridAlpha: 0.2,
-                        dashLength: 0,
-                        title: 'time in seconds',
-                        autoRotateAngle: 90
-                    }
-                ],
-                gridAboveGraphs: true,
-                startDuration: 1,
-                mouseWheelZoomEnabled: true,
-                graphs: [
-                    {
-                        balloonText: '[[category]]: <b>[[value]] seconds</b>',
-                        fillAlphas: 0.8,
-                        lineAlpha: 0.2,
-                        type: 'column',
-                        valueField: props.fieldToDisplay,
-                        fillColorsField: 'color'
-                    }
-                ],
-                chartScrollbar: {
-                    graph: 'g1',
-                    oppositeAxis: false,
-                    offset: 30,
-                    scrollbarHeight: 5,
-                    backgroundAlpha: 0,
-                    selectedBackgroundAlpha: 0.1,
-                    selectedBackgroundColor: '#888888',
-                    graphFillAlpha: 0,
-                    graphLineAlpha: 0.5,
-                    selectedGraphFillAlpha: 0,
-                    selectedGraphLineAlpha: 1,
-                    autoGridCount: false,
-                    color: '#AAAAAA'
-                },
-                chartCursor: {
-                    limitToGraph:'g1',
-                    fullWidth: true,
-                    categoryBalloonEnabled: false,
-                    cursorAlpha: 0,
-                    zoomable: true,
-                    valueZoomable: true
-                },
-                categoryField: 'execution',
-                categoryAxis: {
-                    gridPosition: 'start',
-                    gridAlpha: 0,
-                    tickPosition: 'start',
-                    tickLength: 20,
-                    autoRotateAngle: 45,
-                    autoRotateCount: 5
-                },
-                maxSelectedTime: 3,
-                export: {
-                    enabled: true
-                },
-                listeners: [
-                    {
-                        event: 'clickGraphItem',
-                        method: function(e) {
-                            props.barChartBarClick(e.item.index);
-                        }
-                    }
-                ]
-            };
-
-            var lastTestAvg = barChartData[barChartData.length-1]
-                                    && barChartData[barChartData.length-1][props.fieldToDisplay];
-
-            const pieChartConfig = {
-                type: 'pie',
-                theme: 'light',
-                outlineAlpha: 0.7,
-                outlineColor: '#343242',
-                labelsEnabled: false,
-                dataProvider: [
-                    {
-                        title: 'Average Response Time',
-                        value: 3
-                    },
-                    {
-                        title: 'Last Test Average',
-                        value: lastTestAvg
-                    }
-                ],
-                colors: [
-                    '#222029', props.jobWithResult.job.pieChartColor
-                ],
-                titleField: 'title',
-                valueField: 'value',
-                labelRadius: 5,
-                radius: '42%',
-                innerRadius: '70%',
-                labelText: '[[title]]',
-                export: {
-                    enabled: true
-                }
-            };
-
-            return (
-                <div className="row single-chart">
-                    <div className="row">
-                        <div className="col-sm-4">
-                            {
-                                (props.jobWithResult.result.length > 0 && props.jobWithResult.testType === AppConstants.PERFORMANCE_TEST_TYPE)
-                                    ? <select className="form-control form-control-sm form-group chart-drop-down"
-                                        value={props.jobWithResult.selectedChartIndex}
-                                        onChange={(e) => this.chartDropDownClick(
-                                            props.keyID,
-                                            props.jobWithResult,
-                                            e.target.value)
-                                        }>
-                                        {
-                                            AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
-                                                return (
-                                                    <option key={'chartType_' + i} value={i}>
-                                                        {chartType.textValue}
-                                                    </option>
-                                                );
-                                            })
-                                        }
-                                      </select>
-                                    : null
-                            }
-                        </div>
-                        <div className="col-sm-3">
-                            <h4 className="job-name-div">
-                                Job Name : {props.jobWithResult.job.jobName}
-                            </h4>
-                        </div>
-                        <div className="col-sm-5">
-                            <h4 className="job-name-div">
-                            {props.chartTitle}
-                            </h4>
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-4">
-                            <div className="row">
-                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
-                            </div>
-                            {/* <div className="row pie-chart-heading">
-                                Last Test Average
-                            </div> */}
-                        </div>
-                        <div className="col-sm-8">
-                            <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
         return (
             <Fragment>
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
@@ -445,40 +285,10 @@ class SingleJobResultView extends React.Component {
                                 ? jobsWithResults.map((jobWithResult, i) => {
                                     if (jobWithResult.job.testType === AppConstants.SCRIPT_TEST_TYPE) {
                                         return (
-                                            <div>
-                                                <LazyLoad height={345} offsetVertical={300}>
-                                                    <ResultViewContainer
-                                                        jobWithResult={jobWithResult}
-                                                        keyID={i}
-                                                        fieldToDisplay={'responseTime'}
-                                                        chartTitle={'Response Time'}
-                                                        barChartBarClick={this.barChartBarClick}/>
-                                                </LazyLoad>
-                                                <LazyLoad height={345} offsetVertical={300}>
-                                                    <ResultViewContainer
-                                                        jobWithResult={jobWithResult}
-                                                        keyID={i}
-                                                        fieldToDisplay={'pageDownLoadTime'}
-                                                        chartTitle={'Page Download Time'}
-                                                        barChartBarClick={this.barChartBarClick}/>
-                                                </LazyLoad>
-                                                <LazyLoad height={345} offsetVertical={300}>
-                                                    <ResultViewContainer
-                                                        jobWithResult={jobWithResult}
-                                                        keyID={i}
-                                                        fieldToDisplay={'serverResponseTime'}
-                                                        chartTitle={'Server Response Times'}
-                                                        barChartBarClick={this.barChartBarClick}/>
-                                                </LazyLoad>
-                                                <LazyLoad height={345} offsetVertical={300}>
-                                                    <ResultViewContainer
-                                                        jobWithResult={jobWithResult}
-                                                        keyID={i}
-                                                        fieldToDisplay={'backEndTime'}
-                                                        chartTitle={'Backend Times'}
-                                                        barChartBarClick={this.barChartBarClick}/>
-                                                </LazyLoad>
-                                            </div>
+                                            <ScriptTestResult
+                                                jobWithResult={jobWithResult}
+                                                FirstViewComponent={ResultViewContainer}
+                                                key={i}/>
                                         );
                                     } else if (jobWithResult.job.testType === AppConstants.PING_TEST_TYPE) {
                                         return (
