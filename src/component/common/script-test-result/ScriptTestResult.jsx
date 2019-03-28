@@ -80,11 +80,8 @@ class ScriptTestResult extends React.Component {
         return (
             <Tabs defaultActiveKey={activeTab}
                 activeKey={activeTab} onSelect={(key, e) => this.handleSelect(key, e)} id="script-results-tabs">
-                <Tab eventKey={0} title={'Summary View'}>
+                <Tab eventKey={0} title={'Graph View'}>
                     <GraphView key={key} jobWithResult={jobWithResult}/>
-                </Tab>
-                <Tab eventKey={1} title={'Results'}>
-                    ABC
                 </Tab>
             </Tabs>
         );
