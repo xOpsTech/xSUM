@@ -184,7 +184,7 @@ exports.executeScriptJob = function(databaseName, collectionName, jobToExecute) 
                     throw err;
                 } else {
 
-                    //Send process request to sitespeed
+                    // Send process request to sitespeed
                     var commandStr = 'sudo docker run --shm-size=1g --rm -v' +
                         ' "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:8.7.5 --preScript ' + jobToExecute.scriptPath + ' -n 1' +
                         ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
@@ -320,6 +320,43 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
     }
 
     return jobResults;
+}
+
+exports.getSummaryResults = async function(params) {
+    let resultsArray = [];
+    let dataTables = [
+        {tableName: AppConstants.SCORE_LIST, displayName: 'Score'},
+        {tableName: AppConstants.FIRST_PAINT_LIST, displayName: 'First Paint'},
+        {tableName: AppConstants.BACKEND_TIME_LIST, displayName: 'Backend Time'},
+        {tableName: AppConstants.FRONTEND_TIME_LIST, displayName: 'Frontend Time'},
+        {tableName: AppConstants.PERFORMANCE_RESULT_LIST, displayName: 'Page Load Time'},
+        {tableName: AppConstants.FIRST_VISUAL_CHANGE_LIST, displayName: 'First Visual Change'},
+        {tableName: AppConstants.SPEED_INDEX_TIME_LIST, displayName: 'Speed Index'},
+        {tableName: AppConstants.PERCEPTUAL_SPEED_INDEX_LIST, displayName: 'Perceptual Speed Index'},
+        {tableName: AppConstants.VISUAL_COMPLETE_85_LIST, displayName: 'Visual Complete 85%'},
+        {tableName: AppConstants.VISUAL_COMPLETE_95_LIST, displayName: 'Visual Complete 95%'},
+        {tableName: AppConstants.VISUAL_COMPLETE_99_LIST, displayName: 'Visual Complete 99%'},
+        {tableName: AppConstants.LAST_VISUAL_CHANGE_LIST, displayName: 'Last Visual Change'}
+    ];
+
+    for (let dataTable of dataTables) {
+        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+        var queryToGetResults = "SELECT * FROM " + dataTable.tableName +
+                                " where jobid='" + params.jobId + "' and time >= '" + backDate + "' and summaryType='pageSummary'";
+
+        if (dataTable.tableName === AppConstants.SCORE_LIST) {
+            queryToGetResults += " ORDER BY time DESC LIMIT 5";
+        } else {
+            queryToGetResults += " ORDER BY time DESC LIMIT 1";
+        }
+
+        var tableResult = await InfluxDB.getAllDataFor(
+            params.tenantID,
+            queryToGetResults
+        );
+        resultsArray.push({tableName: dataTable.tableName, displayName: dataTable.displayName, result: tableResult});
+    }
+    return {summaryResults: resultsArray};
 }
 
 exports.roundValue = function(value, decimalPlaces) {

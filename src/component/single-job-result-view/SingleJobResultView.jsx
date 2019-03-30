@@ -251,7 +251,8 @@ class SingleJobResultView extends React.Component {
             jobsWithResults,
             locationMarker,
             alertData,
-            isLeftNavCollapse
+            isLeftNavCollapse,
+            selectedTenant
         } = this.state;
 
         return (
@@ -288,6 +289,7 @@ class SingleJobResultView extends React.Component {
                                             <ScriptTestResult
                                                 jobWithResult={jobWithResult}
                                                 FirstViewComponent={ResultViewContainer}
+                                                selectedTenant={selectedTenant}
                                                 key={i}/>
                                         );
                                     } else if (jobWithResult.job.testType === AppConstants.PING_TEST_TYPE) {

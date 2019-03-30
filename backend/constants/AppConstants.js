@@ -12,6 +12,16 @@ exports.PERFORMANCE_RESULT_LIST = 'pageLoadTime';
 exports.PAGE_DOWNLOAD_TIME_RESULT_LIST = 'pageDownloadTime';
 exports.SERVER_RESPONSE_TIME_LIST = 'serverResponseTime';
 exports.BACKEND_TIME_LIST = 'backEndTime';
+exports.FRONTEND_TIME_LIST = 'frontEndTime';
+exports.SPEED_INDEX_TIME_LIST = 'SpeedIndex';
+exports.FIRST_VISUAL_CHANGE_LIST = 'FirstVisualChange';
+exports.PERCEPTUAL_SPEED_INDEX_LIST = 'PerceptualSpeedIndex';
+exports.FIRST_PAINT_LIST = 'firstPaint';
+exports.VISUAL_COMPLETE_85_LIST = 'VisualComplete85';
+exports.VISUAL_COMPLETE_95_LIST = 'VisualComplete95';
+exports.VISUAL_COMPLETE_99_LIST = 'VisualComplete99';
+exports.LAST_VISUAL_CHANGE_LIST = 'LastVisualChange';
+exports.SCORE_LIST = 'score';
 exports.PING_RESULT_LIST   = 'pingResults';
 
 exports.RESPONSE_SUCCESS = 'Success';

@@ -43,6 +43,9 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAJobWithResults":
             new JobApi().getAJobWithResults(req, res);
             break;
+        case "getSummaryResults":
+            new JobApi().getSummaryResults(req, res);
+            break;
         case "startorStopJob":
             new JobApi().startorStopJob(req, res);
             break;
@@ -195,6 +198,12 @@ JobApi.prototype.getAJobWithResults = async function(req, res) {
     var paramObj = req.body;
     var job = await Helpers.getAJobWithLocation(paramObj);
     res.send(job);
+}
+
+JobApi.prototype.getSummaryResults = async function(req, res) {
+    var paramObj = req.body;
+    var results = await Helpers.getSummaryResults(paramObj);
+    res.send(results);
 }
 
 JobApi.prototype.removeJob = async function(req, res) {

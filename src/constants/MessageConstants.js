@@ -36,6 +36,7 @@ export const FETCHING_TENANTS = 'Fetching tenants...';
 export const UPDATE_TENANT = 'Updating tenant...';
 export const UPDATE_PROFILE = 'Updating profile...';
 export const REMOVE_TENANT = 'Removing Account...';
+export const LOAD_SUMMARY_VIEW_DATA = 'Loading Summary View Data...'
 
 export const NO_TESTS_AVAILABLE = 'No Tests available';
 

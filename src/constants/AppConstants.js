@@ -14,7 +14,10 @@ export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
 export const JOBS_GET_WITH_A_RESULT_API = '/handleJobs?action=getAllJobsWithLastResult';
 export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibleJobsWithResults';
+export const GET_SCRIPT_JOBS_WITH_RESULTS_API = '/handleJobs?action=getAllScriptJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
+export const GET_SUMMARY_RESULTS_API = '/handleJobs?action=getSummaryResults';
+
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
