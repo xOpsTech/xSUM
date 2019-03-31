@@ -47,6 +47,9 @@ exports.ADMIN_EMAIL_PASSWORD = 'Fwx$HA!4JC7H58npenXHkH3xh$v%zW6w';
 exports.ALERT_EMAIL_USERNAME = 'alerts@xsum.xops.it';
 exports.ALERT_EMAIL_PASSWORD = 'kXC$ug6&2U&UHT8a*^@Q6mwz6HxAZ&V8';
 
+exports.CLUSTER_USERNAME = 'admin';
+exports.CLUSTER_PASSWORD = 'if1PTu7wxEX5str4'
+
 exports.ADMIN_EMAIL_TYPE = 'admin';
 exports.ALERT_EMAIL_TYPE = 'alert';
 

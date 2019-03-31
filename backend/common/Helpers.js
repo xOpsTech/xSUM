@@ -5,9 +5,11 @@ var InfluxDB = require('../db/influxdb');
 var MongoDB = require('../db/mongodb');
 var request = require('request');
 var crypto = require('crypto');
+var config = require('../config/config');
 var moment = require('moment');
 var cmd = require('node-cmd');
 var fileSystem = require('file-system');
+const Client = require('kubernetes-client').Client;
 
 function Helpers(){};
 
@@ -160,7 +162,7 @@ exports.executePingJob = function(databaseName, jobObj, isOneTimeTest) {
     })
 }
 
-exports.executeScriptJob = function(databaseName, collectionName, jobToExecute) {
+exports.executeScriptJob = async function(databaseName, collectionName, jobToExecute) {
     var resultID = crypto.randomBytes(10).toString('hex');
     var locationTitle = jobToExecute.serverLocation.textValue;
     var locationLatitude = jobToExecute.serverLocation.latitude;
@@ -178,43 +180,64 @@ exports.executeScriptJob = function(databaseName, collectionName, jobToExecute) 
             throw err;
         } else {
 
-            fileSystem.writeFile(scriptFilePath + fileName, jobToExecute.scriptValue, (err) => {
+            fileSystem.writeFile(scriptFilePath + fileName, jobToExecute.scriptValue, async (err) => {
                 if (err) {
                     console.log('Error in creating file' + fileName, err);
                     throw err;
                 } else {
 
-                    // Send process request to sitespeed
-                    var commandStr = 'sudo docker run --shm-size=1g --rm -v' +
-                        ' "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:8.7.5 --preScript ' + jobToExecute.scriptPath + ' -n 1' +
-                        ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
-                        ' --browser ' + jobToExecute.browser +
-                        ' --influxdb.tags "jobid=' + jobToExecute.jobId + ',resultID=' + resultID +
-                        ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude +
-                        ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" ' +
-                        jobToExecute.securityProtocol + jobToExecute.siteObject.value;
-                    cmd.get(
-                        commandStr,
-                        async function(err, data, stderr) {
-                            jobToExecute.result.push({resultID: resultID, executedDate: new Date()});
-                            var newValueObj = {
-                                result: jobToExecute.result
-                            };
-
-                            if (err) {
-                                console.log('Error in executing the job : ', jobToExecute.jobId);
-                                console.log('Error : ', err);
-                            } else if (stderr) {
-                                console.log('STD Error in executing the job : ', jobToExecute.jobId);
-                                console.log('STD Error : ', stderr);
-                            } else {
-                                console.log('Successfully executed the job : ', jobToExecute.jobId);
-                            }
-
-                            //MongoDB.updateData(AppConstants.DB_NAME, collectionName, {jobId: jobToExecute.jobId}, newValueObj);
-                            //AlertApi.sendEmailAsAlert(databaseName, jobToExecute, curDateMilliSec);
+                    // Create the job
+                    const client = new Client({
+                        config: {
+                            url: config.CLUSTER_URL,
+                            auth: {
+                                user: AppConstants.CLUSTER_USERNAME,
+                                pass: AppConstants.CLUSTER_PASSWORD,
+                            },
+                            insecureSkipTlsVerify: true
                         }
-                    );
+                    });
+                    await client.loadSpec();
+
+                    const deploymentManifest = {
+                        kind: "Job",
+                        spec: {
+                            template: {
+                                spec: {
+                                    containers: [
+                                        {
+                                            image: "sitespeedio/sitespeed.io:8.7.5",
+                                            name: "sitespeed",
+                                            command: [
+                                                "/start.sh",
+                                                "-n",
+                                                "1",
+                                                "--influxdb.host",
+                                                config.INFLUXDB_IP,
+                                                "--influxdb.port",
+                                                "8086",
+                                                "--influxdb.database",
+                                                databaseName,
+                                                "--browser",
+                                                jobToExecute.browser,
+                                                "--influxdb.tags",
+                                                "jobid=" + jobToExecute.jobId + ",resultID=" + resultID + ",locationTitle=" + locationTitle + ",latitude=" + locationLatitude + ",longitude=" + locationLongitude + ",curDateMilliSec=" + curDateMilliSec,
+                                                jobToExecute.securityProtocol + jobToExecute.siteObject.value
+                                            ]
+                                        }
+                                    ],
+                                    restartPolicy: "Never"
+                                }
+                            },
+                            backoffLimit: 4
+                        },
+                        apiVersion: "batch/v1",
+                        metadata: {
+                            name: "sitespeedjob" + curDateMilliSec
+                        }
+                    };
+                    const create = await client.apis.batch.v1.namespaces('default').jobs.post({ body: deploymentManifest });
+                    console.log("Job creation successful in cluster side ", create);
                 }
             });
         }
