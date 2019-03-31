@@ -9,6 +9,19 @@ var moment = require('moment');
 var Helpers = require('../common/Helpers');
 var AlertApi = require('../routes/api/alert-api');
 var request = require('request');
+const K8sConfig = require('kubernetes-client').config;
+
+const Client = require('kubernetes-client').Client;
+const client = new Client({
+    config: {
+        url: config.CLUSTER_URL,
+        auth: {
+            user: AppConstants.CLUSTER_USERNAME,
+            pass: AppConstants.CLUSTER_PASSWORD,
+        },
+        insecureSkipTlsVerify: true,
+    }
+});
 
 var jobTimers = {};
 
@@ -18,6 +31,7 @@ Scheduler.prototype.startScheduler = async function() {
 
     for (var executionFrequency of AppConstants.RECURSIVE_EXECUTION_ARRAY) {
         executeAllJobs(executionFrequency);
+        removeJobs(executionFrequency);
         setInterval(
             await scheduleJobExecute(executionFrequency),
             executionFrequency.value
@@ -27,7 +41,8 @@ Scheduler.prototype.startScheduler = async function() {
 }
 
 async function scheduleJobExecute(executionFrequency) {
-    return function(){
+    return function() {
+        removeJobs(executionFrequency);
         executeAllJobs(executionFrequency);
     };
 }
@@ -55,6 +70,7 @@ async function executeAllJobs(executionFrequency) {
                     } else if (job.testType === AppConstants.PING_TEST_TYPE) {
                         job.urlValue = job.siteObject.value;
                         job.currentDateTime = currentDateTime;
+
                         // Execute ping test
                         Helpers.executePingJob(String(tenant._id), job, false);
                     }
@@ -68,6 +84,33 @@ async function executeAllJobs(executionFrequency) {
 
     }
     console.log('--------------------------------------------------------------------------------');
+
+}
+
+async function removeJobs(executionFrequency) {
+
+    // Execute remove job each hour
+    if (parseInt(executionFrequency.value) === 1000*60*60) {
+        await client.loadSpec();
+        const job = client.apis.batch.v1.namespaces('default').jobs.get().then(async function(jobsObj) {
+
+            for (var job of jobsObj.body.items) {
+
+                if (job.status.completionTime !== undefined) {
+                    var diff = moment.duration(moment().diff(moment(job.status.completionTime)));
+                    var diffHours = Math.floor(diff.asHours());
+
+                    if (diffHours > 1) {
+                        await client.apis.batch.v1.namespaces('default').jobs(job.metadata.name).delete();
+                        console.log("Job deletion success from cluster", job.metadata.name);
+                    }
+
+                }
+
+            }
+
+        });
+    }
 
 }
 
