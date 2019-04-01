@@ -24,7 +24,7 @@ import ProfileView from './component/management/profile/ProfileView';
 import TenantSettings from './component/management/tenant-settings/TenantSettings';
 import Billing from './component/management/billing/Billing';
 import DashboardConfig from './component/management/dashboard-config/DashboardConfig';
-import AddFeedbackView from './component/feedback/add-feedback/AddFeedbackView'
+import AddFeedbackView from './component/common/feedback/AddFeedbackView'
 export default (
     <Route path={'/'} component={Page}>
         <IndexRoute component={Login}/>

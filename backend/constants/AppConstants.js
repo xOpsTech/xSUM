@@ -7,6 +7,7 @@ exports.ALERT_LIST   = 'alertList';
 exports.TENANT_LIST   = 'tenantList';
 exports.SUPER_USER_LIST = 'superUserList';
 exports.FEEDBACK_LIST = 'feedbackList';
+exports.UNLOGIN_FEEDBACK_LIST = 'unloginFeedbackList';
 
 // InfluxDB Datatables
 exports.PERFORMANCE_RESULT_LIST = 'pageLoadTime';

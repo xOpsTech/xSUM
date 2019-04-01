@@ -1,9 +1,9 @@
 import React, {Fragment} from 'react';
-import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
-import ErrorIconComponent from '../../common/error-icon-component/ErrorIconComponent';
-import LeftNav from '../../common/left-nav/LeftNav';
-import NavContainer from '../../common/nav-container/NavContainer';
-import LoadingScreen from '../../common/loading-screen/LoadingScreen';
+import ErrorMessageComponent from '../error-message-component/ErrorMessageComponent';
+import ErrorIconComponent from '../error-icon-component/ErrorIconComponent';
+import LeftNav from '../left-nav/LeftNav';
+import NavContainer from '../nav-container/NavContainer';
+import LoadingScreen from '../loading-screen/LoadingScreen';
 import feedbackApi from '../../../api/feedbackApi';
 
 import * as AppConstants from '../../../constants/AppConstants';
@@ -38,10 +38,17 @@ class AddFeedbackView extends React.Component {
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({loggedUserObj: loggedUserObject, email: loggedUserObject.email});
+            this.setState({
+                loggedUserObj: loggedUserObject,
+                email: {
+                    value: loggedUserObject.email,
+                    error: {
+                        hasError: false,
+                        name: ""
+                    }
+                }
+            });
             this.getLoggedUserData(loggedUserObject);
-        } else {
-            UIHelper.redirectLogin();
         }
 
     }
@@ -53,7 +60,7 @@ class AddFeedbackView extends React.Component {
             isLoading: false,
             loadingMessage: '',
             name: {value:'', error: {}},
-            email: '',
+            email: {value:'', error: {}},
             subject: {value:'', error: {}},
             message: {value:'', error: {}},
         };
@@ -83,16 +90,20 @@ class AddFeedbackView extends React.Component {
     saveFeedback(e) {
         e.preventDefault();
 
-        const {name, email, subject, message} = this.state;
+        const {loggedUserObj, name, email, subject, message} = this.state;
         var undefinedCheck = !(name.error.hasError === undefined ||
-                             subject.error.hasError === undefined);
+                             subject.error.hasError === undefined ||
+                             email.error.hasError === undefined);
         var errorCheck = !(name.error.hasError ||
-                             subject.error.hasError);
+                             subject.error.hasError ||
+                             email.error.hasError);
         if (undefinedCheck && errorCheck) {
+            this.setState({isLoading: true, loadingMessage: MessageConstants.SAVE_FEEDBACK});
             var urlToSaveFeedback = Config.API_URL + AppConstants.SAVE_FEEDBACK_API;
             var feedbackData = {
+                loggedUserObj: loggedUserObj,
                 name: name.value,
-                email: email,
+                email: email.value,
                 subject: subject.value,
                 message: message.value
             };
@@ -130,6 +141,17 @@ class AddFeedbackView extends React.Component {
                     }
                 });
             }
+            if(email.error.hasError === undefined) {
+                this.setState({
+                    email: {
+                        value: email.value,
+                        error: {
+                            hasError: true,
+                            name: MessageConstants.EMAIL_ERROR
+                        }
+                    }
+                });
+            }
         }
 
 
@@ -161,7 +183,12 @@ class AddFeedbackView extends React.Component {
                       </div>
             }
             <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-            <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
+            {
+                (loggedUserObj)
+                    ? <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
+                    : null
+            }
+
                 <div className="feedback-view">
                     <div id="feedback-row" className="row">
                         <div className="col-sm-12">
@@ -200,13 +227,25 @@ class AddFeedbackView extends React.Component {
                                 <div className="form-group">
                                   <label className="control-label">Email</label>
                                   <input
-                                      value={email}
-                                      onChange={e => this.setState({ email: e.target.value })}
+                                      value={email.value}
+                                      onChange={(e) => {
+                                          this.handleChange({
+                                              email: {
+                                                  value: e.target.value,
+                                                  error: {
+                                                    hasError: UIHelper.isEmailHasError(e.target.value),
+                                                    name: MessageConstants.EMAIL_ERROR
+                                                  }
+                                              }
+                                          });
+                                      }}
                                       type="email"
                                       className="form-control"
                                       id="emailInput"/>
                                 </div>
                             </div>
+                            <ErrorIconComponent error={email.error}/>
+                            <ErrorMessageComponent error={email.error}/>
                         </div>
 
                         <div className="row">
