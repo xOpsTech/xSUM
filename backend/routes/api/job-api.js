@@ -10,6 +10,7 @@ var Helpers = require('../../common/Helpers');
 var AlertApi = require('./alert-api');
 var TenantApi = require('./tenant-api');
 var {ObjectId} = require('mongodb');
+var fileSystem = require('file-system');
 
 var jobTimers = {};
 
@@ -30,14 +31,20 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAllJobsWithResults":
             new JobApi().getAllJobsWithResults(req, res);
             break;
-        case "getAllJobsWithAResult":
-            new JobApi().getAllJobsWithAResult(req, res);
+        case "getAllScriptJobsWithResults":
+            new JobApi().getAllScriptJobsWithResults(req, res);
+            break;
+        case "getAllJobsWithLastResult":
+            new JobApi().getAllJobsWithLastResult(req, res);
             break;
         case "getVisibleJobsWithResults":
             new JobApi().getVisibleJobsWithResults(req, res);
             break;
         case "getAJobWithResults":
             new JobApi().getAJobWithResults(req, res);
+            break;
+        case "getSummaryResults":
+            new JobApi().getSummaryResults(req, res);
             break;
         case "startorStopJob":
             new JobApi().startorStopJob(req, res);
@@ -78,6 +85,29 @@ JobApi.prototype.insertJob = async function(req, res) {
         securityProtocol: jobObj.securityProtocol
     };
 
+    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+        let scriptFilePath = 'scripts/tenantid-' + jobObj.tenantID + '/jobid-' + jobObj.jobId;
+        let fileName = '/script-1.js';
+        jobInsertObj.scriptPath = scriptFilePath + fileName;
+        jobInsertObj.scriptValue = jobObj.scriptValue;
+        fileSystem.mkdir(scriptFilePath, {recursive: true}, (err) => {
+
+            if (err) {
+                console.log('Error in creating directories' + scriptFilePath, err);
+                throw err;
+            } else {
+
+                fileSystem.writeFile(scriptFilePath + fileName, jobObj.scriptValue, (err) => {
+                    if (err) {
+                        console.log('Error in creating file' + fileName, err);
+                        throw err;
+                    }
+                });
+            }
+
+        });
+    }
+
     var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
@@ -108,7 +138,32 @@ JobApi.prototype.getAllJobsWithResults = async function(req, res) {
     res.send(objectToSend);
 }
 
-JobApi.prototype.getAllJobsWithAResult = async function(req, res) {
+JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
+    var userObj = req.body;
+    var tenantID = userObj.tenantID;
+    var queryObj = {testType: AppConstants.SCRIPT_TEST_TYPE};
+
+    var jobsList = await MongoDB.getAllData(tenantID, AppConstants.DB_JOB_LIST, queryObj);
+    var locationsArr = [];
+
+    for (let job of jobsList) {
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
+
+        var isLocationFound = locationsArr.find(function(locationObj) {
+            return (locationObj.locationid === job.serverLocation.locationid);
+        });
+
+        if (!isLocationFound) {
+            locationsArr.push(job.serverLocation);
+        }
+
+    }
+
+    var listObj = {jobsList: jobsList, locations: locationsArr};
+    res.send(listObj);
+}
+
+JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var userObj = req.body;
     var tenantID = userObj.tenantID;
     var queryObj = {};
@@ -117,21 +172,7 @@ JobApi.prototype.getAllJobsWithAResult = async function(req, res) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-
-        var dataTable = '';
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
-            dataTable = AppConstants.PERFORMANCE_RESULT_LIST;
-        } else {
-            dataTable = AppConstants.PING_RESULT_LIST;
-        }
-
-        var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
-        var jobResults = await InfluxDB.getAllDataFor(
-            tenantID,
-            "SELECT * FROM " + dataTable + " where jobid='" + job.jobId + "' and time >= '" + backDate + "' ORDER BY time DESC LIMIT 1"
-        );
-
-        job.result = jobResults;
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -159,13 +200,31 @@ JobApi.prototype.getAJobWithResults = async function(req, res) {
     res.send(job);
 }
 
-JobApi.prototype.removeJob = function(req, res) {
+JobApi.prototype.getSummaryResults = async function(req, res) {
+    var paramObj = req.body;
+    var results = await Helpers.getSummaryResults(paramObj);
+    res.send(results);
+}
+
+JobApi.prototype.removeJob = async function(req, res) {
     var jobObj = req.body;
     var queryToRemoveJob = {
         jobId: jobObj.jobId
     };
-    TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
-    MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
+
+    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+
+        fileSystem.unlink(jobObj.scriptPath, (err) => {
+            if (err) {
+                console.log('Error in removing file' + jobObj.scriptPath, err);
+                throw err;
+            }
+        });
+
+    }
+
+    await TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, false);
+    await MongoDB.deleteOneData(jobObj.tenantID, AppConstants.DB_JOB_LIST, queryToRemoveJob);
     InfluxDB.removeData(jobObj.tenantID, "DROP SERIES FROM pageLoadTime WHERE jobid='" + jobObj.jobId + "'");
     res.send(queryToRemoveJob);
 }
@@ -200,8 +259,20 @@ JobApi.prototype.updateJob = async function(req, res) {
             browser: jobObj.browser,
             serverLocation: jobObj.serverLocation,
             securityProtocol: jobObj.securityProtocol,
-            recursiveSelect: jobObj.recursiveSelect
+            recursiveSelect: jobObj.recursiveSelect,
+            testType: jobObj.testType,
+            scriptValue: jobObj.scriptValue
         };
+
+        if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+
+            fileSystem.writeFile(jobObj.scriptPath, jobObj.scriptValue, (err) => {
+                if (err) {
+                    console.log('Error in updating file' + fileName, err);
+                    throw err;
+                }
+            });
+        }
 
         await MongoDB.updateData(jobObj.tenantID, AppConstants.DB_JOB_LIST, {jobId: jobObj.jobId}, updateValueObj);
 

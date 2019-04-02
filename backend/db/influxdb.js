@@ -19,7 +19,7 @@ InfluxDB.prototype.removeDatabase = function(databaseName) {
     influx.dropDatabase(databaseName);
 }
 
-InfluxDB.prototype.insertData = function(databaseName, tableName, tagsObj, valuesToInsert) {
+InfluxDB.prototype.insertData = async function(databaseName, tableName, tagsObj, valuesToInsert) {
     const influx = new Influx.InfluxDB({
         host: config.INFLUXDB_IP,
         database: databaseName
@@ -35,7 +35,7 @@ InfluxDB.prototype.getAllData = function(databaseName, query) {
     return influx.query(query);
 }
 
-InfluxDB.prototype.removeData = function(databaseName, query) {
+InfluxDB.prototype.removeData = async function(databaseName, query) {
     const influx = new Influx.InfluxDB({
         host: config.INFLUXDB_IP,
         database: databaseName

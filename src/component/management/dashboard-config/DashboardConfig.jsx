@@ -2,6 +2,7 @@ import React, {Fragment} from 'react';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import ModalContainer from '../../common/modal-container/ModalContainer';
+import ListSelector from '../../common/list-selector/ListSelector';
 import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
 import NavContainer from '../../common/nav-container/NavContainer';
 import LeftNav from '../../common/left-nav/LeftNav';
@@ -33,6 +34,9 @@ class DashboardConfig extends React.Component {
         this.modalOkClick       = this.modalOkClick.bind(this);
         this.getAllJobs         = this.getAllJobs.bind(this);
         this.getAllAlerts       = this.getAllAlerts.bind(this);
+        this.selectAllJobs      = this.selectAllJobs.bind(this);
+        this.isAllJobsSelected  = this.isAllJobsSelected.bind(this);
+        this.updateDataList     = this.updateDataList.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -75,7 +79,8 @@ class DashboardConfig extends React.Component {
             selectedTenantIndex: 0,
             isModalVisible: false,
             modalTitle: '',
-            jobNumValue: parseInt(AppConstants.NO_OF_JOBS_ARRAY[0].value)
+            jobNumValue: parseInt(AppConstants.NO_OF_JOBS_ARRAY[0].value),
+            isAllJobsSelected: false
         };
 
         return initialState;
@@ -121,12 +126,29 @@ class DashboardConfig extends React.Component {
             tenantID: selectedTenant._id
         };
         jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
+            var isAllJobsSelected = this.isAllJobsSelected(data);
+
             context.setState({
                 jobList: data,
                 isLoading: false,
-                loadingMessage: ''
+                loadingMessage: '',
+                isAllJobsSelected: isAllJobsSelected
             });
         });
+    }
+
+    isAllJobsSelected(jobList) {
+        var isAllJobsSelected = true;
+
+        for (let job of jobList) {
+
+            if (!job.isShow) {
+                isAllJobsSelected = false;
+                break;
+            }
+
+        }
+        return isAllJobsSelected;
     }
 
     handleChange(e, stateObj) {
@@ -136,39 +158,8 @@ class DashboardConfig extends React.Component {
 
     saveSettingsClick(e) {
         e.preventDefault();
-
         var {selectedTenant, loggedUserObj, jobList} = this.state;
-
-        if (jobList.length > 0) {
-            let jobsToUpdate = [];
-
-            for (let job of jobList) {
-
-                // Check for undefined of isShow in job object
-                jobsToUpdate.push({jobId: job.jobId, isShow: (job.isShow) ? job.isShow : false});
-            }
-            this.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_JOBS});
-
-            var updateObject = {
-                jobList: jobsToUpdate,
-                tenantID: selectedTenant._id
-            };
-
-            var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
-            jobApi.updateJob(urlToUpdateJobs, updateObject).then((response) => {
-                this.setState(
-                    {
-                        isLoading: false,
-                        loadingMessage: ''
-                    }
-                );
-            });
-        } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
-            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
-        } else {
-            this.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
-        }
-
+        UIHelper.saveJobsVisibility(jobList, selectedTenant, this);
     }
 
     redirectToAddUser() {
@@ -213,8 +204,39 @@ class DashboardConfig extends React.Component {
         this.handleChange(e, {selectedTenant});
     }
 
+    selectAllJobs() {
+        var {isAllJobsSelected, jobList} = this.state;
+
+        for (let job of jobList) {
+            job.isShow = !isAllJobsSelected;
+        }
+
+        this.setState({isAllJobsSelected: !isAllJobsSelected, jobList: jobList});
+    }
+
     modalOkClick() {
         this.setState({isModalVisible: false, modalTitle: ''});
+    }
+
+    updateDataList(isAll, isShow, selectedIndex) {
+        const {jobList} = this.state;
+
+        if (isAll) {
+
+            for (let job of jobList) {
+                job.isShow = isShow;
+            }
+            this.setState({jobList: jobList});
+
+        } else {
+
+            if (selectedIndex !== undefined) {
+                jobList[selectedIndex].isShow = isShow;
+                this.setState({jobList: jobList});
+            }
+
+        }
+
     }
 
     render() {
@@ -229,7 +251,8 @@ class DashboardConfig extends React.Component {
             selectedTenantIndex,
             isModalVisible,
             modalTitle,
-            jobNumValue
+            jobNumValue,
+            isAllJobsSelected
         } = this.state;
 
         const JobSelectorContainer = (props) => {
@@ -241,12 +264,12 @@ class DashboardConfig extends React.Component {
                         <div className="form-group">
                             <input className="form-check-input checkbox-style"
                                 type="checkbox"
-                                id="recursiveCheck"
                                 checked={job.isShow}
                                 onChange={
                                     (e) => {
                                         job.isShow = !job.isShow;
-                                        this.handleChange(e, {jobList: jobList});
+                                        var isAllJobsSelected = this.isAllJobsSelected(jobList);
+                                        this.handleChange(e, {jobList: jobList, isAllJobsSelected: isAllJobsSelected});
                                     }}/>
                         </div>
                     </div>
@@ -299,39 +322,41 @@ class DashboardConfig extends React.Component {
                         </div>
 
                         <div className="row alert-list-wrap-div settings-section">
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column section-head">
-                                    <h4 className="site-add-title">
-                                        Job Configuration
-                                    </h4>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-3 alert-label-column">
-                                    <div className="form-group label-text">
-                                        <label className="control-label">Number of Jobs (Visible in Dashboard)</label>
-                                    </div>
-                                </div>
-                                <div className="col-sm-9">
-                                    <div className="form-group">
-                                        <select className="form-control form-control-sm form-group"
-                                            value={jobNumValue}
-                                            onChange={(e) => this.dropDownClick(
-                                                {
-                                                    jobNumValue: parseInt(e.target.value)
-                                                })
-                                            }>
-                                            {
-                                                AppConstants.NO_OF_JOBS_ARRAY.map((jobNum) => {
-                                                    return <option key={'jobNum_' + jobNum.value} value={jobNum.value}>
-                                                                {jobNum.textValue}
-                                                           </option>;
-                                                })
-                                            }
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+                            {
+                                // <div className="row">
+                                //     <div className="col-sm-3 alert-label-column section-head">
+                                //         <h4 className="site-add-title">
+                                //             Job Configuration
+                                //         </h4>
+                                //     </div>
+                                // </div>
+                                // <div className="row">
+                                //     <div className="col-sm-3 alert-label-column">
+                                //         <div className="form-group label-text">
+                                //             <label className="control-label">Number of Jobs (Visible in Dashboard)</label>
+                                //         </div>
+                                //     </div>
+                                //     <div className="col-sm-9">
+                                //         <div className="form-group">
+                                //             <select className="form-control form-control-sm form-group"
+                                //                 value={jobNumValue}
+                                //                 onChange={(e) => this.dropDownClick(
+                                //                     {
+                                //                         jobNumValue: parseInt(e.target.value)
+                                //                     })
+                                //                 }>
+                                //                 {
+                                //                     AppConstants.NO_OF_JOBS_ARRAY.map((jobNum) => {
+                                //                         return <option key={'jobNum_' + jobNum.value} value={jobNum.value}>
+                                //                                     {jobNum.textValue}
+                                //                                </option>;
+                                //                     })
+                                //                 }
+                                //             </select>
+                                //         </div>
+                                //     </div>
+                                // </div>
+                            }
 
                             <div className="row">
                                 <div className="col-sm-3 alert-label-column section-head">
@@ -342,13 +367,46 @@ class DashboardConfig extends React.Component {
                             </div>
 
                             <div className="row">
+
                                 {
+                                    // <div className="row">
+                                    //     <div className="col-sm-1 alert-label-column">
+                                    //         <div className="form-group">
+                                    //             <input className="form-check-input checkbox-style"
+                                    //                 type="checkbox"
+                                    //                 checked={isAllJobsSelected}
+                                    //                 onChange={
+                                    //                     (e) => {
+                                    //                         this.selectAllJobs(e);
+                                    //                     }}/>
+                                    //         </div>
+                                    //     </div>
+                                    //     <div className="col-sm-11">
+                                    //         <div className="form-group label-text">
+                                    //             <label className="control-label">
+                                    //                 {
+                                    //                     (isAllJobsSelected)
+                                    //                         ? 'All jobs are selected'
+                                    //                         : 'Click to select all jobs'
+                                    //                 }
+                                    //             </label>
+                                    //         </div>
+                                    //     </div>
+                                    // </div>
+                                }
+                                {
+                                    // (jobList.length > 0)
+                                    //     ? jobList.map((job, i) => {
+                                    //         return (
+                                    //             <JobSelectorContainer job={job} index={i}/>
+                                    //         );
+                                    //     })
+                                    //     : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                                     (jobList.length > 0)
-                                        ? jobList.map((job, i) => {
-                                            return (
-                                                <JobSelectorContainer job={job} index={i}/>
-                                            );
-                                        })
+                                        ? <ListSelector
+                                            dataList={jobList}
+                                            isSaveButtonVisible={false}
+                                            updateDataList={this.updateDataList}/>
                                         : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
                                 }
 

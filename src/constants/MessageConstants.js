@@ -2,6 +2,7 @@ export const NAME_ERROR = 'Invalid Job Name';
 export const URL_ERROR = 'Url is invalid.';
 export const EMAIL_ERROR = 'Email address invalid.';
 export const INVALID_PASSWORD_ERROR = 'Password invalid - password must be at least 6 characters.';
+export const REQUIRED_FILED = 'This field is required'
 export const PASSWORD_CONFIRM_MATCH_ERROR = 'Password and confirm password must match.';
 export const EMPTY_ERROR = 'This field can\'t be empty.';
 export const FORGOT_PW_PAGE_INVALID_EMAIL_ERROR = 'Email address invalid.';
@@ -36,6 +37,7 @@ export const UPDATE_TENANT = 'Updating tenant...';
 export const UPDATE_PROFILE = 'Updating profile...';
 export const REMOVE_TENANT = 'Removing Account...';
 export const SAVE_FEEDBACK = 'Saving feedback data...'
+export const LOAD_SUMMARY_VIEW_DATA = 'Loading Summary View Data...'
 export const NO_TESTS_AVAILABLE = 'No Tests available';
 
 export const SUCCESS_REGISTER_TEXT = 'You will receive an email confirming\n' +

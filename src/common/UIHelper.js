@@ -6,6 +6,7 @@ import {browserHistory} from 'react-router';
 
 import userApi from '../api/userApi';
 import tenantApi from '../api/tenantApi';
+import jobApi from '../api/jobApi';
 
 import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
@@ -248,12 +249,16 @@ export function getAllTenantsData(user, context, callBackFunction, isContinueLoa
 }
 
 export function getArrangedBarChartData(job, selectedChartIndex, context) {
+    var savedDateTime, criticalThreshold, warningThreshold;
 
     for (var thresHold of context.state.alertData) {
+
         if (thresHold.jobId == job.jobId) {
-          var criticalThreshold = thresHold.criticalThreshold;
-          var warningThreshold = thresHold.warningThreshold;
+            criticalThreshold = thresHold.criticalThreshold;
+            warningThreshold = thresHold.warningThreshold;
+            savedDateTime = thresHold.savedDateTime;
         }
+
     }
 
     var resultArray = [];
@@ -270,7 +275,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
 
     for (let currentResult of job.result) {
 
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
+        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE || job.testType === AppConstants.SCRIPT_TEST_TYPE) {
 
             // Check Result ID exists
             var isResultIdFound = resultArray.find(function(jobObj) {
@@ -280,7 +285,10 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             if (!isResultIdFound) {
                 resultArray.push({
                     execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: currentResult[AppConstants.CHART_TYPES_ARRAY[selectedChartIndex].value]/1000,
+                    responseTime: roundValueToTwoDecimals(currentResult.response/1000),
+                    pageDownLoadTime: roundValueToTwoDecimals(currentResult.downloadTime),
+                    serverResponseTime: roundValueToTwoDecimals(currentResult.serverResponseTime/1000),
+                    backEndTime: roundValueToTwoDecimals(currentResult.backEndTime/1000),
                     color: '#eb00ff',
                     resultID: currentResult.resultID
                 });
@@ -288,19 +296,25 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
             }
 
         } else if (job.testType === AppConstants.PING_TEST_TYPE) {
-            var barColor;
+            var barColor = '#eb00ff';
             var responseTime = roundValueToTwoDecimals(currentResult.response / 1000);
             var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
             var tcpConnectTime = roundValueToTwoDecimals(currentResult.connect / 1000);
             var lastByteRecieveTime = roundValueToTwoDecimals(currentResult.end / 1000);
             var socketTime = roundValueToTwoDecimals(currentResult.socket / 1000);
 
+            var dateCompare = moment(currentResult.executedTime).isAfter(savedDateTime);
+
             if (criticalThreshold === undefined && warningThreshold === undefined){
                 barColor = '#eb00ff';
-            } else if (responseTime >= criticalThreshold) {
-                barColor = '#b22222';
-            } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
-                barColor = '#ffff00';
+            } else if (savedDateTime === undefined || dateCompare) {
+
+                if (responseTime >= criticalThreshold) {
+                    barColor = '#b22222';
+                } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                    barColor = '#ffff00';
+                }
+
             } else {
                 barColor = '#eb00ff';
             }
@@ -316,9 +330,40 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
                 resultID: currentResult.resultID
             });
             job.pieChartColor = barColor;
-
-
         }
     }
     return resultArray;
+}
+
+// Save jobs visibility
+export function saveJobsVisibility(jobList, selectedTenant, context) {
+    if (jobList.length > 0) {
+        let jobsToUpdate = [];
+
+        for (let job of jobList) {
+
+            // Check for undefined of isShow in job object
+            jobsToUpdate.push({jobId: job.jobId, isShow: (job.isShow) ? job.isShow : false});
+        }
+        context.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_JOBS});
+
+        var updateObject = {
+            jobList: jobsToUpdate,
+            tenantID: selectedTenant._id
+        };
+
+        var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
+        jobApi.updateJob(urlToUpdateJobs, updateObject).then((response) => {
+            context.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: ''
+                }
+            );
+        });
+    } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
+        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
+    } else {
+        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
+    }
 }

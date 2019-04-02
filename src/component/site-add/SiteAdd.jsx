@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import moment from 'moment';
+import MonacoEditor from 'react-monaco-editor';
 
 import ErrorMessageComponent from '../common/error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
@@ -37,6 +38,7 @@ class SiteAdd extends React.Component {
         this.navigateToResultView = this.navigateToResultView.bind(this);
         this.tenantDropDown = this.tenantDropDown.bind(this);
         this.modalOkClick = this.modalOkClick.bind(this);
+        this.scriptChange = this.scriptChange.bind(this);
 
         // Setting initial state objects
         this.state = this.getInitialState();
@@ -88,7 +90,9 @@ class SiteAdd extends React.Component {
             selectedJobID: null,
             selectedTenant: {userList: []},
             selectedLocationID: 0,
-            securityProtocol: AppConstants.SECURITY_ARRAY[0].value
+            securityProtocol: AppConstants.SECURITY_ARRAY[0].value,
+            scriptValue: '',
+            scriptPath: ''
         };
 
         return initialState;
@@ -101,6 +105,10 @@ class SiteAdd extends React.Component {
     handleChange(e, stateObj) {
         e.preventDefault();
         this.setState(stateObj);
+    }
+
+    scriptChange(scriptValue) {
+        this.setState({scriptValue: scriptValue});
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
@@ -117,32 +125,39 @@ class SiteAdd extends React.Component {
                 for (let currentJobObj of data) {
                     if (jobObj.jobID === currentJobObj.jobId) {
                         var siteUrl = currentJobObj.siteObject.value.replace(/http:\/\//g, '');
-                        context.setState(
-                            {
-                                siteObject: {
-                                    value: siteUrl, // Remove http://
-                                    error: {
-                                        hasError: UIHelper.isUrlHasError(siteUrl),
-                                        name: MessageConstants.URL_ERROR
-                                    }
-                                },
-                                jobName: {
-                                    value: currentJobObj.jobName,
-                                    error: {
-                                        hasError: UIHelper.isNameHasError(currentJobObj.jobName),
-                                        name: MessageConstants.NAME_ERROR
-                                    }
-                                },
-                                browser: currentJobObj.browser,
-                                recursiveSelect: {
-                                    value: currentJobObj.recursiveSelect.value,
-                                    textValue: currentJobObj.recursiveSelect.textValue
-                                },
-                                selectedJobID: currentJobObj.jobId,
-                                selectedLocationID: currentJobObj.serverLocation.locationid,
-                                securityProtocol: currentJobObj.securityProtocol
-                            }
-                        );
+
+                        let jobContext = {
+                            siteObject: {
+                                value: siteUrl, // Remove http://
+                                error: {
+                                    hasError: UIHelper.isUrlHasError(siteUrl),
+                                    name: MessageConstants.URL_ERROR
+                                }
+                            },
+                            jobName: {
+                                value: currentJobObj.jobName,
+                                error: {
+                                    hasError: UIHelper.isNameHasError(currentJobObj.jobName),
+                                    name: MessageConstants.NAME_ERROR
+                                }
+                            },
+                            browser: currentJobObj.browser,
+                            recursiveSelect: {
+                                value: currentJobObj.recursiveSelect.value,
+                                textValue: currentJobObj.recursiveSelect.textValue
+                            },
+                            selectedJobID: currentJobObj.jobId,
+                            selectedLocationID: currentJobObj.serverLocation.locationid,
+                            securityProtocol: currentJobObj.securityProtocol,
+                            testType: currentJobObj.testType
+                        };
+
+                        if (currentJobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+                            jobContext.scriptValue = currentJobObj.scriptValue;
+                            jobContext.scriptPath = currentJobObj.scriptPath;
+                        }
+
+                        context.setState(jobContext);
                         break;
                     }
 
@@ -174,7 +189,7 @@ class SiteAdd extends React.Component {
         var {
             siteObject, browser, testType, scheduleDate,
             isRecursiveCheck, recursiveSelect, jobName,
-            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID, securityProtocol
+            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID, securityProtocol, scriptValue, scriptPath
         } = this.state;
 
         // Get recursive object
@@ -203,7 +218,9 @@ class SiteAdd extends React.Component {
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
                     serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
-                    securityProtocol: securityProtocol
+                    securityProtocol: securityProtocol,
+                    scriptValue: scriptValue,
+                    scriptPath: scriptPath
                 };
 
                 jobApi.updateJob(url, { job: jobToUpdate }).then((data) => {
@@ -231,7 +248,8 @@ class SiteAdd extends React.Component {
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
                     serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
-                    securityProtocol: securityProtocol
+                    securityProtocol: securityProtocol,
+                    scriptValue: scriptValue
                 };
                 var url = Config.API_URL + AppConstants.JOB_INSERT_API;
                 this.setState({ isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB });
@@ -364,7 +382,8 @@ class SiteAdd extends React.Component {
             selectedTenant,
             selectedLocationID,
             securityProtocol,
-            recursiveSelect
+            recursiveSelect,
+            scriptValue
         } = this.state;
 
         return (
@@ -504,6 +523,22 @@ class SiteAdd extends React.Component {
                                 })
                             }
                         </div>
+                        {
+                            (testType === AppConstants.SCRIPT_TEST_TYPE)
+                                ? <MonacoEditor
+                                        width="100%"
+                                        height="600"
+                                        languages={['javascript']}
+                                        theme="vs-dark"
+                                        value={scriptValue}
+                                        options={{
+                                            selectOnLineNumbers: true
+                                        }}
+                                        onChange={(newValue) => {
+                                            this.scriptChange(newValue);
+                                        }}/>
+                                : null
+                        }
                         {
                             (testType === AppConstants.PERFORMANCE_TEST_TYPE)
                                 ? <div className="form-group">

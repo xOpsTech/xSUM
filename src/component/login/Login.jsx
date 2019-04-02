@@ -217,6 +217,7 @@ class Login extends React.Component {
                         <div className="form-group">
                             <button
                                 className="btn btn-primary form-control button-all-caps-text"
+                                id="loginButton"
                                 onClick={this.loginCheck}>
                                 Login
                             </button>

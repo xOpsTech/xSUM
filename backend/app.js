@@ -12,6 +12,7 @@ var app = express();
 RealtimeDataSync.startDataSync(app);
 
 app.use('/assets', express.static('../assets'));
+app.use('/scripts', express.static('./scripts'));
 app.use('/lib', express.static('../lib'));
 app.use('/sitespeed-result', express.static('./sitespeed-result'));
 app.use(bodyParser.urlencoded({ extended: true }));

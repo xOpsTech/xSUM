@@ -11,6 +11,19 @@ exports.UNLOGIN_FEEDBACK_LIST = 'unloginFeedbackList';
 
 // InfluxDB Datatables
 exports.PERFORMANCE_RESULT_LIST = 'pageLoadTime';
+exports.PAGE_DOWNLOAD_TIME_RESULT_LIST = 'pageDownloadTime';
+exports.SERVER_RESPONSE_TIME_LIST = 'serverResponseTime';
+exports.BACKEND_TIME_LIST = 'backEndTime';
+exports.FRONTEND_TIME_LIST = 'frontEndTime';
+exports.SPEED_INDEX_TIME_LIST = 'SpeedIndex';
+exports.FIRST_VISUAL_CHANGE_LIST = 'FirstVisualChange';
+exports.PERCEPTUAL_SPEED_INDEX_LIST = 'PerceptualSpeedIndex';
+exports.FIRST_PAINT_LIST = 'firstPaint';
+exports.VISUAL_COMPLETE_85_LIST = 'VisualComplete85';
+exports.VISUAL_COMPLETE_95_LIST = 'VisualComplete95';
+exports.VISUAL_COMPLETE_99_LIST = 'VisualComplete99';
+exports.LAST_VISUAL_CHANGE_LIST = 'LastVisualChange';
+exports.SCORE_LIST = 'score';
 exports.PING_RESULT_LIST   = 'pingResults';
 
 exports.RESPONSE_SUCCESS = 'Success';
@@ -33,8 +46,11 @@ exports.EMAIL_PASSWORD = 'xsum@9871az';
 
 exports.ADMIN_EMAIL_USERNAME = 'admin@xsum.xops.it';
 exports.ADMIN_EMAIL_PASSWORD = 'Fwx$HA!4JC7H58npenXHkH3xh$v%zW6w';
-exports.ALERT_EMAIL_USERNAME = 'alert@xsum.xops.it';
+exports.ALERT_EMAIL_USERNAME = 'alerts@xsum.xops.it';
 exports.ALERT_EMAIL_PASSWORD = 'kXC$ug6&2U&UHT8a*^@Q6mwz6HxAZ&V8';
+
+exports.CLUSTER_USERNAME = 'admin';
+exports.CLUSTER_PASSWORD = 'if1PTu7wxEX5str4'
 
 exports.ADMIN_EMAIL_TYPE = 'admin';
 exports.ALERT_EMAIL_TYPE = 'alert';
@@ -45,6 +61,10 @@ exports.EMAIL_FAILURE_ALERT_COUNT = 5;
 
 exports.DEFAULT_POINTS_COUNT = 25000;
 exports.DEFAULT_USER_COUNT = 5;
+
+exports.DEF_EMAIL_WARNING_ALERT_COUNT  = 5; // Default email alert count value
+exports.DEF_EMAIL_CRITICAL_ALERT_COUNT = 5;
+exports.DEF_EMAIL_FAILURE_ALERT_COUNT = 5;
 
 exports.TOTAL_MILLISECONDS_PER_MONTH = 1000 * 60 * 60 * 24 * 30;
 
@@ -59,6 +79,11 @@ exports.UPDATE_JOB_RESULTS = 'UpdateJobResults';
 
 // Resources
 exports.ANY_RESOURCE = 'any-resource';
+
+// Result status
+exports.NORMAL_STATUS   = 'normal';
+exports.CRITICAL_STATUS = 'critical';
+exports.WARNING_STATUS  = 'warning';
 
 exports.ACCESS_LIST = [
     { role: this.SUPER_USER, resource: this.ANY_RESOURCE, action: 'create:any', attributes: '*' },
@@ -85,6 +110,7 @@ exports.ACCESS_LIST = [
 // Test types
 exports.PERFORMANCE_TEST_TYPE = 'performace';
 exports.PING_TEST_TYPE = 'ping';
+exports.SCRIPT_TEST_TYPE = 'script';
 
 // Execution time frequencies
 exports.RECURSIVE_EXECUTION_ARRAY = [

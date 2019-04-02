@@ -93,11 +93,16 @@ class AllResultPieChartView extends React.Component {
             var alertThresholdsByJob = [];
 
             for (var alert of data.alertsData) {
-                alertThresholdsByJob.push({
-                    jobId: alert.job.jobId,
-                    criticalThreshold: parseFloat(alert.criticalThreshold),
-                    warningThreshold: parseFloat(alert.warningThreshold)
-                });
+
+                if (alert._id) {
+                    alertThresholdsByJob.push({
+                        jobId: alert.job.jobId,
+                        criticalThreshold: parseFloat(alert.criticalThreshold),
+                        warningThreshold: parseFloat(alert.warningThreshold),
+                        savedDateTime: alert.savedDateTime
+                    });
+                }
+
             }
 
             this.setState({ alertData: alertThresholdsByJob });
@@ -282,20 +287,24 @@ class AllResultPieChartView extends React.Component {
                             }
                         </div>
                         <div>
-                            <h4 className="job-name-div">
-                                {props.jobWithResult.job.jobName}
+                            <h4 className="job-name-div" title={props.jobWithResult.job.jobName}>
+                                {
+                                    ((props.jobWithResult.job.jobName).length > 12)
+                                        ? (((props.jobWithResult.job.jobName).substring(0,12-3)) + '...')
+                                        : props.jobWithResult.job.jobName
+                                }
                             </h4>
                         </div>
                     </div>
-                    <div className="row">
+                        <div className="row">
                         <div>
                             <div className="row pie-chart-clicking"
                                 onClick={(e) => this.jobPieChartClick(props.jobWithResult)}>
                                 <AmCharts.React style={{width: '100%', height: '120px'}} options={pieChartConfig}/>
                             </div>
-                            <div className="row pie-chart-heading">
+                            {/* <div className="row pie-chart-heading">
                                 Last Test Average
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     </div>

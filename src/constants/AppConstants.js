@@ -12,9 +12,12 @@ export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
 export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
-export const JOBS_GET_WITH_A_RESULT_API = '/handleJobs?action=getAllJobsWithAResult';
+export const JOBS_GET_WITH_A_RESULT_API = '/handleJobs?action=getAllJobsWithLastResult';
 export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibleJobsWithResults';
+export const GET_SCRIPT_JOBS_WITH_RESULTS_API = '/handleJobs?action=getAllScriptJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
+export const GET_SUMMARY_RESULTS_API = '/handleJobs?action=getSummaryResults';
+
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
@@ -213,8 +216,10 @@ export const SECURITY_ARRAY = [
 
 export const PERFORMANCE_TEST_TYPE = 'performace';
 export const PING_TEST_TYPE = 'ping';
+export const SCRIPT_TEST_TYPE = 'script';
 export const TEST_TYPE_ARRAY = [
-    {value: PING_TEST_TYPE, textValue: 'PING TEST'}
+    {value: PING_TEST_TYPE, textValue: 'PING TEST'},
+    {value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST'}
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
