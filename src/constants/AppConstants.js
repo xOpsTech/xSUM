@@ -47,6 +47,8 @@ export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTen
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 
+export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
+
 export const RESPONSE_SUCCESS = 'Success';
 
 // ModalTypes
@@ -92,6 +94,7 @@ export const USER_PROFILE_ROUTE = '/user-profile';
 export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
 export const BILLING_ROUTE = '/billing';
 export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
+export const ADD_FEEDBACK_ROUTE = '/add-feedback';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;

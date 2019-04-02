@@ -130,6 +130,9 @@ export function isPasswordHasError(value) {
     return !RegExp(AppConstants.PASSWORD_PATTERN).test(value);
 }
 
+export function isEmptyError(value) {
+  return value.length == 0;
+}
 export function getRandomHexaValue() {
     return randomBytes(10).toString('hex');
 }
