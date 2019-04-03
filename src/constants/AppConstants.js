@@ -108,6 +108,7 @@ export const TENANT_SETTINGS_INDEX = 8;
 export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 export const DASHBOARD_CONFIG_INDEX = 11;
+export const FEEDBACK_INDEX = 12;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
@@ -192,6 +193,11 @@ export const LEFT_NAV_TABS = [
                 route: DASHBOARD_CONFIG_ROUTE
             }
         ]
+    },
+    {
+        index: FEEDBACK_INDEX,
+        text: 'FEEDBACK',
+        route: ADD_FEEDBACK_ROUTE
     }
 ];
 
