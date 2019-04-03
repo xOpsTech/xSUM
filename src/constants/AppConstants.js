@@ -47,6 +47,8 @@ export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTen
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 
+export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
+
 export const RESPONSE_SUCCESS = 'Success';
 
 // ModalTypes
@@ -92,6 +94,7 @@ export const USER_PROFILE_ROUTE = '/user-profile';
 export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
 export const BILLING_ROUTE = '/billing';
 export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
+export const ADD_FEEDBACK_ROUTE = '/add-feedback';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -105,6 +108,7 @@ export const TENANT_SETTINGS_INDEX = 8;
 export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 export const DASHBOARD_CONFIG_INDEX = 11;
+export const FEEDBACK_INDEX = 12;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
@@ -189,6 +193,11 @@ export const LEFT_NAV_TABS = [
                 route: DASHBOARD_CONFIG_ROUTE
             }
         ]
+    },
+    {
+        index: FEEDBACK_INDEX,
+        text: 'FEEDBACK',
+        route: ADD_FEEDBACK_ROUTE
     }
 ];
 

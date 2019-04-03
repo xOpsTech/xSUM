@@ -122,6 +122,10 @@ class Login extends React.Component {
         e.preventDefault();
         UIHelper.redirectTo(AppConstants.SIGN_UP_ROUTE, {});
     }
+    addFeedback(e) {
+        e.preventDefault;
+        UIHelper.redirectTo(AppConstants.ADD_FEEDBACK_ROUTE);
+    }
 
     googleResponseSuccess(response) {
         var basicProfile = response.getBasicProfile();
@@ -232,6 +236,13 @@ class Login extends React.Component {
                                 className="btn btn-primary form-control button-all-caps-text"
                                 onClick={(e) => this.signUpClick(e)}>
                                 Create a new account
+                            </button>
+                        </div>
+                        <div className="form-group">
+                            <button
+                                className="btn btn-primary form-control button-all-caps-text"
+                                onClick={(e) => this.addFeedback(e)}>
+                                Add Feedback
                             </button>
                         </div>
                         <GoogleLoginButton
