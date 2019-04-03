@@ -185,7 +185,7 @@ class AddFeedbackView extends React.Component {
             <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
             {
                 (loggedUserObj)
-                    ? <LeftNav selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX} isFixedLeftNav={false}/>
+                    ? <LeftNav selectedIndex={AppConstants.FEEDBACK_INDEX} isFixedLeftNav={false}/>
                     : null
             }
 
