@@ -230,8 +230,6 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
                             name: "sitespeed",
                             command: [
                                 "/start.sh",
-                                "--preScript",
-                                config.API_URL + '/' + jobToExecute.scriptPath,
                                 "-n",
                                 "1",
                                 "--influxdb.host",
