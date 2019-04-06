@@ -507,7 +507,7 @@ class SiteAdd extends React.Component {
                         <div className="form-group radio-group">
                             {
                                 AppConstants.TEST_TYPE_ARRAY.map((test, i) => {
-                                    return <div className="radio radio-div-container">
+                                    return <div className="row radio radio-div-container">
                                                 <label>
                                                     <input
                                                         value={test.value}
@@ -580,7 +580,7 @@ class SiteAdd extends React.Component {
                             }
                         </div>
                         {
-                            (isRecursiveCheck)
+                            (isRecursiveCheck && (testType !== AppConstants.ONE_TIME_TEST_TYPE))
                                 ? <select
                                     value={recursiveSelect.value}
                                     className="form-control form-control-sm form-group"

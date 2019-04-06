@@ -284,7 +284,8 @@ class SingleJobResultView extends React.Component {
                         {
                             (jobsWithResults.length > 0)
                                 ? jobsWithResults.map((jobWithResult, i) => {
-                                    if (jobWithResult.job.testType === AppConstants.SCRIPT_TEST_TYPE) {
+                                    if (jobWithResult.job.testType === AppConstants.SCRIPT_TEST_TYPE ||
+                                        jobWithResult.job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
                                         return (
                                             <ScriptTestResult
                                                 jobWithResult={jobWithResult}

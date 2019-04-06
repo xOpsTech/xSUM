@@ -108,6 +108,53 @@ JobApi.prototype.insertJob = async function(req, res) {
         });
     }
 
+    if (jobObj.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+
+        // Execute one time test
+        Helpers.executeOneTimeJob(jobObj.tenantID, jobInsertObj);
+        //console.log("Job creation successful in cluster side ", createdClusterJobObj);
+
+        var timeLimit = 1 * 1000 * 1;
+
+        setTimeout(
+            function() {
+
+                // Set timer to send email after some time
+                var pdfFileName = 'job-' + jobObj.jobId + '.pdf';
+                var pathToResultPDF = 'one-time-results/tenantid-' + jobObj.tenantID + '/' + pdfFileName;
+
+                var phantom = require('phantom');
+                phantom.create().then(function(ph) {
+                    ph.createPage().then(function(page) {
+                        page.open("http://www.google.com").then(function(status) {
+                            page.render(pathToResultPDF).then(function() {
+                                var emailBodyToSend = 'Please find the attachement for results of your job';
+                                var pdfAttachments = [
+                                    {
+                                        filename: pdfFileName,
+                                        path: config.API_URL + '/' + pathToResultPDF
+                                    }
+                                ];
+
+                                Helpers.sendEmailAs (
+                                    jobObj.userEmail,
+                                    'xSUM-One Time Test - ' + jobObj.siteObject.value,
+                                    emailBodyToSend,
+                                    AppConstants.ADMIN_EMAIL_TYPE,
+                                    pdfAttachments
+                                );
+                                ph.exit()
+                            });
+                        });
+                    });
+                });
+
+
+            },
+            timeLimit
+        );
+    }
+
     var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 

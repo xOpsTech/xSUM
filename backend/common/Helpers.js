@@ -67,7 +67,7 @@ exports.sendEmailFrom = function(fromMailAddress, fromPassword, toMailAddress, s
     });
 }
 
-exports.sendEmailAs = function(toMailAddress, subject, html, emailType) {
+exports.sendEmailAs = function(toMailAddress, subject, html, emailType, attachments) {
     var sendingMail, sendingMailPassword;
     switch (emailType) {
         case AppConstants.ADMIN_EMAIL_TYPE:
@@ -100,6 +100,10 @@ exports.sendEmailAs = function(toMailAddress, subject, html, emailType) {
         subject: subject,
         html: html
     };
+
+    if (attachments.length > 0) {
+        mailOptions.attachments = attachments;
+    }
 
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
@@ -185,64 +189,77 @@ exports.executeScriptJob = async function(databaseName, collectionName, jobToExe
                     console.log('Error in creating file' + fileName, err);
                     throw err;
                 } else {
-
-                    // Create the job
-                    const client = new Client({
-                        config: {
-                            url: config.CLUSTER_URL,
-                            auth: {
-                                user: AppConstants.CLUSTER_USERNAME,
-                                pass: AppConstants.CLUSTER_PASSWORD,
-                            },
-                            insecureSkipTlsVerify: true
-                        }
-                    });
-                    await client.loadSpec();
-
-                    const deploymentManifest = {
-                        kind: "Job",
-                        spec: {
-                            template: {
-                                spec: {
-                                    containers: [
-                                        {
-                                            image: "sitespeedio/sitespeed.io:8.7.5",
-                                            name: "sitespeed",
-                                            command: [
-                                                "/start.sh",
-                                                "-n",
-                                                "1",
-                                                "--influxdb.host",
-                                                config.INFLUXDB_IP,
-                                                "--influxdb.port",
-                                                "8086",
-                                                "--influxdb.database",
-                                                databaseName,
-                                                "--browser",
-                                                jobToExecute.browser,
-                                                "--influxdb.tags",
-                                                "jobid=" + jobToExecute.jobId + ",resultID=" + resultID + ",locationTitle=" + locationTitle + ",latitude=" + locationLatitude + ",longitude=" + locationLongitude + ",curDateMilliSec=" + curDateMilliSec,
-                                                jobToExecute.securityProtocol + jobToExecute.siteObject.value
-                                            ]
-                                        }
-                                    ],
-                                    restartPolicy: "Never"
-                                }
-                            },
-                            backoffLimit: 4
-                        },
-                        apiVersion: "batch/v1",
-                        metadata: {
-                            name: "sitespeedjob" + curDateMilliSec
-                        }
-                    };
-                    const create = await client.apis.batch.v1.namespaces('default').jobs.post({ body: deploymentManifest });
-                    console.log("Job creation successful in cluster side ", create);
+                    var createdJobObj = await this.executeOneTimeJob(databaseName, jobToExecute);
+                    console.log("Job creation successful in cluster side ", createdJobObj);
                 }
             });
         }
 
     });
+}
+
+exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
+    var resultID = crypto.randomBytes(10).toString('hex');
+    var locationTitle = jobToExecute.serverLocation.textValue;
+    var locationLatitude = jobToExecute.serverLocation.latitude;
+    var locationLongitude = jobToExecute.serverLocation.longitude;
+
+    var curDateMilliSec = new Date().getTime();
+
+    // Create the job
+    const client = new Client({
+        config: {
+            url: config.CLUSTER_URL,
+            auth: {
+                user: AppConstants.CLUSTER_USERNAME,
+                pass: AppConstants.CLUSTER_PASSWORD,
+            },
+            insecureSkipTlsVerify: true
+        }
+    });
+    await client.loadSpec();
+
+    const deploymentManifest = {
+        kind: "Job",
+        spec: {
+            template: {
+                spec: {
+                    containers: [
+                        {
+                            image: "sitespeedio/sitespeed.io:8.7.5",
+                            name: "sitespeed",
+                            command: [
+                                "/start.sh",
+                                "--preScript",
+                                config.API_URL + '/' + jobToExecute.scriptPath,
+                                "-n",
+                                "1",
+                                "--influxdb.host",
+                                config.INFLUXDB_IP,
+                                "--influxdb.port",
+                                "8086",
+                                "--influxdb.database",
+                                databaseName,
+                                "--browser",
+                                jobToExecute.browser,
+                                "--influxdb.tags",
+                                "jobid=" + jobToExecute.jobId + ",resultID=" + resultID + ",locationTitle=" + locationTitle + ",latitude=" + locationLatitude + ",longitude=" + locationLongitude + ",curDateMilliSec=" + curDateMilliSec,
+                                jobToExecute.securityProtocol + jobToExecute.siteObject.value
+                            ]
+                        }
+                    ],
+                    restartPolicy: "Never"
+                }
+            },
+            backoffLimit: 4
+        },
+        apiVersion: "batch/v1",
+        metadata: {
+            name: "sitespeedjob" + curDateMilliSec
+        }
+    };
+    const create = await client.apis.batch.v1.namespaces('default').jobs.post({ body: deploymentManifest });
+    return create;
 }
 
 exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
@@ -290,7 +307,7 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
     var dataTables = [];
     if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
         dataTables.push(AppConstants.PERFORMANCE_RESULT_LIST);
-    } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE) {
+    } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE || job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
         dataTables.push({tableName: AppConstants.PERFORMANCE_RESULT_LIST, fieldToFetch: 'mean',fieldToReturn: 'response', isPageTimingsCheck: true});
         dataTables.push({tableName: AppConstants.PAGE_DOWNLOAD_TIME_RESULT_LIST, fieldToFetch: 'mean', fieldToReturn: 'downloadTime', isPageTimingsCheck: true});
         dataTables.push({tableName: AppConstants.SERVER_RESPONSE_TIME_LIST, fieldToFetch: 'mean', fieldToReturn: 'serverResponseTime', isPageTimingsCheck: true});

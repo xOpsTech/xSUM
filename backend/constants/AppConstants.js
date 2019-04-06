@@ -111,6 +111,7 @@ exports.ACCESS_LIST = [
 exports.PERFORMANCE_TEST_TYPE = 'performace';
 exports.PING_TEST_TYPE = 'ping';
 exports.SCRIPT_TEST_TYPE = 'script';
+exports.ONE_TIME_TEST_TYPE = 'one-time';
 
 // Execution time frequencies
 exports.RECURSIVE_EXECUTION_ARRAY = [

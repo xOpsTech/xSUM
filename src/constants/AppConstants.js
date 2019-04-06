@@ -223,9 +223,11 @@ export const SECURITY_ARRAY = [
 export const PERFORMANCE_TEST_TYPE = 'performace';
 export const PING_TEST_TYPE = 'ping';
 export const SCRIPT_TEST_TYPE = 'script';
+export const ONE_TIME_TEST_TYPE = 'one-time';
 export const TEST_TYPE_ARRAY = [
     {value: PING_TEST_TYPE, textValue: 'PING TEST'},
-    {value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST'}
+    {value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST'},
+    {value: ONE_TIME_TEST_TYPE, textValue: 'ONE TIME TEST'}
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
