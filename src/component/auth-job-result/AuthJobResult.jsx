@@ -1,7 +1,6 @@
 import React, {Fragment} from 'react';
 
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
-import DockerJobResult from '../common/docker-job-result/DockerJobResult';
 import LogoContainer from '../common/logo-container/LogoContainer';
 import ScriptTestResult from '../common/script-test-result/ScriptTestResult';
 import jobApi from '../../api/jobApi';
