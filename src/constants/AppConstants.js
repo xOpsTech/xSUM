@@ -17,6 +17,7 @@ export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibl
 export const GET_SCRIPT_JOBS_WITH_RESULTS_API = '/handleJobs?action=getAllScriptJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
 export const GET_SUMMARY_RESULTS_API = '/handleJobs?action=getSummaryResults';
+export const GET_ONE_TIME_RESULTS_API = '/handleJobs?action=getOneTimeJobWithResults';
 
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
@@ -50,6 +51,7 @@ export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
 
 export const RESPONSE_SUCCESS = 'Success';
+export const RESPONSE_ERROR = 'Error';
 
 // ModalTypes
 export const CONFIRMATION_MODAL = 'CONFIRMATION_MODAL';
@@ -95,6 +97,7 @@ export const TENANT_SETTINGS_ROUTE = '/tenant-settings';
 export const BILLING_ROUTE = '/billing';
 export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
 export const ADD_FEEDBACK_ROUTE = '/add-feedback';
+export const AUTH_JOB_RESULT = '/auth-job-result';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;

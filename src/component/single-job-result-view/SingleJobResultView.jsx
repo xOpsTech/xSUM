@@ -289,7 +289,6 @@ class SingleJobResultView extends React.Component {
                                         return (
                                             <ScriptTestResult
                                                 jobWithResult={jobWithResult}
-                                                FirstViewComponent={ResultViewContainer}
                                                 selectedTenant={selectedTenant}
                                                 key={i}/>
                                         );

@@ -34,6 +34,9 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "getAllScriptJobsWithResults":
             new JobApi().getAllScriptJobsWithResults(req, res);
             break;
+        case "getOneTimeJobWithResults":
+            new JobApi().getOneTimeJobWithResults(req, res);
+            break;
         case "getAllJobsWithLastResult":
             new JobApi().getAllJobsWithLastResult(req, res);
             break;
@@ -108,60 +111,20 @@ JobApi.prototype.insertJob = async function(req, res) {
         });
     }
 
-    if (jobObj.testType === AppConstants.ONE_TIME_TEST_TYPE) {
-
-        // Execute one time test
-        Helpers.executeOneTimeJob(jobObj.tenantID, jobInsertObj);
-        //console.log("Job creation successful in cluster side ", createdClusterJobObj);
-
-        var timeLimit = 1 * 1000 * 1;
-
-        setTimeout(
-            function() {
-
-                // Set timer to send email after some time
-                var pdfFileName = 'job-' + jobObj.jobId + '.pdf';
-                var pathToResultPDF = 'one-time-results/tenantid-' + jobObj.tenantID + '/' + pdfFileName;
-
-                var phantom = require('phantom');
-                phantom.create().then(function(ph) {
-                    ph.createPage().then(function(page) {
-                        page.open("http://www.google.com").then(function(status) {
-                            page.render(pathToResultPDF).then(function() {
-                                var emailBodyToSend = 'Please find the attachement for results of your job';
-                                var pdfAttachments = [
-                                    {
-                                        filename: pdfFileName,
-                                        path: config.API_URL + '/' + pathToResultPDF
-                                    }
-                                ];
-
-                                Helpers.sendEmailAs (
-                                    jobObj.userEmail,
-                                    'xSUM-One Time Test - ' + jobObj.siteObject.value,
-                                    emailBodyToSend,
-                                    AppConstants.ADMIN_EMAIL_TYPE,
-                                    pdfAttachments
-                                );
-                                ph.exit()
-                            });
-                        });
-                    });
-                });
-
-
-            },
-            timeLimit
-        );
-    }
-
     var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
 
     var totalPointsRemain = tenantData[0].points.pointsRemain -
                                     (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobObj.recursiveSelect.value);
 
-    if (totalPointsRemain >= 0 ) {
+    if (totalPointsRemain >= 0) {
+
+        if (jobObj.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+            var authKey = crypto.randomBytes(30).toString('hex');
+            jobInsertObj.authKey = authKey;
+            Helpers.executeOneTimeJob(jobObj.tenantID, jobInsertObj);
+        }
+
         await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
 
         TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, true);
@@ -194,7 +157,7 @@ JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, true);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -210,6 +173,37 @@ JobApi.prototype.getAllScriptJobsWithResults = async function(req, res) {
     res.send(listObj);
 }
 
+JobApi.prototype.getOneTimeJobWithResults = async function(req, res) {
+    var paramObj = req.body;
+    var selectedTenant = undefined, selectedJob;
+
+    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
+    //var currentDateTime = moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT);
+
+    for (let tenant of tenantList) {
+        var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
+
+        for (let job of jobList) {
+
+            if (job.authKey === paramObj.tagCode) {
+                selectedTenant = tenant;
+                job.result = await Helpers.getJobResultsBackDate(String(selectedTenant._id), job, false, false);
+                selectedJob = job;
+                break;
+            }
+
+        }
+
+    }
+
+    if (selectedTenant === undefined) {
+        res.send({message: AppConstants.RESPONSE_ERROR});
+    } else {
+        res.send({selectedJob: selectedJob, selectedTenant: selectedTenant});
+    }
+
+}
+
 JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var userObj = req.body;
     var tenantID = userObj.tenantID;
@@ -219,7 +213,14 @@ JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true);
+
+        // Fetch all results for one time test and fetch only given time range data for other tests
+        if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+            job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, false);
+        } else {
+            job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, true);
+        }
+
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);

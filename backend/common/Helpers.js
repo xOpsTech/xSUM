@@ -101,7 +101,7 @@ exports.sendEmailAs = function(toMailAddress, subject, html, emailType, attachme
         html: html
     };
 
-    if (attachments.length > 0) {
+    if (attachments && attachments.length > 0) {
         mailOptions.attachments = attachments;
     }
 
@@ -196,6 +196,7 @@ exports.executeScriptJob = async function(databaseName, collectionName, jobToExe
         }
 
     });
+
 }
 
 exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
@@ -274,7 +275,13 @@ exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-        job.result = await this.getJobResultsBackDate(tenantID, job, false);
+
+        // Fetch all results for one time test and fetch only given time range data for other tests
+        if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+            job.result = await this.getJobResultsBackDate(tenantID, job, false, false);
+        } else {
+            job.result = await this.getJobResultsBackDate(tenantID, job, false, true);
+        }
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -296,12 +303,17 @@ exports.getAJobWithLocation = async function(paramObj) {
 
     var job = jobsList[0];
 
-    job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false);
+    // Fetch all results for one time test and fetch only given time range data for other tests
+    if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+        job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false, false);
+    } else {
+        job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false, true);
+    }
 
     return job;
 }
 
-exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
+exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast, isTimeCheck) {
     var dataTables = [];
     if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
         dataTables.push(AppConstants.PERFORMANCE_RESULT_LIST);
@@ -321,8 +333,9 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
         for (let dataTable of dataTables) {
             var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
             var queryToGetResults = "SELECT * FROM " + dataTable.tableName +
-                                    " where jobid='" + job.jobId + "' and time >= '" + backDate +
-                                    ((dataTable.isPageTimingsCheck) ? "' and pageTimings='" + dataTable.tableName + "'" : "" ) +
+                                    " where jobid='" + job.jobId + "'" +
+                                    ((isTimeCheck) ? " and time >= '" + backDate + "'" : "") +
+                                    ((dataTable.isPageTimingsCheck) ? " and pageTimings='" + dataTable.tableName + "'" : "" ) +
                                     ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
             var eachTableResults = await InfluxDB.getAllDataFor(
                 tenantID,
@@ -349,7 +362,8 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast) {
     } else {
         var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
         var queryToGetResults = "SELECT * FROM " + dataTables[0] +
-                                " where jobid='" + job.jobId + "' and time >= '" + backDate + "'" +
+                                " where jobid='" + job.jobId + "'" +
+                                ((isTimeCheck) ? " and time >= '" + backDate + "'" : "") +
                                 ((isLimitLast) ? " ORDER BY time DESC LIMIT 1" : "");
         var jobResults = await InfluxDB.getAllDataFor(
             tenantID,

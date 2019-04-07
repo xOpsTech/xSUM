@@ -24,7 +24,9 @@ import ProfileView from './component/management/profile/ProfileView';
 import TenantSettings from './component/management/tenant-settings/TenantSettings';
 import Billing from './component/management/billing/Billing';
 import DashboardConfig from './component/management/dashboard-config/DashboardConfig';
-import AddFeedbackView from './component/common/feedback/AddFeedbackView'
+import AddFeedbackView from './component/common/feedback/AddFeedbackView';
+import AuthJobResult from './component/auth-job-result/AuthJobResult';
+
 export default (
     <Route path={'/'} component={Page}>
         <IndexRoute component={Login}/>
@@ -50,5 +52,6 @@ export default (
         <Route path={AppConstants.BILLING_ROUTE} component={Billing}/>
         <Route path={AppConstants.DASHBOARD_CONFIG_ROUTE} component={DashboardConfig}/>
         <Route path={AppConstants.ADD_FEEDBACK_ROUTE} component={AddFeedbackView}/>
+        <Route path={AppConstants.AUTH_JOB_RESULT} component={AuthJobResult}/>
     </Route>
 );

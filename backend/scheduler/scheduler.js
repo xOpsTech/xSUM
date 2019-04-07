@@ -70,7 +70,6 @@ async function executeAllJobs(executionFrequency) {
                     } else if (job.testType === AppConstants.PING_TEST_TYPE) {
                         job.urlValue = job.siteObject.value;
                         job.currentDateTime = currentDateTime;
-
                         // Execute ping test
                         Helpers.executePingJob(String(tenant._id), job, false);
                     }
@@ -123,20 +122,21 @@ function executeJob(databaseName, collectionName, jobToExecute) {
     var curDateMilliSec = new Date().getTime();
 
     //Send process request to sitespeed
-    var commandStr = 'sudo docker run --rm sitespeedio/sitespeed.io:7.3.6' +
+    var commandStr = 'sudo docker run --shm-size=1g --rm -v' +
+        ' "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:8.7.5 -n 1' +
         ' --influxdb.host ' + config.INFLUXDB_IP + ' --influxdb.port 8086 --influxdb.database ' + databaseName +
         ' --browser ' + jobToExecute.browser +
         ' --influxdb.tags "jobid=' + jobToExecute.jobId + ',resultID=' + resultID
         + ',locationTitle=' + locationTitle + ',latitude=' + locationLatitude
         + ',longitude=' + locationLongitude + ',curDateMilliSec=' + curDateMilliSec + '" '
-        + jobToExecute.siteObject.value;
+        + jobToExecute.securityProtocol + jobToExecute.siteObject.value;
     cmd.get(
         commandStr,
         async function(err, data, stderr) {
-            jobToExecute.result.push({resultID: resultID, executedDate: new Date()});
-            var newValueObj = {
-                result: jobToExecute.result
-            };
+            // jobToExecute.result.push({resultID: resultID, executedDate: new Date()});
+            // var newValueObj = {
+            //     result: jobToExecute.result
+            // };
 
             if (err) {
                 console.log('Error in executing the job : ', jobToExecute.jobId);
