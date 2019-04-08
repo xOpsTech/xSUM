@@ -250,7 +250,7 @@ JobApi.prototype.getAJobWithResults = async function(req, res) {
 
 JobApi.prototype.getSummaryResults = async function(req, res) {
     var paramObj = req.body;
-    var results = await Helpers.getSummaryResults(paramObj);
+    var results = await Helpers.getSummaryResults(paramObj, false);
     res.send(results);
 }
 

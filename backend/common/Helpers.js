@@ -261,6 +261,19 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
     return create;
 }
 
+exports.sendEmailRegardingOneTimeJob = function(jobObj) {
+    var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
+    var emailBodyToSend =  'Please find the attachement for results of your job' +
+                            '<a href="' + oneTimeTestResultURL + '">View results or one time test</a> <br>'
+
+    this.sendEmailAs (
+        jobObj.userEmail,
+        'xSUM - One Time Test - ' + jobObj.siteObject.value,
+        emailBodyToSend,
+        AppConstants.ADMIN_EMAIL_TYPE,
+    );
+}
+
 exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var queryObj;
 
@@ -374,7 +387,7 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast, isTim
     return jobResults;
 }
 
-exports.getSummaryResults = async function(params) {
+exports.getSummaryResults = async function(params, isTimeCheck) {
     let resultsArray = [];
     let dataTables = [
         {tableName: AppConstants.SCORE_LIST, displayName: 'Score'},
@@ -394,7 +407,8 @@ exports.getSummaryResults = async function(params) {
     for (let dataTable of dataTables) {
         var backDate = moment().subtract(1, 'days').format(AppConstants.INFLUXDB_DATETIME_FORMAT);
         var queryToGetResults = "SELECT * FROM " + dataTable.tableName +
-                                " where jobid='" + params.jobId + "' and time >= '" + backDate + "' and summaryType='pageSummary'";
+                                " where jobid='" + params.jobId + "'" +
+                                ((isTimeCheck) ? " and time >= '" + backDate + "'" : "") + " and summaryType='pageSummary'";
 
         if (dataTable.tableName === AppConstants.SCORE_LIST) {
             queryToGetResults += " ORDER BY time DESC LIMIT 5";
