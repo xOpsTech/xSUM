@@ -58,6 +58,9 @@ JobApi.prototype.handleJobs = function(req, res) {
         case "updateJobs":
             new JobApi().updateJobs(req, res);
             break;
+        case "sendOneTimeEmail":
+            new JobApi().sendOneTimeEmail(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -344,6 +347,26 @@ JobApi.prototype.updateJobs = async function(req, res) {
     }
 
     res.send(updateObject);
+}
+
+JobApi.prototype.sendOneTimeEmail = async function(req, res) {
+    var emailToSendObject = req.body;
+
+    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
+
+    for (let tenant of tenantList) {
+        var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
+
+        for (let job of jobList) {
+
+            if (job.testType === AppConstants.ONE_TIME_TEST_TYPE && job.userEmail === emailToSendObject.email) {
+                Helpers.sendEmailRegardingOneTimeJob(job);
+            }
+
+        }
+    }
+
+    res.send(emailToSendObject);
 }
 
 JobApi.prototype.startorStopJob = function(req, res) {

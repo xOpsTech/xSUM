@@ -263,7 +263,7 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
 
 exports.sendEmailRegardingOneTimeJob = function(jobObj) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
-    var emailBodyToSend =  'Please find the attachement for results of your job' +
+    var emailBodyToSend =  'Please find the results of your one time job<br>' +
                             '<a href="' + oneTimeTestResultURL + '">View results or one time test</a> <br>'
 
     this.sendEmailAs (
