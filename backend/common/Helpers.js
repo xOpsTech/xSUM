@@ -330,7 +330,7 @@ exports.getJobResultsBackDate = async function(tenantID, job, isLimitLast, isTim
     var dataTables = [];
     if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE) {
         dataTables.push(AppConstants.PERFORMANCE_RESULT_LIST);
-    } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE || job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+    } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE) {
         dataTables.push({tableName: AppConstants.PERFORMANCE_RESULT_LIST, fieldToFetch: 'mean',fieldToReturn: 'response', isPageTimingsCheck: true});
         dataTables.push({tableName: AppConstants.PAGE_DOWNLOAD_TIME_RESULT_LIST, fieldToFetch: 'mean', fieldToReturn: 'downloadTime', isPageTimingsCheck: true});
         dataTables.push({tableName: AppConstants.SERVER_RESPONSE_TIME_LIST, fieldToFetch: 'mean', fieldToReturn: 'serverResponseTime', isPageTimingsCheck: true});

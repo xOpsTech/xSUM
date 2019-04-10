@@ -67,7 +67,7 @@ async function executeAllJobs(executionFrequency) {
                         executeJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
                     } else if (job.testType === AppConstants.SCRIPT_TEST_TYPE) {
                         Helpers.executeScriptJob(String(tenant._id), AppConstants.DB_JOB_LIST, job);
-                    } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+                    } else if (job.testType === AppConstants.PING_TEST_TYPE || job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
                         job.urlValue = job.siteObject.value;
                         job.currentDateTime = currentDateTime;
                         // Execute ping test

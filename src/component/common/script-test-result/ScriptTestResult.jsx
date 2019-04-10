@@ -72,24 +72,24 @@ class ScriptTestResult extends React.Component {
                         <ResultViewContainer
                             jobWithResult={jobWithResult}
                             keyID={key}
-                            fieldToDisplay={'pageDownLoadTime'}
-                            chartTitle={'Page Download Time'}
+                            fieldToDisplay={'dnsLookUpTime'}
+                            chartTitle={'DNS Time'}
                             barChartBarClick={this.barChartBarClick}/>
                     </LazyLoad>
                     <LazyLoad height={345} offsetVertical={300}>
                         <ResultViewContainer
                             jobWithResult={jobWithResult}
                             keyID={key}
-                            fieldToDisplay={'serverResponseTime'}
-                            chartTitle={'Server Response Times'}
+                            fieldToDisplay={'tcpConnectTime'}
+                            chartTitle={'TCP Connect Time'}
                             barChartBarClick={this.barChartBarClick}/>
                     </LazyLoad>
                     <LazyLoad height={345} offsetVertical={300}>
                         <ResultViewContainer
                             jobWithResult={jobWithResult}
                             keyID={key}
-                            fieldToDisplay={'backEndTime'}
-                            chartTitle={'Backend Times'}
+                            fieldToDisplay={'lastByteRecieveTime'}
+                            chartTitle={'Last Byte Recieve Time'}
                             barChartBarClick={this.barChartBarClick}/>
                     </LazyLoad>
                 </div>

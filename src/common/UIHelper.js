@@ -276,8 +276,7 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
     for (let currentResult of job.result) {
 
         if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE ||
-            job.testType === AppConstants.SCRIPT_TEST_TYPE ||
-            job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+            job.testType === AppConstants.SCRIPT_TEST_TYPE) {
 
             // Check Result ID exists
             var isResultIdFound = resultArray.find(function(jobObj) {
@@ -297,7 +296,8 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
                 job.pieChartColor = '#eb00ff';
             }
 
-        } else if (job.testType === AppConstants.PING_TEST_TYPE) {
+        } else if (job.testType === AppConstants.PING_TEST_TYPE ||
+        job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
             var barColor = '#eb00ff';
             var responseTime = roundValueToTwoDecimals(currentResult.response / 1000);
             var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
