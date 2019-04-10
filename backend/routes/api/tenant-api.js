@@ -33,6 +33,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "removeTenantData":
             new TenantApi().removeTenantData(req, res);
             break;
+        case "getCompanyName":
+            new TenantApi().getCompanyName(req, res);
+            break;
         default:
             res.send("no data");
     }
@@ -46,7 +49,6 @@ TenantApi.prototype.getAllTenantsData = async function(req, res) {
     var userObj = req.body;
     var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
     var matchedTenants = [];
-
     for (let tenant of tenantData) {
 
         for (let user of tenant.users) {
@@ -263,4 +265,10 @@ TenantApi.prototype.removeTenantData = async function(req, res) {
     res.send({message: AppConstants.RESPONSE_SUCCESS, tenant: tenantObj});
 }
 
+TenantApi.prototype.getCompanyName = async function (req, res) {
+    var id = req.body.id;
+    var queryObj = {ownerId: ObjectId(id)};
+    var data = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS, name: data[0].name});
+}
 module.exports = new TenantApi();

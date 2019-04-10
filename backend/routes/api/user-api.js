@@ -47,13 +47,16 @@ UserApi.prototype.handleUserData = function(req, res) {
         case "setEmailPasswordData":
             new UserApi().setEmailPasswordData(req, res);
             break;
+        case "updateProfile":
+            new UserApi().updateProfile(req, res);
+            break;
         default:
             res.send("no data");
     }
 }
 
 UserApi.prototype.registerUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     if (userObj.password) {
@@ -100,7 +103,7 @@ UserApi.prototype.registerUserData = async function(req, res) {
 }
 
 UserApi.prototype.addInActiveUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     var activationCode = crypto.randomBytes(30).toString('hex');
@@ -175,7 +178,7 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
 }
 
 UserApi.prototype.updateUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     var queryObjToGetUsers = {email: userObj.email};
@@ -433,6 +436,20 @@ UserApi.prototype.activateUser = async function(req, res) {
         res.send("User id is invalid");
     }
 
+}
+
+UserApi.prototype.updateProfile = async function(req, res) {
+    var userObj = req.body;
+    var queryObj = {_id: ObjectId(userObj._id)};
+    var updateObj = {
+        name: userObj.name,
+        title: userObj.title,
+        location: userObj.location,
+        timeZone: userObj.timeZone,
+    };
+    if (userObj.password) updateObj.password = await hashPassword(userObj.password);
+    await MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, updateObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS});
 }
 
 module.exports = new UserApi();

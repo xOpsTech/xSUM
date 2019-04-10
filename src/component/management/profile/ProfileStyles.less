@@ -1,17 +1,21 @@
 @import (reference) "../../../variables.less";
 
 .label-text{
-    text-align: left; 
+    text-align: left;
+}
+
+.col-sm-9 {
+  margin-top: 8px;
 }
 
 .alert-label{
-    color: white; 
-    font-size: 18px; 
+    color: white;
+    font-size: 18px;
 }
 
 .edit-icon{
     color: #EB00FF;
-    float: right;   
+    float: right;
     font-size: 22px;
 }
 
@@ -80,8 +84,9 @@ body {
 }
 
 .profile-label{
-    font-size: 20px; 
-    display: inline; 
+    font-size: 20px;
+    display: inline;
+    padding-top: 10;
 }
 
 #password-change{
@@ -89,27 +94,27 @@ body {
 }
 
 .profile-row{
-    border-bottom: 1px solid #17161d; 
+    border-bottom: 1px solid #17161d;
     padding: 20px 0px 0px 5px;
     &:hover{
-        background: #4d4966; 
-        cursor: pointer; 
+        background: #4d4966;
+        cursor: pointer;
     }
 }
 
 .exitOverlay{
-  background: rgba(0, 0, 0, 0.95); 
+  background: rgba(0, 0, 0, 0.95);
   width:      100%;
-  height:     100%; 
+  height:     100%;
   z-index:    4;
-  top:        0; 
-  left:       0; 
-  position:   fixed; 
+  top:        0;
+  left:       0;
+  position:   fixed;
  /* filter: blur(2px); */
 }
 
 .picture-change{
-  width: auto; 
+  width: auto;
   float: right;
   margin-left: 20px;
 }
@@ -139,7 +144,7 @@ body {
   color: #fff;
   background-color: #dc3545;
   border-color: #dc3545;
-  outline: none; 
+  outline: none;
 }
 
 .btn-outline-danger:hover {
@@ -149,12 +154,12 @@ body {
 }
 
 .profile-picture{
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .change-profile-form {
-  border-radius: 2px; 
-  z-index: 5; 
+  border-radius: 2px;
+  z-index: 5;
   display: block;
   box-shadow: 1px 2px 8px 2px black;
   padding: 15px;
