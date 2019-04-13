@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 import ErrorMessageComponent from '../../../common/error-message-component/ErrorMessageComponent';
 import ErrorIconComponent from '../../../common/error-icon-component/ErrorIconComponent';
@@ -14,10 +15,12 @@ class ProfilePopup extends React.Component {
         this.state = {
           value: null,
           password        : {value:'', error: {}},
-          confirmPassword : {value:'', error: {}}
+          confirmPassword : {value:'', error: {}},
+          selectedFile: null
         };
         this.updatePassword = this.updatePassword.bind(this);
         this.onChangeValue = this.onChangeValue.bind(this);
+        this.renderPicture = this.renderPicture.bind(this);
     }
 
     passwordCheck(passwordText, confirmPasswordText) {
@@ -94,6 +97,26 @@ class ProfilePopup extends React.Component {
         )
     }
 
+    renderPicture() {
+        return(
+            <input type="file" onChange={(e) => {this.fileChangeHandler(e)}}/>
+        )
+    }
+    fileChangeHandler(event) {
+        this.setState({ selectedFile: event.target.files[0] })
+    }
+
+    uploadHandler() {
+        const data = new FormData()
+        data.append('file', this.state.selectedFile)
+        axios.post(Config.API_URL + AppConstants.UPLOAD_PICTURE, data, {
+        })
+        .then(res => { // then print response status
+          console.log(res.statusText);
+          this.props.updatePic(this.state.selectedFile.name);
+        })
+    }
+
     renderTextInput() {
       const {password, confirmPassword} = this.state;
       if (this.props.selectedPopup.toLowerCase() == 'password') {
@@ -150,19 +173,6 @@ class ProfilePopup extends React.Component {
                   required />
         )
       }
-      return (
-        <input
-                className="name change-profile-input form-control"
-                onChange={(e) => {
-                    this.handleChange({
-                        value: e.target.value
-                    });
-                }}
-                id="changeForm"
-                type="text"
-                required />
-      )
-
     }
     render() {
         return (
@@ -177,11 +187,12 @@ class ProfilePopup extends React.Component {
                     </div>
                     <div className="form-group change-profile-form-group">
                         <label className="change-profile-form-label" for="changeForm">{this.props.selectedPopup} </label>
-                        {
-                            (this.props.selectedPopup.toLowerCase() == 'location' ||
-                                this.props.selectedPopup.toLowerCase() == 'timezone')
-                                ? this.renderSelection()
-                                : this.renderTextInput()
+                        {   (this.props.selectedPopup == 'picture')
+                                ? this.renderPicture()
+                                : (this.props.selectedPopup.toLowerCase() == 'location' ||
+                                      this.props.selectedPopup.toLowerCase() == 'timezone')
+                                      ? this.renderSelection()
+                                      : this.renderTextInput()
                         }
 
 
@@ -193,9 +204,11 @@ class ProfilePopup extends React.Component {
                         <button
                             className="formBtnDone formBtn"
                             onClick={
-                              (this.props.selectedPopup == 'password')
-                              ? this.updatePassword.bind(this)
-                              :this.onChangeValue.bind(this)}>
+                              (this.props.selectedPopup == 'picture')
+                                  ? this.uploadHandler()
+                                  : (this.props.selectedPopup == 'password')
+                                      ? this.updatePassword.bind(this)
+                                      :this.onChangeValue.bind(this)}>
                             SUBMIT
                         </button>
                     </div>

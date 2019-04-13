@@ -35,7 +35,9 @@ export const UPDATE_USER_API = '/userAuth?action=updateUserData';
 export const GET_USER_DATA_API = '/userAuth?action=getUserData';
 export const ADD_EMAIL_SETTING_DATA_API = '/userAuth?action=addEmailSettingsUserData';
 export const SET_EMAIL_PASSWORD_API = '/userAuth?action=setEmailPasswordData';
-export const UPDATE_PROFILE_API = '/userAuth?action=updateProfile'
+export const UPDATE_PROFILE_API = '/userAuth?action=updateProfile';
+export const UPLOAD_PICTURE = '/userAuth?action=uploadPicture';
+export const DELETE_PICTURE = '/userAuth?action=deletePicture';
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';
 export const REMOVE_ALERT_API = '/alert?action=removeAlert';

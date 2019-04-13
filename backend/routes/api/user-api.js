@@ -9,6 +9,8 @@ var SuperUserApi = require('./super-user-api');
 const AccessControl = require('accesscontrol');
 const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
 var moment = require('moment');
+var multer = require('multer');
+var cors = require('cors');
 
 var TenantApi = require('./tenant-api');
 
@@ -49,6 +51,12 @@ UserApi.prototype.handleUserData = function(req, res) {
             break;
         case "updateProfile":
             new UserApi().updateProfile(req, res);
+            break;
+        case "uploadPicture":
+            new UserApi().uploadPicture(req, res);
+            break;
+        case "deletePicture":
+            new UserApi().deletePicture(req, res);
             break;
         default:
             res.send("no data");
@@ -446,10 +454,41 @@ UserApi.prototype.updateProfile = async function(req, res) {
         title: userObj.title,
         location: userObj.location,
         timeZone: userObj.timeZone,
+        picture: userObj.picture
     };
     if (userObj.password) updateObj.password = await hashPassword(userObj.password);
     await MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, updateObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS});
+}
+
+UserApi.prototype.uploadPicture = async function(req, res) {
+    var storage = multer.diskStorage({
+          destination: function (req, file, cb) {
+          cb(null, '../assets/img/filePicture')
+        },
+        filename: function (req, file, cb) {
+          cb(null, file.originalname )
+        }
+    });
+    var upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+       if (err instanceof multer.MulterError) {
+           return res.status(500).json(err)
+       } else if (err) {
+           return res.status(500).json(err)
+       }
+       return res.status(200).send(req.file)
+     })
+}
+UserApi.prototype.deletePicture = async function(req, res) {
+    console.log(req.body);
+    const fs = require('fs');
+    fs.unlink("../assets/img/filePicture/" + req.body.name, function (err) {            
+         if (err) {
+             console.error(err);
+         }
+        console.log('File has been Deleted');
+     });
 }
 
 module.exports = new UserApi();

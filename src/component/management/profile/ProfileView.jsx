@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import axios from 'axios';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
@@ -63,7 +64,8 @@ class ProfileView extends React.Component {
                 location: '',
                 name: '',
                 timeZone: '',
-                password: '00000'
+                password: '',
+                picture: ''
 
             },
             isLeftNavCollapse: false,
@@ -100,7 +102,29 @@ class ProfileView extends React.Component {
         });
         this.saveProfile();
     }
-
+    updatePicture(e) {
+        var usr = this.state.loggedUserObj
+        usr.picture = e;
+        this.setState({
+            loggedUserObj: usr,
+            isHidden: !this.state.isHidden
+        });
+        this.saveProfile();
+    }
+    deletePicture() {
+      var usr = this.state.loggedUserObj
+      axios.post(Config.API_URL + AppConstants.DELETE_PICTURE, {
+          name: this.state.loggedUserObj.picture
+      })
+      .then(res => { // then print response status
+        console.log(res.statusText);
+      })
+      usr.picture = null;
+      this.setState({
+          loggedUserObj: usr,
+      });
+      this.saveProfile();
+    }
     getLoggedUserData(loggedUserObj) {
         UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
     }
@@ -258,6 +282,7 @@ class ProfileView extends React.Component {
                     selectedPopup={selectedPopup}
                     closePopup={this.togglePopup.bind(this)}
                     update={this.updateValue.bind(this)}
+                    updatePic={this.updatePicture.bind(this)}
                 />}
                 <div className="site-edit-container">
                     <div className={
@@ -279,13 +304,21 @@ class ProfileView extends React.Component {
                                     </div>
                                 </div>
                                 <div className="col-sm-9" >
-                                    <img className="profile-picture" src="../../../../assets/img/missing.png" />
+                                    <img className="profile-picture"
+                                        src={
+                                            (this.state.loggedUserObj.picture)
+                                            ? "../../../../assets/img/filePicture/" + this.state.loggedUserObj.picture
+                                            : "../../../../assets/img/missing.png"
+                                        }/>
                                     <button
                                         className="btn btn-outline-danger form-control button-all-caps-text  picture-change"
-                                        onClick={this.togglePopup.bind(this, "picture")}>
+                                        onClick={this.deletePicture.bind(this)}>
                                         Remove Picture
                                     </button>
-                                    <button className="btn btn-primary form-control button-all-caps-text picture-change"> Change Picture </button>
+                                    <button className="btn btn-primary form-control button-all-caps-text picture-change"
+                                            onClick={this.togglePopup.bind(this, "picture")}>
+                                            Change Picture
+                                    </button>
                                 </div>
                             </div>
                             <div className="row profile-row" onClick={this.togglePopup.bind(this, "name")}>
