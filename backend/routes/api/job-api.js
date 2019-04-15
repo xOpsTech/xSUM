@@ -190,7 +190,7 @@ JobApi.prototype.getOneTimeJobWithResults = async function(req, res) {
 
             if (job.authKey === paramObj.tagCode) {
                 selectedTenant = tenant;
-                job.result = await Helpers.getJobResultsBackDate(String(selectedTenant._id), job, false, false);
+                job.result = await Helpers.getJobResultsBackDate(String(selectedTenant._id), job, false, true);
                 selectedJob = job;
                 break;
             }
