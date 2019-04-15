@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import ErrorMessageComponent from '../../../common/error-message-component/ErrorMessageComponent';
 import ErrorIconComponent from '../../../common/error-icon-component/ErrorIconComponent';
+import LocationSearchInput from '../location-search-input/LocationSearchInput';
 
 import * as MessageConstants from '../../../../constants/MessageConstants';
 import * as Config from '../../../../config/config';
@@ -59,6 +60,9 @@ class ProfilePopup extends React.Component {
     onChangeValue() {
         this.props.update(this.state.value);
     }
+    changeLocation(e) {
+        this.setState({value: e});
+    }
 
     updatePassword() {
         const {password, confirmPassword} = this.state;
@@ -77,22 +81,14 @@ class ProfilePopup extends React.Component {
           <select
                 className="form-control form-control-sm form-group"
                 onChange={(e) => this.dropDownClick({value: e.target.value})}>
-                {   (this.props.selectedPopup.toLowerCase() == 'location')
-                      ? Config.SERVER_LOCATION_ARRAY.map((location) => {
-                            return (
-                                <option value={location.textValue}>
-                                    {location.textValue}
-                                </option>
-                            );
-                        })
-                      : AppConstants.TIMEZONE_LIST.map((zone) => {
-                            return (
-                                <option value={zone}>
-                                    {zone}
-                                </option>
-                            );
-                        })
-               }
+                {   AppConstants.TIMEZONE_LIST.map((zone) => {
+                        return (
+                            <option value={zone}>
+                                {zone}
+                            </option>
+                        );
+                    })
+                 }
             </select>
         )
     }
@@ -112,7 +108,6 @@ class ProfilePopup extends React.Component {
         axios.post(Config.API_URL + AppConstants.UPLOAD_PICTURE, data, {
         })
         .then(res => { // then print response status
-          console.log(res.statusText);
           this.props.updatePic(this.state.selectedFile.name);
         })
     }
@@ -159,6 +154,10 @@ class ProfilePopup extends React.Component {
             </div>
 
           )
+      } else if (this.props.selectedPopup == 'location') {
+        return (
+          <LocationSearchInput changeLocation={this.changeLocation.bind(this)}/>
+        )
       } else {
         return (
           <input
@@ -189,15 +188,11 @@ class ProfilePopup extends React.Component {
                         <label className="change-profile-form-label" for="changeForm">{this.props.selectedPopup} </label>
                         {   (this.props.selectedPopup == 'picture')
                                 ? this.renderPicture()
-                                : (this.props.selectedPopup.toLowerCase() == 'location' ||
-                                      this.props.selectedPopup.toLowerCase() == 'timezone')
+                                : (this.props.selectedPopup.toLowerCase() == 'timezone')
                                       ? this.renderSelection()
                                       : this.renderTextInput()
                         }
 
-
-                    </div>
-                    <div className="form-group">
 
                     </div>
                     <div className="change-profile-form-buttons">
