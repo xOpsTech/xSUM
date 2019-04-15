@@ -66,7 +66,6 @@ class ProfileView extends React.Component {
                 timeZone: '',
                 password: '',
                 picture: ''
-
             },
             isLeftNavCollapse: false,
             isHidden: true,
@@ -115,10 +114,7 @@ class ProfileView extends React.Component {
       var usr = this.state.loggedUserObj
       axios.post(Config.API_URL + AppConstants.DELETE_PICTURE, {
           name: this.state.loggedUserObj.picture
-      })
-      .then(res => { // then print response status
-        console.log(res.statusText);
-      })
+      });
       usr.picture = null;
       this.setState({
           loggedUserObj: usr,
