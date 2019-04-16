@@ -16,7 +16,6 @@
         "accesscontrol": "2.2.1",
         "bcryptjs": "^2.4.3",
         "body-parser": "1.15.2",
-        "cors": "^2.8.5",
         "crypto": "1.0.1",
         "express": "4.14.0",
         "file-system": "^2.2.2",

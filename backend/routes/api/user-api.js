@@ -10,7 +10,6 @@ const AccessControl = require('accesscontrol');
 const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
 var moment = require('moment');
 var multer = require('multer');
-var cors = require('cors');
 
 var TenantApi = require('./tenant-api');
 
@@ -481,9 +480,8 @@ UserApi.prototype.uploadPicture = async function(req, res) {
      })
 }
 UserApi.prototype.deletePicture = async function(req, res) {
-    console.log(req.body);
     const fs = require('fs');
-    fs.unlink("../assets/img/filePicture/" + req.body.name, function (err) {            
+    fs.unlink("../assets/img/filePicture/" + req.body.name, function (err) {
          if (err) {
              console.error(err);
          }
