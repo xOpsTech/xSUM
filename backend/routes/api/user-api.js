@@ -9,6 +9,7 @@ var SuperUserApi = require('./super-user-api');
 const AccessControl = require('accesscontrol');
 const accessControl = new AccessControl(AppConstants.ACCESS_LIST);
 var moment = require('moment');
+var multer = require('multer');
 
 var TenantApi = require('./tenant-api');
 
@@ -47,13 +48,22 @@ UserApi.prototype.handleUserData = function(req, res) {
         case "setEmailPasswordData":
             new UserApi().setEmailPasswordData(req, res);
             break;
+        case "updateProfile":
+            new UserApi().updateProfile(req, res);
+            break;
+        case "uploadPicture":
+            new UserApi().uploadPicture(req, res);
+            break;
+        case "deletePicture":
+            new UserApi().deletePicture(req, res);
+            break;
         default:
             res.send("no data");
     }
 }
 
 UserApi.prototype.registerUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     if (userObj.password) {
@@ -100,7 +110,7 @@ UserApi.prototype.registerUserData = async function(req, res) {
 }
 
 UserApi.prototype.addInActiveUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     var activationCode = crypto.randomBytes(30).toString('hex');
@@ -175,7 +185,7 @@ UserApi.prototype.addInActiveUserData = async function(req, res) {
 }
 
 UserApi.prototype.updateUserData = async function(req, res) {
-    
+
     var userObj = req.body;
 
     var queryObjToGetUsers = {email: userObj.email};
@@ -433,6 +443,50 @@ UserApi.prototype.activateUser = async function(req, res) {
         res.send("User id is invalid");
     }
 
+}
+
+UserApi.prototype.updateProfile = async function(req, res) {
+    var userObj = req.body;
+    var queryObj = {_id: ObjectId(userObj._id)};
+    var updateObj = {
+        name: userObj.name,
+        title: userObj.title,
+        location: userObj.location,
+        timeZone: userObj.timeZone,
+        picture: userObj.picture
+    };
+    if (userObj.password) updateObj.password = await hashPassword(userObj.password);
+    await MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj, updateObj);
+    res.send({message: AppConstants.RESPONSE_SUCCESS});
+}
+
+UserApi.prototype.uploadPicture = async function(req, res) {
+    var storage = multer.diskStorage({
+          destination: function (req, file, cb) {
+          cb(null, '../assets/img/filePicture')
+        },
+        filename: function (req, file, cb) {
+          cb(null, file.originalname )
+        }
+    });
+    var upload = multer({ storage: storage }).single('file');
+    upload(req, res, function (err) {
+       if (err instanceof multer.MulterError) {
+           return res.status(500).json(err)
+       } else if (err) {
+           return res.status(500).json(err)
+       }
+       return res.status(200).send(req.file)
+     })
+}
+UserApi.prototype.deletePicture = async function(req, res) {
+    const fs = require('fs');
+    fs.unlink("../assets/img/filePicture/" + req.body.name, function (err) {
+         if (err) {
+             console.error(err);
+         }
+        console.log('File has been Deleted');
+     });
 }
 
 module.exports = new UserApi();

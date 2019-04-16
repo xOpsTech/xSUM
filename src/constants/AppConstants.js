@@ -37,7 +37,9 @@ export const UPDATE_USER_API = '/userAuth?action=updateUserData';
 export const GET_USER_DATA_API = '/userAuth?action=getUserData';
 export const ADD_EMAIL_SETTING_DATA_API = '/userAuth?action=addEmailSettingsUserData';
 export const SET_EMAIL_PASSWORD_API = '/userAuth?action=setEmailPasswordData';
-
+export const UPDATE_PROFILE_API = '/userAuth?action=updateProfile';
+export const UPLOAD_PICTURE = '/userAuth?action=uploadPicture';
+export const DELETE_PICTURE = '/userAuth?action=deletePicture';
 export const SAVE_ALERT_API = '/alert?action=saveAlert';
 export const ALERTS_GET_API = '/alert?action=getAllAlerts';
 export const REMOVE_ALERT_API = '/alert?action=removeAlert';
@@ -48,6 +50,7 @@ export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers
 export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
+export const GET_COMPANY_NAME = '/tenant?action=getCompanyName'
 
 export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
 
@@ -315,3 +318,38 @@ export const MAP_CONTENT_DATA = {
 };
 
 export const SUPER_USER = 'super-user';
+
+export const TIMEZONE_LIST = [
+   '',
+   '(GMT -12:00) Eniwetok, Kwajalein',
+   '(GMT -11:00) Midway Island, Samoa',
+   '(GMT -10:00) Hawaii',
+   '(GMT -9:00) Alaska',
+   '(GMT -8:00) Pacific Time (US & Canada)',
+   '(GMT -7:00) Mountain Time (US & Canada)',
+   '(GMT -6:00) Central Time (US & Canada), Mexico City',
+   '(GMT -5:00) Eastern Time (US & Canada), Bogota, Lima',
+   '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz',
+   '(GMT -3:30) Newfoundland',
+   '(GMT -3:00) Brazil, Buenos Aires, Georgetown',
+   '(GMT -2:00) Mid-Atlantic',
+   '(GMT -1:00) Azores, Cape Verde Islands',
+   '(GMT) Western Europe Time, London, Lisbon, Casablanca',
+   '(GMT +1:00) Brussels, Copenhagen, Madrid, Paris',
+   '(GMT +2:00) Kaliningrad, South Africa',
+   '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg',
+   '(GMT +3:30) Tehran',
+   '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi',
+   '(GMT +4:30) Kabul',
+   '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent',
+   '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi',
+   '(GMT +5:45) Kathmandu',
+   '(GMT +6:00) Almaty, Dhaka, Colombo',
+   '(GMT +7:00) Bangkok, Hanoi, Jakarta',
+   '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong',
+   '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk',
+   '(GMT +9:30) Adelaide, Darwin',
+   '(GMT +10:00) Eastern Australia, Guam, Vladivostok',
+   '(GMT +11:00) Magadan, Solomon Islands, New Caledonia',
+   '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
+]
