@@ -1,7 +1,8 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
-    apiRouter = require('./routes/router')
-    config = require('./config/config');
+    apiRouter = require('./routes/router'),
+    config = require('./config/config')
+
 var Helpers = require('./common/Helpers');
 var AppConstants = require('./constants/AppConstants');
 var RealtimeDataSync = require('./realtime-data/realtime-data-sync');

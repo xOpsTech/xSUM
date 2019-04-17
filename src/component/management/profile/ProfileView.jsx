@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import axios from 'axios';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import ErrorMessageComponent from '../../common/error-message-component/ErrorMessageComponent';
@@ -26,7 +27,7 @@ class ProfileView extends React.Component {
         this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.dropDownClick = this.dropDownClick.bind(this);
-
+        this.getAllTenantsData = this.getAllTenantsData.bind(this);
         // Setting initial state objects
         this.state = this.getInitialState();
     }
@@ -41,13 +42,13 @@ class ProfileView extends React.Component {
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({ loggedUserObj: loggedUserObject });
-
+            var usr = this.state.loggedUserObj;
+            usr.email = loggedUserObject.email;
+            this.setState({ loggedUserObj: usr });
             this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectLogin();
         }
-
         this.setState({ isLeftNavCollapse: UIHelper.getLeftState() });
     }
 
@@ -56,7 +57,16 @@ class ProfileView extends React.Component {
         var initialState = {
             isLoading: false,
             loadingMessage: '',
-            loggedUserObj: null,
+            loggedUserObj: {
+                email: '',
+                title: '',
+                company: '',
+                location: '',
+                name: '',
+                timeZone: '',
+                password: '',
+                picture: ''
+            },
             isLeftNavCollapse: false,
             isHidden: true,
             selectedPopup: "",
@@ -81,13 +91,60 @@ class ProfileView extends React.Component {
         })
     }
 
+    updateValue(e) {
+        var usr = this.state.loggedUserObj
+
+        usr[this.state.selectedPopup] = e;
+        this.setState({
+            loggedUserObj: usr,
+            isHidden: !this.state.isHidden
+        });
+        this.saveProfile();
+    }
+    updatePicture(e) {
+        var usr = this.state.loggedUserObj
+        usr.picture = e;
+        this.setState({
+            loggedUserObj: usr,
+            isHidden: !this.state.isHidden
+        });
+        this.saveProfile();
+    }
+    deletePicture() {
+      var usr = this.state.loggedUserObj
+      axios.post(Config.API_URL + AppConstants.DELETE_PICTURE, {
+          name: this.state.loggedUserObj.picture
+      });
+      usr.picture = null;
+      this.setState({
+          loggedUserObj: usr,
+      });
+      this.saveProfile();
+    }
     getLoggedUserData(loggedUserObj) {
         UIHelper.getUserData(loggedUserObj, this, this.getAllTenantsData);
+    }
+
+    getUserCompany(id) {
+        this.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS });
+        var url = Config.API_URL + AppConstants.GET_COMPANY_NAME;
+        tenantApi.getAllTenantsFrom(url, {id: id}).then((response) => {
+            var usr = this.state.loggedUserObj;
+            usr.company = response.name;
+            this.setState(
+                {
+                    loggedUserObj: usr,
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+        });
     }
 
     getAllTenantsData(user, context) {
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANT_DATA_API;
         context.setState({ isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS });
+        this.getUserCompany(user._id);
         tenantApi.getAllTenantsFrom(urlToGetTenantData, { userID: user._id }).then((data) => {
 
             var tenantList = [];
@@ -112,11 +169,24 @@ class ProfileView extends React.Component {
         });
     }
 
+
     handleChange(e, stateObj) {
         e.preventDefault();
         this.setState(stateObj);
     }
+    saveProfile() {
+        this.setState({ isLoading: true, loadingMessage: MessageConstants.UPDATE_PROFILE });
 
+        var url = Config.API_URL + AppConstants.UPDATE_PROFILE_API;
+        userApi.updateUser(url, this.state.loggedUserObj).then((response) => {
+            this.setState(
+                {
+                    isLoading: false,
+                    loadingMessage: '',
+                }
+            );
+        });
+    }
     updateMailClick(e) {
         e.preventDefault();
 
@@ -207,6 +277,8 @@ class ProfileView extends React.Component {
                 {!this.state.isHidden && <ProfilePopup
                     selectedPopup={selectedPopup}
                     closePopup={this.togglePopup.bind(this)}
+                    update={this.updateValue.bind(this)}
+                    updatePic={this.updatePicture.bind(this)}
                 />}
                 <div className="site-edit-container">
                     <div className={
@@ -228,12 +300,24 @@ class ProfileView extends React.Component {
                                     </div>
                                 </div>
                                 <div className="col-sm-9" >
-                                    <img className="profile-picture" src="../../../../assets/img/missing.png" />
-                                    <button className="btn btn-outline-danger form-control button-all-caps-text  picture-change"> Remove Picture </button>
-                                    <button className="btn btn-primary form-control button-all-caps-text picture-change"> Change Picture </button>
+                                    <img className="profile-picture"
+                                        src={
+                                            (this.state.loggedUserObj.picture)
+                                            ? "../../../../assets/img/filePicture/" + this.state.loggedUserObj.picture
+                                            : "../../../../assets/img/missing.png"
+                                        }/>
+                                    <button
+                                        className="btn btn-outline-danger form-control button-all-caps-text  picture-change"
+                                        onClick={this.deletePicture.bind(this)}>
+                                        Remove Picture
+                                    </button>
+                                    <button className="btn btn-primary form-control button-all-caps-text picture-change"
+                                            onClick={this.togglePopup.bind(this, "picture")}>
+                                            Change Picture
+                                    </button>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "Name")}>
+                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "name")}>
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Name</label>
@@ -246,7 +330,7 @@ class ProfileView extends React.Component {
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "Email")}>
+                            <div className="row profile-row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Email</label>
@@ -256,10 +340,9 @@ class ProfileView extends React.Component {
                                     <p className="profile-label">
                                         {loggedUserObj.email}
                                     </p>
-                                    <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "Company")}>
+                            <div className="row profile-row">
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Company</label>
@@ -269,10 +352,9 @@ class ProfileView extends React.Component {
                                     <p className="profile-label">
                                     {loggedUserObj.company}
                                     </p>
-                                    <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "Title")}>
+                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "title")}>
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Title</label>
@@ -285,7 +367,7 @@ class ProfileView extends React.Component {
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "Location")}>
+                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "location")}>
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Location</label>
@@ -298,7 +380,7 @@ class ProfileView extends React.Component {
                                     <i class="fas fa-edit edit-icon"></i>
                                 </div>
                             </div>
-                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "TimeZone")}>
+                            <div className="row profile-row" onClick={this.togglePopup.bind(this, "timeZone")}>
                                 <div className="col-sm-3 alert-label-column">
                                     <div className="form-group label-text">
                                         <label className="control-label">Time Zone</label>
@@ -321,7 +403,7 @@ class ProfileView extends React.Component {
                                                 <div className="form-group">
                                                     <button
                                                         className="btn btn-primary form-control button-all-caps-text" id="password-change"
-                                                        onClick={this.togglePopup.bind(this, "Password")}>
+                                                        onClick={this.togglePopup.bind(this, "password")}>
                                                         Change Password
                                                 </button>
                                                 </div>
