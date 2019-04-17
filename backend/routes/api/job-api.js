@@ -360,7 +360,7 @@ JobApi.prototype.sendOneTimeEmail = async function(req, res) {
         for (let job of jobList) {
 
             if (job.testType === AppConstants.ONE_TIME_TEST_TYPE && job.userEmail === emailToSendObject.email) {
-                Helpers.sendEmailRegardingOneTimeJob(job);
+                Helpers.sendEmailRegardingOneTimeJob(String(tenant._id), job);
             }
 
         }

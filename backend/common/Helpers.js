@@ -261,17 +261,83 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
     return create;
 }
 
-exports.sendEmailRegardingOneTimeJob = function(jobObj) {
+exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
-    var emailBodyToSend =  'Please find the results of your one time job<br>' +
-                            '<a href="' + oneTimeTestResultURL + '">View results or one time test</a> <br>'
 
+    let objectToRetrieveResults = {jobId: jobObj.jobId, tenantID: tenantID};
+    let results = await this.getSummaryResults(objectToRetrieveResults, false);
+
+    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>';
+    for (let result of results.summaryResults) {
+        emailBodyToSend += this.getTileTagString(result);
+    }
+    emailBodyToSend += '</div>';
     this.sendEmailAs (
         jobObj.userEmail,
         'xSUM - One Time Test - ' + jobObj.siteObject.value,
         emailBodyToSend,
-        AppConstants.ADMIN_EMAIL_TYPE,
+        AppConstants.ADMIN_EMAIL_TYPE
     );
+}
+
+exports.getTileTagString = function(summaryResult) {
+    if (summaryResult.tableName === 'score') {
+        return (
+            summaryResult.result.map((resultObj, j) => {
+                let tileName = undefined;
+                switch (resultObj.advice) {
+                    case null:
+                        tileName = 'Overall Score';
+                        break;
+                    case 'performance':
+                        tileName = 'Performance Score';
+                        break;
+                    case 'bestpractice':
+                        tileName = 'Best Practice score';
+                        break;
+                    case 'accessibility':
+                        tileName = 'Accessibility score';
+                        break;
+
+                }
+                let tileValue = resultObj.value;
+                let styleClass = 'color: #b94a48;background-color: #f2dede;border-color: #eed3d7;';
+                if (tileValue > 90) {
+                    styleClass = 'color: #468847;background-color: #dff0d8;border-color: #d6e9c6;';
+                } else if (tileValue > 80) {
+                    styleClass = 'color: #c09853;background-color: #fcf8e3;border-color: #fbeed5;';
+                }
+
+                if (tileName !== undefined) {
+                    return this.getTileHTML(tileName, tileValue, styleClass);
+                } else {
+                    return null;
+                }
+
+            })
+        );
+    } else {
+        let valueToDisplay = (summaryResult.result.length > 0)
+                                 ? (this.roundValue(summaryResult.result[0].mean/1000, 2) + ' s')
+                                 : 'N/A';
+        return this.getTileHTML(summaryResult.displayName, valueToDisplay, 'background-color: #d9edf7;border-color: #bce8f1;color: #3a87ad;');
+    }
+
+}
+
+exports.getTileHTML = function(tileName, tileValue, styleClass) {
+    var valueStringToReturn =
+        (
+            '<div style="width:30%;float: left;">' +
+                '<div style="padding: 15px;margin-bottom: 20px;border: 1px solid transparent;border-radius: 4px;margin: 20px 5px;' + styleClass + '">' +
+                    tileName +
+                    '<div style="font-size: 25px;line-height: 1;font-weight: 700;">' +
+                    tileValue +
+                    '</div>' +
+                '</div>' +
+            '</div>'
+        );
+    return valueStringToReturn;
 }
 
 exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
