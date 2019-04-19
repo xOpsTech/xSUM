@@ -469,7 +469,7 @@ UserApi.prototype.uploadPicture = async function(req, res) {
           cb(null, file.originalname )
         }
     });
-    var upload = multer({ storage: storage }).single('file');
+    var upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 50 } }).single('file');
     upload(req, res, function (err) {
        if (err instanceof multer.MulterError) {
            return res.status(500).json(err)
