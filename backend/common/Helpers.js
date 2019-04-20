@@ -368,9 +368,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
                     const instance = await phantom.create();
                     const page = await instance.createPage();
                     let urlToOpen = config.API_URL + '/one-time-test';
-                    const status = await page.open('https://s.codepen.io/amcharts/debug/cd2e8ce27e3a96f43bb79d5d23722d11');
-                    //const content = await page.property('content');
-
+                    const status = await page.open(urlToOpen);
                     page.render(renderedImgPath);
                 }
 
@@ -380,8 +378,8 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     });
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
-    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>' +
-                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/>';
+    var emailBodyToSend = '<div>Test Results - ' + jobObj.jobName + '</h3>' +
+                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/><h3>';
 
     for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
