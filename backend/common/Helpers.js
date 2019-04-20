@@ -273,69 +273,9 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     let renderedImageName = '/image.png';
     let renderedImgPath = rederedImageDir + renderedImageName;
 
-    let chartJSON =
-    {
-  "type": "serial",
-  "theme": "light",
-  "autoMargins": false,
-  "marginLeft": 50,
-  "marginRight": 8,
-  "marginTop": 30,
-  "marginBottom": 26,
-  "dataProvider": [ {
-    "country": "USA",
-    "visits": 2025
-  }, {
-    "country": "China",
-    "visits": 1882
-  }, {
-    "country": "Japan",
-    "visits": 1809
-  }, {
-    "country": "Germany",
-    "visits": 1322
-  }, {
-    "country": "UK",
-    "visits": 1122
-  }, {
-    "country": "France",
-    "visits": 1114
-  }, {
-    "country": "India",
-    "visits": 984
-  }, {
-    "country": "Spain",
-    "visits": 711
-  } ],
-  "valueAxes": [ {
-    "gridColor": "#FFFFFF",
-    "gridAlpha": 0.2,
-    "axisAlpha": 1,
-    "dashLength": 0
-  } ],
-  "startDuration": 1,
-  "graphs": [ {
-    "balloonText": "[[category]]: <b>[[value]]</b>",
-    "fillAlphas": 0.8,
-    "lineAlpha": 0.2,
-    "type": "column",
-    "valueField": "visits"
-  } ],
-  "chartCursor": {
-    "categoryBalloonEnabled": false,
-    "cursorAlpha": 0,
-    "zoomable": false
-  },
-  "categoryField": "country",
-  "categoryAxis": {
-    "gridPosition": "start",
-    "gridAlpha": 0,
-    "axisAlpha": 1,
-    "tickPosition": "start",
-    "tickLength": 20
-  }
+    let oneTimeResults = await this.getJobResultsBackDate(tenantID, jobObj, false, true);
+    let chartData = await this.getArrangedChartData(tenantID, jobObj, oneTimeResults);
 
-};
     let contentToWrite = (
         '<style>' +
         '.chartdiv {' +
@@ -349,15 +289,23 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
         '</script><script src="../../lib/js/am-charts/v3/serial.js">' +
         '</script><script src="../../lib/js/am-charts/v3/light.js">' +
         '</script><script src="../../lib/js/am-charts/v3/pie.js"></script>' +
-        '<div id="chart1" class="chartdiv"></div>' +
-        '<script>AmCharts.makeChart( "chart1",' + JSON.stringify(chartJSON) + ');</script>'
+        '<div><h4>Response Time</h4><div id="responseTime" class="chartdiv"></div></div>' +
+        '<div><h4>DNS Time</h4><div id="dnsLookUpTime" class="chartdiv"></div></div>' +
+        '<div><h4>TCP Connect Time</h4><div id="tcpConnectTime" class="chartdiv"></div></div>' +
+        '<div><h4>Last Byte Recieve Time</h4><div id="lastByteRecieveTime" class="chartdiv"></div></div>' +
+        this.createCharts(chartData, 'responseTime') +
+        this.createCharts(chartData, 'dnsLookUpTime') +
+        this.createCharts(chartData, 'tcpConnectTime') +
+        this.createCharts(chartData, 'lastByteRecieveTime')
     );
 
     fileSystem.writeFile(htmlPath + fileName, contentToWrite, async (err) => {
+
         if (err) {
             console.log('Error in writing to file' + fileName, err);
             throw err;
         } else {
+
             // Create directory to store image
             fileSystem.mkdir(rederedImageDir, {recursive: true}, async (err) => {
 
@@ -369,12 +317,14 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
                     const page = await instance.createPage();
                     let urlToOpen = config.API_URL + '/one-time-test';
                     const status = await page.open(urlToOpen);
-                    page.render(renderedImgPath);
+                    await page.render(renderedImgPath);
+                    await instance.exit();
                 }
 
             });
 
         }
+
     });
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
@@ -393,6 +343,117 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
         AppConstants.ADMIN_EMAIL_TYPE
     );
 
+}
+
+exports.getArrangedChartData = async function (tenantID, job, jobResults) {
+    var queryToGetJobAlert = {
+        jobId: job.jobId
+    };
+
+    var alertObjData = await MongoDB.getAllData(tenantID, AppConstants.ALERT_LIST, queryToGetJobAlert);
+    var savedDateTime, criticalThreshold, warningThreshold;
+
+    for (var thresHold of alertObjData) {
+        criticalThreshold = thresHold.criticalThreshold;
+        warningThreshold = thresHold.warningThreshold;
+        savedDateTime = thresHold.savedDateTime;
+    }
+
+    var resultArray = [];
+
+    if (jobResults.length === 0) {
+        resultArray.push({
+            execution: moment().format(AppConstants.DATE_TIME_FORMAT),
+            responseTime: 0,
+            color: '#eb00ff',
+            resultID: -1
+        });
+        job.pieChartColor = '#eb00ff';
+    }
+
+    for (let currentResult of jobResults) {
+        var barColor = '#eb00ff';
+        var responseTime = this.roundValue(currentResult.response / 1000, 2);
+        var dnsLookUpTime = this.roundValue(currentResult.lookup / 1000, 2);
+        var tcpConnectTime = this.roundValue(currentResult.connect / 1000, 2);
+        var lastByteRecieveTime = this.roundValue(currentResult.end / 1000, 2);
+        var socketTime = this.roundValue(currentResult.socket / 1000, 2);
+
+        var dateCompare = moment(currentResult.executedTime).isAfter(savedDateTime);
+
+        if (criticalThreshold === undefined && warningThreshold === undefined){
+            barColor = '#eb00ff';
+        } else if (savedDateTime === undefined || dateCompare) {
+
+            if (responseTime >= criticalThreshold) {
+                barColor = '#b22222';
+            } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                barColor = '#ffff00';
+            }
+
+        } else {
+            barColor = '#eb00ff';
+        }
+
+        resultArray.push({
+            execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
+            responseTime: responseTime,
+            dnsLookUpTime: dnsLookUpTime,
+            tcpConnectTime: tcpConnectTime,
+            lastByteRecieveTime: lastByteRecieveTime,
+            socketTime: socketTime,
+            color: barColor,
+            resultID: currentResult.resultID
+        });
+        job.pieChartColor = barColor;
+    }
+    return resultArray;
+}
+
+exports.createCharts = function(chartData, valueField, ) {
+    let chartJSON = {
+        color: '#fff',
+        type: 'serial',
+        theme: 'light',
+        dataProvider: chartData,
+        valueAxes: [
+            {
+                gridColor: '#FFFFFF',
+                gridAlpha: 0.2,
+                dashLength: 0,
+                title: 'Response time / second',
+                autoRotateAngle: 90
+            }
+        ],
+        gridAboveGraphs: true,
+        startDuration: 1,
+        mouseWheelZoomEnabled: true,
+        graphs: [
+            {
+                balloonText: '[[category]]: <b>[[value]] seconds</b>',
+                fillAlphas: 0.8,
+                lineAlpha: 0.2,
+                type: 'column',
+                valueField: valueField,
+                fillColorsField: 'color'
+            }
+        ],
+        categoryField: 'execution',
+        categoryAxis: {
+            gridPosition: 'start',
+            gridAlpha: 0,
+            tickPosition: 'start',
+            tickLength: 20,
+            autoRotateAngle: 45,
+            autoRotateCount: 5
+        },
+        maxSelectedTime: 3,
+        export: {
+            enabled: true
+        }
+    };
+
+    return '<script>AmCharts.makeChart("' + valueField + '", ' + JSON.stringify(chartJSON) + ');</script>'
 }
 
 exports.getTileTagString = function(summaryResult) {
