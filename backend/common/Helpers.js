@@ -8,6 +8,7 @@ var crypto = require('crypto');
 var config = require('../config/config');
 var moment = require('moment');
 var cmd = require('node-cmd');
+const phantom = require('phantom');
 var fileSystem = require('file-system');
 const Client = require('kubernetes-client').Client;
 
@@ -265,12 +266,127 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
 
     let objectToRetrieveResults = {jobId: jobObj.jobId, tenantID: tenantID};
-    let results = await this.getSummaryResults(objectToRetrieveResults, false);
 
-    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>';
+    let htmlPath = 'one-time-results/';
+    let fileName = 'result.html';
+    let rederedImageDir = htmlPath + 'tenantid-' + tenantID + '/jobid-' + jobObj.jobId;
+    let renderedImageName = '/image.png';
+    let renderedImgPath = rederedImageDir + renderedImageName;
+
+    let chartJSON =
+    {
+  "type": "serial",
+  "theme": "light",
+  "autoMargins": false,
+  "marginLeft": 50,
+  "marginRight": 8,
+  "marginTop": 30,
+  "marginBottom": 26,
+  "dataProvider": [ {
+    "country": "USA",
+    "visits": 2025
+  }, {
+    "country": "China",
+    "visits": 1882
+  }, {
+    "country": "Japan",
+    "visits": 1809
+  }, {
+    "country": "Germany",
+    "visits": 1322
+  }, {
+    "country": "UK",
+    "visits": 1122
+  }, {
+    "country": "France",
+    "visits": 1114
+  }, {
+    "country": "India",
+    "visits": 984
+  }, {
+    "country": "Spain",
+    "visits": 711
+  } ],
+  "valueAxes": [ {
+    "gridColor": "#FFFFFF",
+    "gridAlpha": 0.2,
+    "axisAlpha": 1,
+    "dashLength": 0
+  } ],
+  "startDuration": 1,
+  "graphs": [ {
+    "balloonText": "[[category]]: <b>[[value]]</b>",
+    "fillAlphas": 0.8,
+    "lineAlpha": 0.2,
+    "type": "column",
+    "valueField": "visits"
+  } ],
+  "chartCursor": {
+    "categoryBalloonEnabled": false,
+    "cursorAlpha": 0,
+    "zoomable": false
+  },
+  "categoryField": "country",
+  "categoryAxis": {
+    "gridPosition": "start",
+    "gridAlpha": 0,
+    "axisAlpha": 1,
+    "tickPosition": "start",
+    "tickLength": 20
+  }
+
+};
+    let contentToWrite = (
+        '<style>' +
+        '.chartdiv {' +
+            'width: 800px;' +
+            'height: 220px;' +
+            'margin: 30px 0;' +
+            'border: 1px solid #ccc;' +
+        '}' +
+        '</style>' +
+        '<script src="../../lib/js/am-charts/v3/amcharts.js">' +
+        '</script><script src="../../lib/js/am-charts/v3/serial.js">' +
+        '</script><script src="../../lib/js/am-charts/v3/light.js">' +
+        '</script><script src="../../lib/js/am-charts/v3/pie.js"></script>' +
+        '<div id="chart1" class="chartdiv"></div>' +
+        '<script>AmCharts.makeChart( "chart1",' + JSON.stringify(chartJSON) + ');</script>'
+    );
+
+    fileSystem.writeFile(htmlPath + fileName, contentToWrite, async (err) => {
+        if (err) {
+            console.log('Error in writing to file' + fileName, err);
+            throw err;
+        } else {
+            // Create directory to store image
+            fileSystem.mkdir(rederedImageDir, {recursive: true}, async (err) => {
+
+                if (err) {
+                    console.log('Error in creating directories' + rederedImageDir, err);
+                    throw err;
+                } else {
+                    const instance = await phantom.create();
+                    const page = await instance.createPage();
+                    let urlToOpen = config.API_URL + '/one-time-test';
+                    const status = await page.open('https://s.codepen.io/amcharts/debug/cd2e8ce27e3a96f43bb79d5d23722d11');
+                    //const content = await page.property('content');
+
+                    page.render(renderedImgPath);
+                }
+
+            });
+
+        }
+    });
+
+    let results = await this.getSummaryResults(objectToRetrieveResults, false);
+    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>' +
+                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/>';
+
     for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
     }
+
     emailBodyToSend += '</div>';
     this.sendEmailAs (
         jobObj.userEmail,
@@ -278,6 +394,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
         emailBodyToSend,
         AppConstants.ADMIN_EMAIL_TYPE
     );
+
 }
 
 exports.getTileTagString = function(summaryResult) {

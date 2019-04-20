@@ -21,4 +21,5 @@ router.route('/tenant').post(TenantApi.handleTenantData);
 router.route('/feedback').post(FeedbackApi.handleFeedbackData);
 
 router.route('/').get(Api.handleHTML);
+router.route('/one-time-test').get(Api.handleOneTimeHTML);
 module.exports = router;

@@ -17,6 +17,10 @@ Api.prototype.handleHTML = function(req, res) {
     res.sendFile(path.join(__dirname, '../../../', 'index.html'));
 }
 
+Api.prototype.handleOneTimeHTML = function(req, res) {
+    res.sendFile(path.join(__dirname, '../../one-time-results', 'result.html'));
+}
+
 Api.prototype.handleUrlData = function(req, res) {
     var action = req.query.action;
     switch (action) {
