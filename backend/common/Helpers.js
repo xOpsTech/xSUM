@@ -317,8 +317,11 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
                     const page = await instance.createPage();
                     let urlToOpen = config.API_URL + '/one-time-test';
                     const status = await page.open(urlToOpen);
-                    await page.render(renderedImgPath);
-                    await instance.exit();
+                    setTimeout(async function() {
+                        await page.render(renderedImgPath);
+                        await instance.exit();
+                    }, 5000);
+
                 }
 
             });
@@ -328,8 +331,8 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     });
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
-    var emailBodyToSend = '<div>Test Results - ' + jobObj.jobName + '</h3>' +
-                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/><h3>';
+    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>' +
+                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/>';
 
     for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
