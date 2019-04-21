@@ -274,29 +274,51 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
     let renderedImgPath = rederedImageDir + renderedImageName;
 
     let oneTimeResults = await this.getJobResultsBackDate(tenantID, jobObj, false, true);
-    let chartData = await this.getArrangedChartData(tenantID, jobObj, oneTimeResults);
+    let barChartData = await this.getArrangedChartData(tenantID, jobObj, oneTimeResults);
 
     let contentToWrite = (
         '<style>' +
-        '.chartdiv {' +
-            'width: 800px;' +
-            'height: 220px;' +
-            'margin: 30px 0;' +
+        '.barChartDiv {' +
+            'width: 700px;' +
+            'height: 250px;' +
             'border: 1px solid #ccc;' +
+            'display: inline-block;' +
+        '}' +
+        '.pieChartDiv {' +
+            'width: 250px;' +
+            'height: 250px;' +
+            'border: 1px solid #ccc;' +
+            'display: inline-block;' +
         '}' +
         '</style>' +
         '<script src="../../lib/js/am-charts/v3/amcharts.js">' +
         '</script><script src="../../lib/js/am-charts/v3/serial.js">' +
         '</script><script src="../../lib/js/am-charts/v3/light.js">' +
         '</script><script src="../../lib/js/am-charts/v3/pie.js"></script>' +
-        '<div><h4>Response Time</h4><div id="responseTime" class="chartdiv"></div></div>' +
-        '<div><h4>DNS Time</h4><div id="dnsLookUpTime" class="chartdiv"></div></div>' +
-        '<div><h4>TCP Connect Time</h4><div id="tcpConnectTime" class="chartdiv"></div></div>' +
-        '<div><h4>Last Byte Recieve Time</h4><div id="lastByteRecieveTime" class="chartdiv"></div></div>' +
-        this.createCharts(chartData, 'responseTime') +
-        this.createCharts(chartData, 'dnsLookUpTime') +
-        this.createCharts(chartData, 'tcpConnectTime') +
-        this.createCharts(chartData, 'lastByteRecieveTime')
+        '<div>' +
+            '<h4>Response Time</h4>' +
+            '<div id="responseTimePie" class="pieChartDiv"></div>' +
+            '<div id="responseTimeBar" class="barChartDiv"></div>' +
+        '</div>' +
+        '<div>' +
+            '<h4>DNS Time</h4>' +
+            '<div id="dnsLookUpTimePie" class="pieChartDiv"></div>' +
+            '<div id="dnsLookUpTimeBar" class="barChartDiv"></div>' +
+        '</div>' +
+        '<div>' +
+            '<h4>TCP Connect Time</h4>' +
+            '<div id="tcpConnectTimePie" class="pieChartDiv"></div>' +
+            '<div id="tcpConnectTimeBar" class="barChartDiv"></div>' +
+        '</div>' +
+        '<div>' +
+            '<h4>Last Byte Recieve Time</h4>' +
+            '<div id="lastByteRecieveTimePie" class="pieChartDiv"></div>' +
+            '<div id="lastByteRecieveTimeBar" class="barChartDiv"></div>' +
+        '</div>' +
+        this.createBarCharts(barChartData, 'responseTime', 'responseTimeBar', 'responseTimePie') +
+        this.createBarCharts(barChartData, 'dnsLookUpTime', 'dnsLookUpTimeBar', 'dnsLookUpTimePie') +
+        this.createBarCharts(barChartData, 'tcpConnectTime', 'tcpConnectTimeBar', 'tcpConnectTimePie') +
+        this.createBarCharts(barChartData, 'lastByteRecieveTime', 'lastByteRecieveTimeBar', 'lastByteRecieveTimePie')
     );
 
     fileSystem.writeFile(htmlPath + fileName, contentToWrite, async (err) => {
@@ -413,7 +435,7 @@ exports.getArrangedChartData = async function (tenantID, job, jobResults) {
     return resultArray;
 }
 
-exports.createCharts = function(chartData, valueField, ) {
+exports.createBarCharts = function(chartData, valueField, barChartID, pieChartID) {
     let chartJSON = {
         color: '#fff',
         type: 'serial',
@@ -456,7 +478,47 @@ exports.createCharts = function(chartData, valueField, ) {
         }
     };
 
-    return '<script>AmCharts.makeChart("' + valueField + '", ' + JSON.stringify(chartJSON) + ');</script>'
+    var lastTestAvg = chartData[chartData.length-1]
+                            && chartData[chartData.length-1][valueField];
+    var lastColor = chartData[chartData.length-1]
+                            && chartData[chartData.length-1].color;
+
+    const pieChartConfig = {
+        type: 'pie',
+        theme: 'light',
+        outlineAlpha: 0.7,
+        outlineColor: '#343242',
+        labelsEnabled: false,
+        dataProvider: [
+            {
+                title: 'Average Response Time',
+                value: 3
+            },
+            {
+                title: 'Last Test Average',
+                value: lastTestAvg
+            }
+        ],
+        colors: [
+            '#222029', lastColor
+        ],
+        titleField: 'title',
+        valueField: 'value',
+        labelRadius: 5,
+        radius: '42%',
+        innerRadius: '70%',
+        labelText: '[[title]]',
+        export: {
+            enabled: true
+        }
+    };
+
+    return (
+        '<script>' +
+            'AmCharts.makeChart("' + barChartID + '", ' + JSON.stringify(chartJSON) + ');' +
+            'AmCharts.makeChart("' + pieChartID + '", ' + JSON.stringify(pieChartConfig) + ');' +
+        '</script>'
+    );
 }
 
 exports.getTileTagString = function(summaryResult) {
