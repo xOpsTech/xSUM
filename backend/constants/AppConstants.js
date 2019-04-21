@@ -40,6 +40,7 @@ exports.POINT_NOT_ENOUGH_UPDATE_ERROR = 'You don\'t have points to update this j
 exports.USER_LIMIT_REACHED = 'You have reached to the user limit for this account. Please contact administrator for any help...';
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+exports.DATE_TIME_FORMAT = 'MM/DD h:mm a';
 
 exports.EMAIL_USERNAME = 'xsum.xops@gmail.com';
 exports.EMAIL_PASSWORD = 'xsum@9871az';
