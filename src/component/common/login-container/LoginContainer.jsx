@@ -32,6 +32,9 @@ class LoginContainer extends React.Component {
 
     render() {
         const {loggedUserObj} = this.props;
+        const userIcon = (loggedUserObj.picture)
+                        ? './assets/img/filePicture/' + loggedUserObj.picture
+                        : './assets/img/user-icon.png'
         const DropDownPopOver = (props) => {
             return(
                 <Popover {...props} className="drop-down">
@@ -76,7 +79,11 @@ class LoginContainer extends React.Component {
             <div className="login-container">
                 <OverlayTrigger trigger="click" rootClose placement="bottom" overlay={LogOutPopOver}>
                     <button className="login-button">
-                        <img className="profile-icon" src="./assets/img/user-icon.png"/>
+                        <img className={
+                              (loggedUserObj.picture)
+                                  ? 'user-picture'
+                                  : 'profile-icon'}
+                              src={userIcon}/>
                     </button>
                 </OverlayTrigger>
             </div>
