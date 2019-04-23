@@ -108,7 +108,9 @@ class ProfilePopup extends React.Component {
         axios.post(Config.API_URL + AppConstants.UPLOAD_PICTURE, data, {
         })
         .then(res => { // then print response status
-          this.props.updatePic(this.state.selectedFile.name);
+            if (this.state.selectedFile) {
+                this.props.updatePic(this.state.selectedFile.name);
+            }
         })
     }
 
