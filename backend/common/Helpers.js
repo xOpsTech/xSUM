@@ -598,13 +598,7 @@ exports.getJobsWithLocations = async function(tenantID, isNeedShowTest) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-
-        // Fetch all results for one time test and fetch only given time range data for other tests
-        if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
-            job.result = await this.getJobResultsBackDate(tenantID, job, false, false);
-        } else {
-            job.result = await this.getJobResultsBackDate(tenantID, job, false, true);
-        }
+        job.result = await this.getJobResultsBackDate(tenantID, job, false, true);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
@@ -626,12 +620,7 @@ exports.getAJobWithLocation = async function(paramObj) {
 
     var job = jobsList[0];
 
-    // Fetch all results for one time test and fetch only given time range data for other tests
-    if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
-        job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false, false);
-    } else {
-        job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false, true);
-    }
+    job.result = await this.getJobResultsBackDate(paramObj.tenantID, job, false, true);
 
     return job;
 }

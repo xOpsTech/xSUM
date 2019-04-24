@@ -216,14 +216,7 @@ JobApi.prototype.getAllJobsWithLastResult = async function(req, res) {
     var locationsArr = [];
 
     for (let job of jobsList) {
-
-        // Fetch all results for one time test and fetch only given time range data for other tests
-        if (job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
-            job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, false);
-        } else {
-            job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, true);
-        }
-
+        job.result = await Helpers.getJobResultsBackDate(tenantID, job, true, true);
 
         var isLocationFound = locationsArr.find(function(locationObj) {
             return (locationObj.locationid === job.serverLocation.locationid);
