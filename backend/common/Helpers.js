@@ -278,14 +278,17 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
 
     let contentToWrite = (
         '<style>' +
+        '.chartContainer {' +
+            'width: 1000px;' +
+        '}' +
         '.barChartDiv {' +
-            'width: 700px;' +
+            'width: 70%;' +
             'height: 250px;' +
             'border: 1px solid #ccc;' +
             'display: inline-block;' +
         '}' +
         '.pieChartDiv {' +
-            'width: 250px;' +
+            'width: 28%;' +
             'height: 250px;' +
             'border: 1px solid #ccc;' +
             'display: inline-block;' +
@@ -295,22 +298,22 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
         '</script><script src="../../lib/js/am-charts/v3/serial.js">' +
         '</script><script src="../../lib/js/am-charts/v3/light.js">' +
         '</script><script src="../../lib/js/am-charts/v3/pie.js"></script>' +
-        '<div>' +
+        '<div class="chartContainer">' +
             '<h4>Response Time</h4>' +
             '<div id="responseTimePie" class="pieChartDiv"></div>' +
             '<div id="responseTimeBar" class="barChartDiv"></div>' +
         '</div>' +
-        '<div>' +
+        '<div class="chartContainer">' +
             '<h4>DNS Time</h4>' +
             '<div id="dnsLookUpTimePie" class="pieChartDiv"></div>' +
             '<div id="dnsLookUpTimeBar" class="barChartDiv"></div>' +
         '</div>' +
-        '<div>' +
+        '<div class="chartContainer">' +
             '<h4>TCP Connect Time</h4>' +
             '<div id="tcpConnectTimePie" class="pieChartDiv"></div>' +
             '<div id="tcpConnectTimeBar" class="barChartDiv"></div>' +
         '</div>' +
-        '<div>' +
+        '<div class="chartContainer">' +
             '<h4>Last Byte Recieve Time</h4>' +
             '<div id="lastByteRecieveTimePie" class="pieChartDiv"></div>' +
             '<div id="lastByteRecieveTimeBar" class="barChartDiv"></div>' +
@@ -354,7 +357,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
     var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>' +
-                          '<img src="' + config.API_URL + '/' + renderedImgPath + '"/>';
+                          '<img width="100%" src="' + config.API_URL + '/' + renderedImgPath + '"/>';
 
     for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
