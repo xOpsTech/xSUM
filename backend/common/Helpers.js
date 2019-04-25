@@ -7,6 +7,7 @@ var request = require('request');
 var crypto = require('crypto');
 var config = require('../config/config');
 var moment = require('moment');
+var momentTimeZone = require('moment-timezone');
 var cmd = require('node-cmd');
 const phantom = require('phantom');
 var fileSystem = require('file-system');
@@ -262,7 +263,7 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
     return create;
 }
 
-exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToSend) {
+exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToSend, timeZone) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
 
     let objectToRetrieveResults = {jobId: jobObj.jobId, tenantID: tenantID};
@@ -274,7 +275,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToS
     let renderedImgPath = rederedImageDir + renderedImageName;
 
     let oneTimeResults = await this.getJobResultsBackDate(tenantID, jobObj, false, true);
-    let barChartData = await this.getArrangedChartData(tenantID, jobObj, oneTimeResults);
+    let barChartData = await this.getArrangedChartData(tenantID, jobObj, oneTimeResults, timeZone);
 
     let contentToWrite = (
         '<style>' +
@@ -373,7 +374,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToS
 
 }
 
-exports.getArrangedChartData = async function (tenantID, job, jobResults) {
+exports.getArrangedChartData = async function (tenantID, job, jobResults, timeZone) {
     var queryToGetJobAlert = {
         jobId: job.jobId
     };
@@ -391,7 +392,7 @@ exports.getArrangedChartData = async function (tenantID, job, jobResults) {
 
     if (jobResults.length === 0) {
         resultArray.push({
-            execution: moment().format(AppConstants.DATE_TIME_FORMAT),
+            execution: momentTimeZone.tz(timeZone).format(AppConstants.DATE_TIME_FORMAT),
             responseTime: 0,
             color: '#eb00ff',
             resultID: -1
@@ -424,7 +425,7 @@ exports.getArrangedChartData = async function (tenantID, job, jobResults) {
         }
 
         resultArray.push({
-            execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
+            execution: momentTimeZone.tz(currentResult.time, timeZone).format(AppConstants.DATE_TIME_FORMAT),
             responseTime: responseTime,
             dnsLookUpTime: dnsLookUpTime,
             tcpConnectTime: tcpConnectTime,

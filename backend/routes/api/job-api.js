@@ -344,7 +344,12 @@ JobApi.prototype.updateJobs = async function(req, res) {
 
 JobApi.prototype.sendOneTimeEmail = async function(req, res) {
     var emailToSendObject = req.body;
-    Helpers.sendEmailRegardingOneTimeJob(emailToSendObject.tenantID, emailToSendObject.job, emailToSendObject.email);
+    Helpers.sendEmailRegardingOneTimeJob(
+        emailToSendObject.tenantID,
+        emailToSendObject.job,
+        emailToSendObject.email,
+        emailToSendObject.timezone
+    );
     res.send(emailToSendObject);
 }
 

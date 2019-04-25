@@ -1,5 +1,6 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
 
 import LoadingScreen from '../../common/loading-screen/LoadingScreen';
 import NavContainer from '../../common/nav-container/NavContainer';
@@ -57,7 +58,8 @@ class SendOneTimeJobEmails extends React.Component {
             var objectToRetrieve = {
                 tenantID: selectedTenant._id,
                 email: emailAddress.value,
-                job: jobWithResult.job
+                job: jobWithResult.job,
+                timezone: moment.tz.guess()
             };
             jobApi.updateJob(url, objectToRetrieve).then((data) => {
                 this.setState({isLoading: false, loadingMessage: ''});
