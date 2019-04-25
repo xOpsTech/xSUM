@@ -26,7 +26,6 @@ import Billing from './component/management/billing/Billing';
 import DashboardConfig from './component/management/dashboard-config/DashboardConfig';
 import AddFeedbackView from './component/common/feedback/AddFeedbackView';
 import AuthJobResult from './component/auth-job-result/AuthJobResult';
-import SendOneTimeJobEmails from './component/send-one-time-job-emails/SendOneTimeJobEmails';
 
 export default (
     <Route path={'/'} component={Page}>
@@ -54,6 +53,5 @@ export default (
         <Route path={AppConstants.DASHBOARD_CONFIG_ROUTE} component={DashboardConfig}/>
         <Route path={AppConstants.ADD_FEEDBACK_ROUTE} component={AddFeedbackView}/>
         <Route path={AppConstants.AUTH_JOB_RESULT} component={AuthJobResult}/>
-        <Route path={AppConstants.SEND_ONE_TIME_TEST_EMAIL} component={SendOneTimeJobEmails}/>
     </Route>
 );

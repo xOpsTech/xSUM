@@ -1,8 +1,10 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import LazyLoad from 'react-lazy-load';
+import {OverlayTrigger, Popover} from 'react-bootstrap';
 import ResultViewContainer from '../result-view-container/ResultViewContainer';
 import SummaryView from './summary-view/SummaryView';
+import SendOneTimeJobEmails from '../send-one-time-job-emails/SendOneTimeJobEmails';
 import {Tab, Tabs} from 'react-bootstrap';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -17,6 +19,7 @@ class ScriptTestResult extends React.Component {
 
         this.handleSelect      = this.handleSelect.bind(this);
         this.createPdfFromHTML = this.createPdfFromHTML.bind(this);
+        this.sendEmailPopUp    = this.sendEmailPopUp.bind(this);
 
         // Setting initial state objects
         this.state  = this.getInitialState();
@@ -53,8 +56,12 @@ class ScriptTestResult extends React.Component {
         });
     }
 
+    sendEmailPopUp(e) {
+        e.preventDefault();
+    }
+
     render() {
-        const {jobWithResult, key, selectedTenant} = this.props;
+        const {jobWithResult, key, selectedTenant, loggedUserObj} = this.props;
         const {activeTab} = this.state;
         const GraphView = (props) => {
             const {key, jobWithResult} = props;
@@ -95,6 +102,26 @@ class ScriptTestResult extends React.Component {
                 </div>
             );
         };
+
+        const DropDownPopOver = (props) => {
+            return(
+                <Popover {...props} className="drop-down">
+                    {props.children}
+                </Popover>
+            );
+        };
+
+        const EmailPopOver = (
+            <DropDownPopOver className="log-out-drop-down">
+                <div className="row">
+                    <SendOneTimeJobEmails
+                        jobWithResult={jobWithResult}
+                        selectedTenant={selectedTenant}
+                        loggedUserObj={loggedUserObj}/>
+                </div>
+            </DropDownPopOver>
+        );
+
         return (
             <Fragment>
                 <Tabs defaultActiveKey={activeTab}
@@ -112,6 +139,17 @@ class ScriptTestResult extends React.Component {
                     className="btn btn-primary download-btn-col" title="Download as pdf">
                     <i className="fa fa-file-pdf-o"/>
                 </button>
+                {
+                    (loggedUserObj)
+                        ? <OverlayTrigger trigger="click" rootClose placement="left" overlay={EmailPopOver}>
+                            <button onClick={(e) => this.sendEmailPopUp(e)}
+                                className="btn btn-primary download-btn-col" title="Send results through email">
+                                <i className="fa fa-envelope"/>
+                            </button>
+                        </OverlayTrigger>
+                        : null
+                }
+
             </Fragment>
         );
     }
@@ -120,6 +158,7 @@ class ScriptTestResult extends React.Component {
 ScriptTestResult.propTypes = {
     jobWithResult: PropTypes.object,
     selectedTenant: PropTypes.object,
+    loggedUserObj: PropTypes.object,
     key: PropTypes.number
 };
 

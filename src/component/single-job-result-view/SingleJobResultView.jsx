@@ -290,7 +290,8 @@ class SingleJobResultView extends React.Component {
                                             <ScriptTestResult
                                                 jobWithResult={jobWithResult}
                                                 selectedTenant={selectedTenant}
-                                                key={i}/>
+                                                key={i}
+                                                loggedUserObj={loggedUserObj}/>
                                         );
                                     } else if (jobWithResult.job.testType === AppConstants.PING_TEST_TYPE) {
                                         return (

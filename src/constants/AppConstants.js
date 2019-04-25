@@ -102,7 +102,6 @@ export const BILLING_ROUTE = '/billing';
 export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
 export const ADD_FEEDBACK_ROUTE = '/add-feedback';
 export const AUTH_JOB_RESULT = '/auth-job-result';
-export const SEND_ONE_TIME_TEST_EMAIL = '/send-one-time-email';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -117,7 +116,6 @@ export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 export const DASHBOARD_CONFIG_INDEX = 11;
 export const FEEDBACK_INDEX = 12;
-export const SEND_ONE_TIME_TEST_EMAIL_INDEX = 13;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
@@ -207,11 +205,6 @@ export const LEFT_NAV_TABS = [
         index: FEEDBACK_INDEX,
         text: 'FEEDBACK',
         route: ADD_FEEDBACK_ROUTE
-    },
-    {
-        index: SEND_ONE_TIME_TEST_EMAIL_INDEX,
-        text: 'EMAIL',
-        route: SEND_ONE_TIME_TEST_EMAIL
     }
 ];
 
