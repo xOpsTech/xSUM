@@ -344,21 +344,7 @@ JobApi.prototype.updateJobs = async function(req, res) {
 
 JobApi.prototype.sendOneTimeEmail = async function(req, res) {
     var emailToSendObject = req.body;
-
-    var tenantList = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, {});
-
-    for (let tenant of tenantList) {
-        var jobList = await MongoDB.getAllData(String(tenant._id), AppConstants.DB_JOB_LIST, {});
-
-        for (let job of jobList) {
-
-            if (job.testType === AppConstants.ONE_TIME_TEST_TYPE && job.userEmail === emailToSendObject.email) {
-                Helpers.sendEmailRegardingOneTimeJob(String(tenant._id), job);
-            }
-
-        }
-    }
-
+    Helpers.sendEmailRegardingOneTimeJob(emailToSendObject.tenantID, emailToSendObject.job, emailToSendObject.email);
     res.send(emailToSendObject);
 }
 

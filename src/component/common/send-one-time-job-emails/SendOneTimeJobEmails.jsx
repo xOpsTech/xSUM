@@ -47,7 +47,7 @@ class SendOneTimeJobEmails extends React.Component {
         e.preventDefault();
 
         const {emailAddress} = this.state;
-        const {selectedTenant} = this.props;
+        const {selectedTenant, jobWithResult} = this.props;
 
         var isEmailValid = (emailAddress.error.hasError === undefined || !emailAddress.error.hasError);
 
@@ -56,7 +56,8 @@ class SendOneTimeJobEmails extends React.Component {
             this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
             var objectToRetrieve = {
                 tenantID: selectedTenant._id,
-                email: emailAddress.value
+                email: emailAddress.value,
+                job: jobWithResult.job
             };
             jobApi.updateJob(url, objectToRetrieve).then((data) => {
                 this.setState({isLoading: false, loadingMessage: ''});

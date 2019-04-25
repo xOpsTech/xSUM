@@ -262,7 +262,7 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
     return create;
 }
 
-exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
+exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToSend) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
 
     let objectToRetrieveResults = {jobId: jobObj.jobId, tenantID: tenantID};
@@ -365,7 +365,7 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj) {
 
     emailBodyToSend += '</div>';
     this.sendEmailAs (
-        jobObj.userEmail,
+        emailToSend,
         'xSUM - One Time Test - ' + jobObj.siteObject.value,
         emailBodyToSend,
         AppConstants.ADMIN_EMAIL_TYPE
