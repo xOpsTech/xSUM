@@ -64,7 +64,7 @@ RunAutomatedScript.prototype.executeAutomatedData = async function() {
 
     setTimeout(function() {
         Helpers.sendEmailToScriptedUsers(Helpers);
-    }, 1000);
+    }, 25*60*60*1000); // Execute it after 25 hours
 
     console.log('--------------------------------------------------------------------------------');
 }
