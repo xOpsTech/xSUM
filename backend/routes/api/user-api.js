@@ -63,48 +63,14 @@ UserApi.prototype.handleUserData = function(req, res) {
 }
 
 UserApi.prototype.registerUserData = async function(req, res) {
-
     var userObj = req.body;
 
-    if (userObj.password) {
-        userObj.password = await hashPassword(userObj.password);
-    } else {
-        userObj.password = '';
-    }
-    var userInsertObj = {
-        email: userObj.email,
-        name: userObj.name,
-        company: userObj.company,
-        title: userObj.title,
-        location: userObj.location,
-        timeZone:userObj.timeZone,
-        password: userObj.password,
-        timestamp: moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT),
-        isActive: true,
-        tenants: []
-    };
-    var queryObj = {email: userObj.email};
-    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
+    let isUserCreated = await Helpers.isUserCreated(userObj);
 
-    if (userData.length > 0) {
+    if (isUserCreated) {
+        res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userObj.email}});
+    } else {
         res.send({message: AppConstants.USER_EXISTS});
-    } else {
-        await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
-        var tenantName = userObj.email.replace(/@.*$/,'') + '-account';
-        var tenantObj = await TenantApi.insertTenantData(userInsertObj._id, tenantName);
-
-        var tenantsArray = userInsertObj.tenants;
-
-        tenantsArray.push({tenantID: tenantObj._id, role: AppConstants.ADMIN_ROLE});
-        var toUpdateTenantArray = {
-            tenants: tenantsArray
-        };
-        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, {_id: ObjectId(userInsertObj._id)}, toUpdateTenantArray);
-
-        // Insert user to tenant id database
-        await MongoDB.insertData(String(tenantObj._id), AppConstants.USER_LIST, userInsertObj);
-        InfluxDB.createDatabase(String(tenantObj._id));
-        res.send({message: AppConstants.RESPONSE_SUCCESS, user: {email: userInsertObj.email}});
     }
 
 }

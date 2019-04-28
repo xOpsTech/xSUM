@@ -41,6 +41,7 @@ exports.USER_LIMIT_REACHED = 'You have reached to the user limit for this accoun
 
 exports.INFLUXDB_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 exports.DATE_TIME_FORMAT = 'MM/DD h:mm a';
+exports.DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
 
 exports.EMAIL_USERNAME = 'xsum.xops@gmail.com';
 exports.EMAIL_PASSWORD = 'xsum@9871az';
@@ -121,4 +122,9 @@ exports.RECURSIVE_EXECUTION_ARRAY = [
     {value: 1000*60*5}, //textValue: 'TEST FREQUENCY - 5 Minutes Intervals'
     {value: 1000*60*30}, //textValue: 'TEST FREQUENCY - 30 Minutes Intervals'
     {value: 1000*60*60}, //textValue: 'TEST FREQUENCY - 60 Minutes Intervals'
+];
+
+exports.SECURITY_ARRAY = [
+    {value: 'https://', textValue: 'https'},
+    {value: 'http://', textValue: 'http'}
 ];

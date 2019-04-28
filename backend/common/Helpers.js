@@ -1,10 +1,13 @@
 var nodemailer = require('nodemailer');
 var AppConstants = require('../constants/AppConstants');
 var AlertApi = require('../routes/api/alert-api');
+var TenantApi = require('../routes/api/tenant-api');
 var InfluxDB = require('../db/influxdb');
 var MongoDB = require('../db/mongodb');
+var {ObjectId} = require('mongodb');
 var request = require('request');
 var crypto = require('crypto');
+var bcrypt = require('bcryptjs');
 var config = require('../config/config');
 var moment = require('moment');
 var momentTimeZone = require('moment-timezone');
@@ -391,8 +394,14 @@ exports.getArrangedChartData = async function (tenantID, job, jobResults, timeZo
     var resultArray = [];
 
     if (jobResults.length === 0) {
+        var dateTime = moment().format(AppConstants.DATE_TIME_FORMAT);
+
+        if (timeZone) {
+            dateTime = momentTimeZone.tz(timeZone).format(AppConstants.DATE_TIME_FORMAT);
+        }
+
         resultArray.push({
-            execution: momentTimeZone.tz(timeZone).format(AppConstants.DATE_TIME_FORMAT),
+            execution: dateTime,
             responseTime: 0,
             color: '#eb00ff',
             resultID: -1
@@ -424,8 +433,14 @@ exports.getArrangedChartData = async function (tenantID, job, jobResults, timeZo
             barColor = '#eb00ff';
         }
 
+        var dateTime = moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT);
+
+        if (timeZone) {
+            dateTime = momentTimeZone.tz(currentResult.time, timeZone).format(AppConstants.DATE_TIME_FORMAT);
+        }
+
         resultArray.push({
-            execution: momentTimeZone.tz(currentResult.time, timeZone).format(AppConstants.DATE_TIME_FORMAT),
+            execution: dateTime,
             responseTime: responseTime,
             dnsLookUpTime: dnsLookUpTime,
             tcpConnectTime: tcpConnectTime,
@@ -728,4 +743,175 @@ exports.getSummaryResults = async function(params, isTimeCheck) {
 exports.roundValue = function(value, decimalPlaces) {
     let num = Math.pow(10, decimalPlaces);
     return Math.round(value * num) / num;
+}
+
+exports.isUserCreated = async function(userObj, willReturnTenantObject) {
+
+    if (userObj.password) {
+        userObj.password = await this.hashPassword(userObj.password);
+    } else {
+        userObj.password = '';
+    }
+
+    var userInsertObj = {
+        email: userObj.email,
+        name: userObj.name,
+        title: userObj.title,
+        location: userObj.location,
+        timeZone: userObj.timeZone,
+        password: userObj.password,
+        company: userObj.company,
+        timestamp: moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT),
+        isActive: true,
+        tenants: []
+    };
+
+    if (userObj.isScriptedUser) {
+        userInsertObj.isScriptedUser = true;
+        userInsertObj.passTocken = userObj.passTocken;
+    }
+
+    var queryObj = {email: userObj.email};
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, queryObj);
+
+    if (userData.length > 0) {
+        return false;
+    } else {
+        var tenantName = userObj.email.replace(/@.*$/,'') + '-account';
+
+        if (userInsertObj.company === '') userInsertObj.company = tenantName;
+
+        await MongoDB.insertData(AppConstants.DB_NAME, AppConstants.USER_LIST, userInsertObj);
+
+        var tenantObj = await TenantApi.insertTenantData(userInsertObj._id, tenantName);
+
+        var tenantsArray = userInsertObj.tenants;
+
+        tenantsArray.push({tenantID: tenantObj._id, role: AppConstants.ADMIN_ROLE});
+        var toUpdateTenantArray = {
+            tenants: tenantsArray
+        };
+        MongoDB.updateData(AppConstants.DB_NAME, AppConstants.USER_LIST, {_id: ObjectId(userInsertObj._id)}, toUpdateTenantArray);
+
+        // Insert user to tenant id database
+        await MongoDB.insertData(String(tenantObj._id), AppConstants.USER_LIST, userInsertObj);
+        InfluxDB.createDatabase(String(tenantObj._id));
+
+        if (willReturnTenantObject) {
+            return tenantObj;
+        } else {
+            return true;
+        }
+
+    }
+}
+
+exports.isJobCreated = async function (jobObj) {
+    var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+
+    var jobInsertObj = {
+        jobId: jobObj.jobId,
+        siteObject: {value: jobObj.siteObject.value},
+        browser: jobObj.browser,
+        testType: jobObj.testType,
+        scheduleDate: jobObj.scheduleDate,
+        isRecursiveCheck: jobObj.isRecursiveCheck,
+        recursiveSelect: jobObj.recursiveSelect,
+        result: [],
+        userEmail: jobObj.userEmail,
+        jobName: jobName,
+        serverLocation: jobObj.serverLocation,
+        alerts: {
+            critical: [],
+            warning: []
+        },
+        isShow: true,
+        securityProtocol: jobObj.securityProtocol
+    };
+
+    if (jobObj.isScriptedJob) {
+        jobInsertObj.isScriptedJob = true;
+    }
+
+    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+        let scriptFilePath = 'scripts/tenantid-' + jobObj.tenantID + '/jobid-' + jobObj.jobId;
+        let fileName = '/script-1.js';
+        jobInsertObj.scriptPath = scriptFilePath + fileName;
+        jobInsertObj.scriptValue = jobObj.scriptValue;
+        fileSystem.mkdir(scriptFilePath, {recursive: true}, (err) => {
+
+            if (err) {
+                console.log('Error in creating directories' + scriptFilePath, err);
+                throw err;
+            } else {
+
+                fileSystem.writeFile(scriptFilePath + fileName, jobObj.scriptValue, (err) => {
+                    if (err) {
+                        console.log('Error in creating file' + fileName, err);
+                        throw err;
+                    }
+                });
+            }
+
+        });
+    }
+
+    var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
+    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
+
+    var totalPointsRemain = tenantData[0].points.pointsRemain -
+                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobObj.recursiveSelect.value);
+
+    if (totalPointsRemain >= 0) {
+
+        if (jobObj.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+            var authKey = crypto.randomBytes(30).toString('hex');
+            jobInsertObj.authKey = authKey;
+            this.executeOneTimeJob(jobObj.tenantID, jobInsertObj);
+        }
+
+        await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
+
+        TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, true);
+
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+exports.sendEmailToScriptedUsers = async function (context) {
+    var userData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.USER_LIST, {isScriptedUser: true});
+
+    for (let user of userData) {
+
+        // Send scriptted user data to relevant email
+        var emailBodyToSend =  'Administrator has invited you to join the ' + user.email + ' account on xSUM.<br>' +
+                                'You can login to xSUM by using <b>your email as username</b> and following password. <br>' +
+                                'Your password is: <b>' + user.passTocken + '<b> <br>' +
+                                'Use following URL to login to xSUM<br>' +
+                                '<a href="' + AppConstants.API_URL + '">Navigate to xSUM Login</a> <br>' +
+                                'Thanks you';
+        context.sendEmailAs (
+            user.email,
+            'xSUM - Login Details',
+            emailBodyToSend,
+            AppConstants.ADMIN_EMAIL_TYPE
+        );
+
+        // Get the job list for current tenant
+        var jobList = await MongoDB.getAllData(String(user.tenants[0].tenantID), AppConstants.DB_JOB_LIST, {isScriptedJob: true});
+        await context.sendEmailRegardingOneTimeJob(String(user.tenants[0].tenantID), jobList[0], user.email)
+        console.log("Send emails Successfully for " + user.email);
+    }
+
+}
+
+exports.hashPassword = function(password) {
+    return new Promise((resolve) => {
+        bcrypt.hash(password, 10, (err, hash) => {
+            resolve(hash);
+        });
+    });
 }

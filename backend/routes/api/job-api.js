@@ -69,73 +69,14 @@ JobApi.prototype.handleJobs = function(req, res) {
 JobApi.prototype.insertJob = async function(req, res) {
     var jobObj = req.body;
 
-    var jobName = (jobObj.jobName === '') ? (jobObj.siteObject.value + '-Job') : jobObj.jobName;
+    let isJobCreated = await Helpers.isJobCreated(jobObj);
 
-    var jobInsertObj = {
-        jobId: jobObj.jobId,
-        siteObject: {value: jobObj.siteObject.value},
-        browser: jobObj.browser,
-        testType: jobObj.testType,
-        scheduleDate: jobObj.scheduleDate,
-        isRecursiveCheck: jobObj.isRecursiveCheck,
-        recursiveSelect: jobObj.recursiveSelect,
-        result: [],
-        userEmail: jobObj.userEmail,
-        jobName: jobName,
-        serverLocation: jobObj.serverLocation,
-        alerts: {
-            critical: [],
-            warning: []
-        },
-        isShow: true,
-        securityProtocol: jobObj.securityProtocol
-    };
-
-    if (jobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
-        let scriptFilePath = 'scripts/tenantid-' + jobObj.tenantID + '/jobid-' + jobObj.jobId;
-        let fileName = '/script-1.js';
-        jobInsertObj.scriptPath = scriptFilePath + fileName;
-        jobInsertObj.scriptValue = jobObj.scriptValue;
-        fileSystem.mkdir(scriptFilePath, {recursive: true}, (err) => {
-
-            if (err) {
-                console.log('Error in creating directories' + scriptFilePath, err);
-                throw err;
-            } else {
-
-                fileSystem.writeFile(scriptFilePath + fileName, jobObj.scriptValue, (err) => {
-                    if (err) {
-                        console.log('Error in creating file' + fileName, err);
-                        throw err;
-                    }
-                });
-            }
-
-        });
-    }
-
-    var queryToGetTenantObj = {_id: ObjectId(jobObj.tenantID)};
-    var tenantData = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryToGetTenantObj);
-
-    var totalPointsRemain = tenantData[0].points.pointsRemain -
-                                    (AppConstants.TOTAL_MILLISECONDS_PER_MONTH / jobObj.recursiveSelect.value);
-
-    if (totalPointsRemain >= 0) {
-
-        if (jobObj.testType === AppConstants.ONE_TIME_TEST_TYPE) {
-            var authKey = crypto.randomBytes(30).toString('hex');
-            jobInsertObj.authKey = authKey;
-            Helpers.executeOneTimeJob(jobObj.tenantID, jobInsertObj);
-        }
-
-        await MongoDB.insertData(jobObj.tenantID, AppConstants.DB_JOB_LIST, jobInsertObj);
-
-        TenantApi.updateTenantPoints(jobObj.jobId, jobObj.tenantID, true);
-
-        res.send(jobInsertObj);
+    if (isJobCreated) {
+        res.send(jobObj);
     } else {
         res.send({error: AppConstants.POINT_NOT_ENOUGH_ERROR});
     }
+
 }
 
 JobApi.prototype.getAllJobs = async function(req, res) {
