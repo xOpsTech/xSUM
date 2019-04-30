@@ -1,5 +1,8 @@
 assets/bundle.js
+assets/img/filePicture/*
 backend/node_modules/*
+backend/one-time-results/*
+backend/scripts/*
 # Logs
 logs
 *.log
