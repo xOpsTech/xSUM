@@ -21,33 +21,48 @@ RunAutomatedScript.prototype.executeAutomatedData = async function() {
     let automatedScriptData = require('./automated-script-data.json');
 
     for (let scriptData of automatedScriptData.dataList) {
-        scriptData.userData.isScriptedUser = true;
-        scriptData.userData.passTocken = scriptData.userData.password;
+        var userData = {
+            email: scriptData["Business Email"],
+            password: "acc0unt@123",
+            name: scriptData["First Name"] + " " + scriptData["Last Name"],
+            title: scriptData["Title"],
+            timeZone: scriptData["Time Zone"],
+            location: scriptData["Country"],
+            company: scriptData["Company"]
+        };
+        userData.isScriptedUser = true;
+        userData.passTocken = userData.password;
 
         // Create user
-        let isUserCreated = await Helpers.isUserCreated(scriptData.userData, true);
+        let isUserCreated = await Helpers.isUserCreated(userData, true);
 
         if (isUserCreated) {
             let jobObjectToInsert = {
                 jobId: crypto.randomBytes(10).toString('hex'),
                 tenantID: String(isUserCreated._id),
                 siteObject: {value: ''},
-                browser: scriptData.jobData.browser,
-                testType: scriptData.jobData.testType,
+                browser: "chrome",
+                testType: AppConstants.ONE_TIME_TEST_TYPE,
                 scheduleDate: moment().format(AppConstants.DATE_FORMAT),
-                isRecursiveCheck: scriptData.jobData.isRecursiveCheck,
-                recursiveSelect: scriptData.jobData.recursiveSelect,
+                isRecursiveCheck: true,
+                recursiveSelect: { "value": 600000, "textValue": "TEST FREQUENCY - 10 Minutes Intervals" },
                 result: [],
-                userEmail: scriptData.userData.email,
+                userEmail: userData.email,
                 jobName: '',
-                serverLocation: scriptData.jobData.serverLocation,
+                serverLocation: {
+                    "locationid": 0,
+                    "textValue": "USA",
+                    "latitude": 36.778259,
+                    "longitude": -119.417931
+                },
                 isScriptedJob: true
             };
 
             for (let security of AppConstants.SECURITY_ARRAY) {
 
-                if (scriptData.jobData.siteURL.includes(security.value)) {
-                    jobObjectToInsert.siteObject.value = scriptData.jobData.siteURL.replace(security.value, '');
+                let siteURL = scriptData["Web"];
+                if (siteURL.includes(security.value)) {
+                    jobObjectToInsert.siteObject.value = siteURL.replace(security.value, '');
                     jobObjectToInsert.securityProtocol = security.value;
                     break;
                 }
@@ -56,7 +71,7 @@ RunAutomatedScript.prototype.executeAutomatedData = async function() {
             await Helpers.isJobCreated(jobObjectToInsert);
             console.log("jobObjectToInsert", jobObjectToInsert)
         } else {
-            console.log("continue", scriptData.userData)
+            console.log("continue", userData)
             continue;
         }
 
