@@ -886,13 +886,13 @@ exports.sendEmailToScriptedUsers = async function (context) {
 
     for (let user of userData) {
 
-        // Send scriptted user data to relevant email
+        // Send scripted user data to relevant email
         var emailBodyToSend =  'Administrator has invited you to join the ' + user.email + ' account on xSUM.<br>' +
                                 'You can login to xSUM by using <b>your email as username</b> and following password. <br>' +
                                 'Your password is: <b>' + user.passTocken + '<b> <br>' +
                                 'Use following URL to login to xSUM<br>' +
-                                '<a href="' + AppConstants.API_URL + '">Navigate to xSUM Login</a> <br>' +
-                                'Thanks you';
+                                '<a href="' + config.API_URL + '/#/login' + '">Navigate to xSUM Login</a> <br>' +
+                                'Thank you';
         context.sendEmailAs (
             user.email,
             'xSUM - Login Details',
