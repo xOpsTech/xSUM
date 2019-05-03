@@ -46,8 +46,11 @@ class LeftNav extends React.Component {
 
     componentWillMount() {
         this.setState({isNavCollapse: UIHelper.getLeftState()});
+        if (typeof window.orientation !== "undefined") {
+            this.setState({isNavCollapse: true});
+            this.props.leftNavStateUpdate && this.props.leftNavStateUpdate();
+        }
         var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
-
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
             UIHelper.getUserData(loggedUserObject, this);

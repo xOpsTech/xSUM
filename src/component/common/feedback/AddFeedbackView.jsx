@@ -171,9 +171,14 @@ class AddFeedbackView extends React.Component {
             <Fragment>
             {
                 (loggedUserObj)
+                    ? <LeftNav selectedIndex={AppConstants.FEEDBACK_INDEX} isFixedLeftNav={true}/>
+                    : null
+            }
+            <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
+            {
+                (loggedUserObj)
                     ? <NavContainer
                               loggedUserObj={loggedUserObj}
-                              isFixedNav={false}
                               tenantDropDown={this.tenantDropDown}/>
                     : <div className="sign-in-button">
                           <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
@@ -182,12 +187,7 @@ class AddFeedbackView extends React.Component {
                           </button>
                       </div>
             }
-            <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-            {
-                (loggedUserObj)
-                    ? <LeftNav selectedIndex={AppConstants.FEEDBACK_INDEX} isFixedLeftNav={false}/>
-                    : null
-            }
+
 
                 <div className="feedback-view">
                     <div id="feedback-row" className="row">
