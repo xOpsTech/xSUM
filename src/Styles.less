@@ -227,9 +227,13 @@ select.custom-select {
     margin-right: @margin-left-right;
 }
 
-.expand-left-navigation {
-    margin-left: 255px;
-    margin-right: @margin-left-right;
+@media only screen and (min-width: 1024px) {
+
+    .expand-left-navigation {
+        margin-left: 255px;
+        margin-right: @margin-left-right;
+    }
+
 }
 
 .add-test-section {

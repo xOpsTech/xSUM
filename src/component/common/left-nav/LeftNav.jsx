@@ -98,6 +98,7 @@ class LeftNav extends React.Component {
             return (
                 <div id="leftNavContainer" role="navigation" aria-label="left"
                     className={(isFixedLeftNav) ? 'fixed-top-nav-bar' : ''}>
+                    <div className="overlay"></div>
                     <button className="collapse-button collapse-nav-button" onClick={this.collapseButtonClick}>
                         <span className="glyphicon glyphicon-triangle-left collapse-icon">
                         </span>
