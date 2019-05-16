@@ -106,11 +106,16 @@ class TenantListDropdown extends React.Component {
 
         return (
             <div className="row">
-                <div className="col-sm-4 col-lg-3 alert-label-column">
-                    <div className="form-group label-text">
-                        <label className="control-label">Account </label>
-                    </div>
-                </div>
+                {
+                    ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) )
+                        ? null
+                        : <div className="col-sm-4 col-lg-3 alert-label-column">
+                            <div className="form-group label-text">
+                                <label className="control-label">Account </label>
+                            </div>
+                        </div>
+                }
+
                 <div className="col-sm-8 col-lg-9">
                     <div className="form-group">
                         <select className="form-control form-group"
