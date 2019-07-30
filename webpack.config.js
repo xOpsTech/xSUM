@@ -34,49 +34,44 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /.(js|jsx)$/,
-                enforce: 'pre',
-                exclude: /node_modules/,
-                use: [
-                        {
-                            loader: "eslint-loader",
-                        }
-                    ],
-            },
+            // {
+            //     test: /.(js|jsx)$/,
+            //     enforce: 'pre',
+            //     exclude: /node_modules/,
+            //     use: [
+            //             {
+            //                 loader: "eslint-loader",
+            //             }
+            //         ],
+            // },
             {
                 test: /\.(js|jsx)$/,
                 exclude: /(node_modules|__tests__)/,
-                loader: "babel-loader",
+                loader: 'babel-loader',
                 query: {
                     presets: ['es2015', 'react']
                 }
             },
             {
                 test: /\.css$/,
-                use: [
-                        "style-loader",
-                        "css-loader",
-                     ],
+                use: ['style-loader', 'css-loader']
             },
             {
                 test: /\.less$/,
-                use: [
-                        "style-loader",
-                        "css-loader",
-                        "less-loader",
-                     ],
-                     
+                use: ['style-loader', 'css-loader', 'less-loader']
             },
-            { test: /\.(png|woff|woff2|eot|ttf|svg)$/, loader: 'url-loader?limit=100000' },
+            {
+                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                loader: 'url-loader?limit=100000'
+            },
             {
                 test: /\.woff($|\?)|\.woff2($|\?)|\.ttf($|\?)|\.eot($|\?)|\.svg($|\?)|\.jpg($|\?)/,
                 use: [
-                        {
-                            loader: "file-loader?name=../assets/img/[name].[ext]"
-                        },
-                     ],
+                    {
+                        loader: 'file-loader?name=../assets/img/[name].[ext]'
+                    }
+                ]
             }
         ]
     }
-}
+};
