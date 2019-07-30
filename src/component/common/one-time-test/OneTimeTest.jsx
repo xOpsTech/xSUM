@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 
 import ErrorMessageComponent from '../error-message-component/ErrorMessageComponent';
 import LoadingScreen from '../loading-screen/LoadingScreen';
@@ -18,39 +18,37 @@ class OneTimeTest extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleChange    = this.handleChange.bind(this);
-        this.searchKeyPress  = this.searchKeyPress.bind(this);
-        this.searchClick     = this.searchClick.bind(this);
-        this.searchURL       = this.searchURL.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.searchKeyPress = this.searchKeyPress.bind(this);
+        this.searchClick = this.searchClick.bind(this);
+        this.searchURL = this.searchURL.bind(this);
         this.setStorageValue = this.setStorageValue.bind(this);
-        this.insertToDB      = this.insertToDB.bind(this);
-        this.loopToCheckUrl  = this.loopToCheckUrl.bind(this);
-        this.viewResult      = this.viewResult.bind(this);
-        this.modalYesClick   = this.modalYesClick.bind(this);
-        this.modalNoClick    = this.modalNoClick.bind(this);
-        this.modalOkClick    = this.modalOkClick.bind(this);
-        this.dropDownClick   = this.dropDownClick.bind(this);
+        this.insertToDB = this.insertToDB.bind(this);
+        this.loopToCheckUrl = this.loopToCheckUrl.bind(this);
+        this.viewResult = this.viewResult.bind(this);
+        this.modalYesClick = this.modalYesClick.bind(this);
+        this.modalNoClick = this.modalNoClick.bind(this);
+        this.modalOkClick = this.modalOkClick.bind(this);
+        this.dropDownClick = this.dropDownClick.bind(this);
 
         // Setting initial state objects
-        this.state  = this.getInitialState();
+        this.state = this.getInitialState();
     }
 
     componentWillMount() {
-
         let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
 
         if (storageID) {
-            this.setState({isModalVisible: true});
+            this.setState({ isModalVisible: true });
         }
-
     }
 
     // Returns initial props
     getInitialState() {
         var initialState = {
-            urlObject : {value:'', error: {}},
+            urlObject: { value: '', error: {} },
             isLoading: false,
-            result: {isResultRecieved: false, resultUrl: '', searchedUrl: ''},
+            result: { isResultRecieved: false, resultUrl: '', searchedUrl: '' },
             isModalVisible: false,
             isAlertVisible: false,
             modalTitle: '',
@@ -63,29 +61,36 @@ class OneTimeTest extends React.Component {
     handleChange(e, stateObj) {
         e.preventDefault();
         this.setState(stateObj);
+        this.setState({
+            securityProtocol: UIHelper.isHttpsProtocol(e.target.value)
+                ? 'https://'
+                : 'http://'
+        });
     }
 
     searchKeyPress(e) {
-
-        if(e.key == 'Enter') {
+        if (e.key == 'Enter') {
             this.searchURL();
         }
-
     }
 
     searchClick() {
-
         if (!this.state.isLoading) {
-            this.setState({result: {isResultRecieved: false, url: '', searchedUrl: ''}});
+            this.setState({
+                result: { isResultRecieved: false, url: '', searchedUrl: '' }
+            });
             this.searchURL();
         }
-
     }
 
     searchURL() {
-
-        if (this.state.urlObject.error.hasError !== undefined && !this.state.urlObject.error.hasError) {
-            let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
+        if (
+            this.state.urlObject.error.hasError !== undefined &&
+            !this.state.urlObject.error.hasError
+        ) {
+            let storageID = UIHelper.getLocalStorageValue(
+                AppConstants.STORAGE_ID
+            );
 
             if (storageID) {
                 UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
@@ -96,11 +101,10 @@ class OneTimeTest extends React.Component {
                 this.insertToDB(randomHash);
             }
         }
-
     }
 
     insertToDB(randomHash) {
-        let {urlObject, loggedUserObj, securityProtocol} = this.state;
+        let { urlObject, loggedUserObj, securityProtocol } = this.state;
 
         var url, urlObj;
 
@@ -122,22 +126,27 @@ class OneTimeTest extends React.Component {
             };
         }
 
-        this.setState({isLoading: true});
+        this.setState({ isLoading: true });
 
-        urlApi.setUrlData(url, urlObj).then((json) => {
+        urlApi
+            .setUrlData(url, urlObj)
+            .then(json => {
+                // Store hash in browser
+                this.setStorageValue(randomHash);
 
-            // Store hash in browser
-            this.setStorageValue(randomHash);
-
-            if (json.status !== AppConstants.URL_NEW_STATE) {
-                this.setState({isLoading: false});
-            } else {
-                this.loopToCheckUrl();
-            }
-
-        }).catch((error) => {
-            this.setState({isLoading: false, isAlertVisible: true, modalTitle: error});
-        });
+                if (json.status !== AppConstants.URL_NEW_STATE) {
+                    this.setState({ isLoading: false });
+                } else {
+                    this.loopToCheckUrl();
+                }
+            })
+            .catch(error => {
+                this.setState({
+                    isLoading: false,
+                    isAlertVisible: true,
+                    modalTitle: error
+                });
+            });
     }
 
     setStorageValue(randomHash) {
@@ -147,28 +156,30 @@ class OneTimeTest extends React.Component {
     loopToCheckUrl() {
         var secondsToSendReq = 2;
         var intervalUrl = setInterval(() => {
-
-            let storageID = UIHelper.getLocalStorageValue(AppConstants.STORAGE_ID);
+            let storageID = UIHelper.getLocalStorageValue(
+                AppConstants.STORAGE_ID
+            );
 
             if (storageID) {
                 var url = Config.API_URL + AppConstants.URL_GET_API;
-                urlApi.getUrlData(url, {hashID: storageID}).then((data) => {
-
+                urlApi.getUrlData(url, { hashID: storageID }).then(data => {
                     if (data[0].status === AppConstants.URL_DONE_STATE) {
-                        this.setState({isLoading: false});
-                        UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
+                        this.setState({ isLoading: false });
+                        UIHelper.removeLocalStorageValue(
+                            AppConstants.STORAGE_ID
+                        );
                         clearInterval(intervalUrl);
                         this.setState({
                             result: {
                                 isResultRecieved: true,
                                 resultID: data[0].resultID,
-                                searchedUrl: data[0].securityProtocol + data[0].urlValue
+                                searchedUrl:
+                                    data[0].securityProtocol + data[0].urlValue
                             }
                         });
                     }
                 });
             }
-
         }, 1000 * secondsToSendReq);
     }
 
@@ -191,18 +202,18 @@ class OneTimeTest extends React.Component {
     }
 
     modalYesClick() {
-        this.setState({isModalVisible:false});
-        this.setState({isLoading: true});
+        this.setState({ isModalVisible: false });
+        this.setState({ isLoading: true });
         this.loopToCheckUrl();
     }
 
     modalNoClick() {
-        this.setState({isModalVisible: false});
+        this.setState({ isModalVisible: false });
         UIHelper.removeLocalStorageValue(AppConstants.STORAGE_ID);
     }
 
     modalOkClick() {
-        this.setState({isAlertVisible: false, modalTitle: ''});
+        this.setState({ isAlertVisible: false, modalTitle: '' });
     }
 
     dropDownClick(stateObject) {
@@ -210,7 +221,17 @@ class OneTimeTest extends React.Component {
     }
 
     render() {
-        const {urlObject, result, isLoading, isModalVisible, isAlertVisible, modalTitle, securityProtocol} = this.state;
+        const {
+            urlObject,
+            result,
+            isLoading,
+            isModalVisible,
+            isAlertVisible,
+            modalTitle,
+            securityProtocol
+        } = this.state;
+
+        console.log(4545, AppConstants.SECURITY_ARRAY);
         return (
             <Fragment>
                 <ModalContainer
@@ -218,81 +239,107 @@ class OneTimeTest extends React.Component {
                     yesClick={this.modalYesClick}
                     noClick={this.modalNoClick}
                     isModalVisible={isModalVisible}
-                    modalType={AppConstants.CONFIRMATION_MODAL}/>
+                    modalType={AppConstants.CONFIRMATION_MODAL}
+                />
                 <ModalContainer
                     title={modalTitle}
                     okClick={this.modalOkClick}
                     isModalVisible={isAlertVisible}
-                    modalType={AppConstants.ALERT_MODAL}/>
-                <LoadingScreen isDisplay={isLoading} message={MessageConstants.LOADING_MESSAGE}/>
-                <h3 className="search-text">
-                    Run a one-time test
-                </h3>
+                    modalType={AppConstants.ALERT_MODAL}
+                />
+                <LoadingScreen
+                    isDisplay={isLoading}
+                    message={MessageConstants.LOADING_MESSAGE}
+                />
+                <h3 className="search-text">Run a one-time test</h3>
                 <form name="site-add-form">
                     <div className="row without-margin">
-                        <div className="col-sm-3">
-                            <select className="custom-select"
+                        {/* <div className="col-sm-3">
+                            <select
+                                className="custom-select"
                                 value={securityProtocol}
-                                onChange={(e) => this.dropDownClick({securityProtocol: e.target.value})}>
-                                {
-                                    AppConstants.SECURITY_ARRAY.map((security, i) => {
+                                onChange={e =>
+                                    this.dropDownClick({
+                                        securityProtocol: e.target.value
+                                    })
+                                }
+                            >
+                                {AppConstants.SECURITY_ARRAY.map(
+                                    (security, i) => {
                                         return (
-                                            <option key={'security_' + i} value={security.value}>
+                                            <option
+                                                key={'security_' + i}
+                                                value={security.value}
+                                            >
                                                 {security.textValue}
                                             </option>
                                         );
-                                    })
-                                }
+                                    }
+                                )}
                             </select>
-                        </div>
-                        <div className="col-sm-9">
-                            <div className={
+                        </div> */}
+                        <div className="col-sm-12">
+                            <div
+                                className={
                                     'input-group has-feedback ' +
-                                    ((urlObject.error.hasError !== undefined)
-                                        ? ((urlObject.error.hasError) ? 'has-error' : 'has-success') : '')
-                                }>
+                                    (urlObject.error.hasError !== undefined
+                                        ? urlObject.error.hasError
+                                            ? 'has-error'
+                                            : 'has-success'
+                                        : '')
+                                }
+                            >
                                 <input
                                     value={urlObject.value}
-                                    onChange={(e) => this.handleChange(e, {
-                                        urlObject: {
-                                            value: e.target.value,
-                                            error: {
-                                                hasError: UIHelper.isUrlHasError(e.target.value),
-                                                name: MessageConstants.URL_ERROR
+                                    onChange={e =>
+                                        this.handleChange(e, {
+                                            //console.log(228,e.target.value);
+                                            urlObject: {
+                                                value: e.target.value,
+                                                error: {
+                                                    hasError: UIHelper.isUrlHasError(
+                                                        e.target.value
+                                                    ),
+                                                    name:
+                                                        MessageConstants.URL_ERROR
+                                                }
                                             }
-                                        }
-                                    })}
+                                        })
+                                    }
                                     onKeyPress={this.searchKeyPress}
                                     type="text"
-                                    disabled={(isLoading)? 'disabled' : ''}
+                                    disabled={isLoading ? 'disabled' : ''}
                                     className="form-control"
                                     id="urlObjectInput"
-                                    placeholder="ENTER WEBSITE URL"/>
-                                <span className="input-group-addon"
-                                    onClick={this.searchClick}>
-                                    <i className="glyphicon glyphicon-search"></i>
+                                    placeholder="ENTER WEBSITE URL"
+                                />
+                                <span
+                                    className="input-group-addon"
+                                    onClick={this.searchClick}
+                                >
+                                    <i className="glyphicon glyphicon-search" />
                                 </span>
                             </div>
-                            <ErrorMessageComponent error={urlObject.error}/>
+                            <ErrorMessageComponent error={urlObject.error} />
                         </div>
                     </div>
-                    {
-                        result.isResultRecieved
-                            ? <div className="result-container">
-                                  <a className="btn btn-primary" href="#"
-                                      onClick={(e) => this.viewResult(e, result)}>
-                                      View Result for {result.searchedUrl}
-                                  </a>
-                              </div>
-                            : null
-                    }
+                    {result.isResultRecieved ? (
+                        <div className="result-container">
+                            <a
+                                className="btn btn-primary"
+                                href="#"
+                                onClick={e => this.viewResult(e, result)}
+                            >
+                                View Result for {result.searchedUrl}
+                            </a>
+                        </div>
+                    ) : null}
                 </form>
             </Fragment>
         );
     }
 }
 
-OneTimeTest.propTypes = {
-};
+OneTimeTest.propTypes = {};
 
 export default OneTimeTest;

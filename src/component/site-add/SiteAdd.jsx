@@ -46,20 +46,21 @@ class SiteAdd extends React.Component {
 
     componentDidMount() {
         document.title = 'Site Add - ' + AppConstants.PRODUCT_NAME;
-        document.getElementById("background-video").style.display = 'none';
+        document.getElementById('background-video').style.display = 'none';
     }
 
     componentWillMount() {
-        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+        var siteLoginCookie = UIHelper.getCookie(
+            AppConstants.SITE_LOGIN_COOKIE
+        );
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({loggedUserObj: loggedUserObject});
+            this.setState({ loggedUserObj: loggedUserObject });
             this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectLogin();
         }
-
     }
 
     getLoggedUserData(loggedUserObj) {
@@ -86,9 +87,9 @@ class SiteAdd extends React.Component {
             isModalVisible: false,
             modalTitle: '',
             siteToResult: null,
-            jobName: {value: '', error: {}},
+            jobName: { value: '', error: {} },
             selectedJobID: null,
-            selectedTenant: {userList: []},
+            selectedTenant: { userList: [] },
             selectedLocationID: 0,
             securityProtocol: AppConstants.SECURITY_ARRAY[0].value,
             scriptValue: '',
@@ -105,26 +106,36 @@ class SiteAdd extends React.Component {
     handleChange(e, stateObj) {
         e.preventDefault();
         this.setState(stateObj);
+        this.setState({
+            securityProtocol: UIHelper.isHttpsProtocol(e.target.value)
+                ? 'https://'
+                : 'http://'
+        });
     }
 
     scriptChange(scriptValue) {
-        this.setState({scriptValue: scriptValue});
+        this.setState({ scriptValue: scriptValue });
     }
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
         var url = Config.API_URL + AppConstants.JOBS_GET_API;
-        this.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        this.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.FETCHING_JOBS
+        });
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
-        jobApi.getAllJobsFrom(url, objectToRetrieve).then((data) => {
-
+        jobApi.getAllJobsFrom(url, objectToRetrieve).then(data => {
             if (this.props.location.query.jobObj) {
                 var jobObj = JSON.parse(this.props.location.query.jobObj);
 
                 for (let currentJobObj of data) {
                     if (jobObj.jobID === currentJobObj.jobId) {
-                        var siteUrl = currentJobObj.siteObject.value.replace(/http:\/\//g, '');
+                        var siteUrl = currentJobObj.siteObject.value.replace(
+                            /http:\/\//g,
+                            ''
+                        );
 
                         let jobContext = {
                             siteObject: {
@@ -137,22 +148,29 @@ class SiteAdd extends React.Component {
                             jobName: {
                                 value: currentJobObj.jobName,
                                 error: {
-                                    hasError: UIHelper.isNameHasError(currentJobObj.jobName),
+                                    hasError: UIHelper.isNameHasError(
+                                        currentJobObj.jobName
+                                    ),
                                     name: MessageConstants.NAME_ERROR
                                 }
                             },
                             browser: currentJobObj.browser,
                             recursiveSelect: {
                                 value: currentJobObj.recursiveSelect.value,
-                                textValue: currentJobObj.recursiveSelect.textValue
+                                textValue:
+                                    currentJobObj.recursiveSelect.textValue
                             },
                             selectedJobID: currentJobObj.jobId,
-                            selectedLocationID: currentJobObj.serverLocation.locationid,
+                            selectedLocationID:
+                                currentJobObj.serverLocation.locationid,
                             securityProtocol: currentJobObj.securityProtocol,
                             testType: currentJobObj.testType
                         };
 
-                        if (currentJobObj.testType === AppConstants.SCRIPT_TEST_TYPE) {
+                        if (
+                            currentJobObj.testType ===
+                            AppConstants.SCRIPT_TEST_TYPE
+                        ) {
                             jobContext.scriptValue = currentJobObj.scriptValue;
                             jobContext.scriptPath = currentJobObj.scriptPath;
                         }
@@ -160,9 +178,7 @@ class SiteAdd extends React.Component {
                         context.setState(jobContext);
                         break;
                     }
-
                 }
-
             } else {
                 UIHelper.getUserData(loggedUserObj, this, (user, context) => {
                     if (!user.permissions.canCreate) {
@@ -171,7 +187,11 @@ class SiteAdd extends React.Component {
                 });
             }
 
-            this.setState({ siteList: data, isLoading: false, loadingMessage: '' });
+            this.setState({
+                siteList: data,
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
     }
 
@@ -187,23 +207,44 @@ class SiteAdd extends React.Component {
         e.preventDefault();
 
         var {
-            siteObject, browser, testType, scheduleDate,
-            isRecursiveCheck, recursiveSelect, jobName,
-            selectedJobID, loggedUserObj, selectedTenant, selectedLocationID, securityProtocol, scriptValue, scriptPath
+            siteObject,
+            browser,
+            testType,
+            scheduleDate,
+            isRecursiveCheck,
+            recursiveSelect,
+            jobName,
+            selectedJobID,
+            loggedUserObj,
+            selectedTenant,
+            selectedLocationID,
+            securityProtocol,
+            scriptValue,
+            scriptPath
         } = this.state;
 
         // Get recursive object
-        var recursiveSelect = AppConstants.RECURSIVE_EXECUTION_ARRAY.find(function(execution) {
-            return parseInt(execution.value) === parseInt(recursiveSelect.value);
-        });
+        var recursiveSelect = AppConstants.RECURSIVE_EXECUTION_ARRAY.find(
+            function(execution) {
+                return (
+                    parseInt(execution.value) ===
+                    parseInt(recursiveSelect.value)
+                );
+            }
+        );
 
-        if (siteObject.error.hasError !== undefined && !siteObject.error.hasError) {
+        if (
+            siteObject.error.hasError !== undefined &&
+            !siteObject.error.hasError
+        ) {
             siteObject.value = siteObject.value;
 
             if (selectedJobID) {
-
                 // Update existing job
-                this.setState({ isLoading: true, loadingMessage: MessageConstants.UPDATING_A_JOB });
+                this.setState({
+                    isLoading: true,
+                    loadingMessage: MessageConstants.UPDATING_A_JOB
+                });
                 var url = Config.API_URL + AppConstants.JOB_UPDATE_API;
 
                 let jobToUpdate = {
@@ -211,61 +252,70 @@ class SiteAdd extends React.Component {
                     siteObject,
                     browser,
                     testType,
-                    scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
+                    scheduleDate: moment(scheduleDate).format(
+                        AppConstants.DATE_FORMAT
+                    ),
                     isRecursiveCheck,
                     recursiveSelect,
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
-                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
+                    serverLocation:
+                        Config.SERVER_LOCATION_ARRAY[selectedLocationID],
                     securityProtocol: securityProtocol,
                     scriptValue: scriptValue,
                     scriptPath: scriptPath
                 };
 
-                jobApi.updateJob(url, { job: jobToUpdate }).then((data) => {
-
+                jobApi.updateJob(url, { job: jobToUpdate }).then(data => {
                     if (data.error) {
-                        this.setState({isModalVisible: true, modalTitle: data.error});
+                        this.setState({
+                            isModalVisible: true,
+                            modalTitle: data.error
+                        });
                         this.setState({ isLoading: false, loadingMessage: '' });
                     } else {
                         UIHelper.goToPreviousPage();
                     }
-
                 });
             } else {
-
                 // Add a new job
                 let jobObjectToInsert = {
                     jobId: UIHelper.getRandomHexaValue(),
                     siteObject,
                     browser,
                     testType,
-                    scheduleDate: moment(scheduleDate).format(AppConstants.DATE_FORMAT),
+                    scheduleDate: moment(scheduleDate).format(
+                        AppConstants.DATE_FORMAT
+                    ),
                     isRecursiveCheck,
                     recursiveSelect,
                     userEmail: loggedUserObj.email,
                     jobName: jobName.value,
                     tenantID: selectedTenant._id,
-                    serverLocation: Config.SERVER_LOCATION_ARRAY[selectedLocationID],
+                    serverLocation:
+                        Config.SERVER_LOCATION_ARRAY[selectedLocationID],
                     securityProtocol: securityProtocol,
                     scriptValue: scriptValue
                 };
                 var url = Config.API_URL + AppConstants.JOB_INSERT_API;
-                this.setState({ isLoading: true, loadingMessage: MessageConstants.ADDING_A_JOB });
-                jobApi.addJob(url, jobObjectToInsert).then((data) => {
-
+                this.setState({
+                    isLoading: true,
+                    loadingMessage: MessageConstants.ADDING_A_JOB
+                });
+                jobApi.addJob(url, jobObjectToInsert).then(data => {
                     if (data.error) {
-                        this.setState({isModalVisible: true, modalTitle: data.error});
+                        this.setState({
+                            isModalVisible: true,
+                            modalTitle: data.error
+                        });
                         this.setState({ isLoading: false, loadingMessage: '' });
                     } else {
                         this.state.siteList.push(data);
                         UIHelper.goToPreviousPage();
                     }
-
                 });
             }
-
         } else {
             this.setState({
                 siteObject: {
@@ -276,43 +326,50 @@ class SiteAdd extends React.Component {
                 }
             });
         }
-
     }
 
     startOrStopJobClick(e, jobToStartOrStop) {
         e.preventDefault();
 
-        this.setState({ isLoading: true, loadingMessage: MessageConstants.START_A_JOB });
+        this.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.START_A_JOB
+        });
         var url = Config.API_URL + AppConstants.JOB_START_API;
 
-        var isStartValue = (jobToStartOrStop.recursiveSelect.isStart !== undefined
-            && jobToStartOrStop.recursiveSelect.isStart);
+        var isStartValue =
+            jobToStartOrStop.recursiveSelect.isStart !== undefined &&
+            jobToStartOrStop.recursiveSelect.isStart;
         jobToStartOrStop.recursiveSelect.isStart = !isStartValue;
         jobApi.startOrStopJob(url, { job: jobToStartOrStop }).then(() => {
             this.setState({ isLoading: false, loadingMessage: '' });
         });
-
     }
 
     removeJobClick(e, jobIdToRemove) {
         e.preventDefault();
 
-        this.setState({ isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB });
+        this.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.REMOVING_A_JOB
+        });
         var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
         jobApi.removeJob(url, { jobId: jobIdToRemove }).then(() => {
-            let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
+            let arrayAfterRemove = this.state.siteList.filter(siteObject => {
                 return siteObject.jobId !== jobIdToRemove;
             });
-            this.setState({ siteList: arrayAfterRemove, isLoading: false, loadingMessage: '' });
+            this.setState({
+                siteList: arrayAfterRemove,
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
-
     }
 
     redirectToSiteLoad() {
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
-            {
-                userObj: JSON.stringify(this.state.loggedUserObj)
-            });
+        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE, {
+            userObj: JSON.stringify(this.state.loggedUserObj)
+        });
     }
 
     dropDownClick(stateObject) {
@@ -327,7 +384,6 @@ class SiteAdd extends React.Component {
         e.preventDefault();
 
         if (siteForResult.result.length > 1) {
-
             // Route to result chart view
             UIHelper.redirectTo(AppConstants.SITE_CHART_RESULT_ROUTE, {
                 userObj: JSON.stringify(this.state.loggedUserObj),
@@ -340,7 +396,6 @@ class SiteAdd extends React.Component {
                 resultID: siteForResult.result[0].resultID
             });
         }
-
     }
 
     closeClick() {
@@ -354,14 +409,21 @@ class SiteAdd extends React.Component {
 
     tenantDropDown(stateObject) {
         this.state.loggedUserObj.isSuperUser &&
-            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+            UIHelper.setLocalStorageValue(
+                AppConstants.SELECTED_TENANT_ID,
+                stateObject.selectedTenant._id
+            );
         this.setState(stateObject);
 
-        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+        this.getAllJobs(
+            this.state.loggedUserObj,
+            stateObject.selectedTenant,
+            this
+        );
     }
 
     modalOkClick() {
-        this.setState({isModalVisible: false, modalTitle: ''});
+        this.setState({ isModalVisible: false, modalTitle: '' });
     }
 
     render() {
@@ -392,21 +454,30 @@ class SiteAdd extends React.Component {
                     title={modalTitle}
                     okClick={this.modalOkClick}
                     isModalVisible={isModalVisible}
-                    modalType={AppConstants.ALERT_MODAL}/>
+                    modalType={AppConstants.ALERT_MODAL}
+                />
                 <LoadingScreen isDisplay={isLoading} message={loadingMessage} />
-                <LeftNav selectedIndex={AppConstants.TESTS_INDEX} isFixedLeftNav={true} />
-                {
-                    (loggedUserObj)
-                        ? <NavContainer
-                            loggedUserObj={loggedUserObj}
-                            tenantDropDown={this.tenantDropDown}/>
-                        : <div className="sign-in-button">
-                            <button onClick={() => { UIHelper.redirectTo(AppConstants.LOGIN_ROUTE); }}
-                                className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                Sign in
-                              </button>
-                        </div>
-                }
+                <LeftNav
+                    selectedIndex={AppConstants.TESTS_INDEX}
+                    isFixedLeftNav={true}
+                />
+                {loggedUserObj ? (
+                    <NavContainer
+                        loggedUserObj={loggedUserObj}
+                        tenantDropDown={this.tenantDropDown}
+                    />
+                ) : (
+                    <div className="sign-in-button">
+                        <button
+                            onClick={() => {
+                                UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+                            }}
+                            className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                )}
                 {
                     // <div className="logo-div-container">
                     //     <img className="logo-img" src="./assets/img/logo.png"/>
@@ -419,22 +490,33 @@ class SiteAdd extends React.Component {
                     <form
                         name="site-add-form"
                         method="post"
-                        id="monitor-test-form">
-                        <h1 id="monitor-test-title" className="site-add-title">Monitor Site 24/7</h1>
-                        <div className={
-                            'form-group has-feedback ' +
-                            ((jobName.error.hasError !== undefined)
-                                ? ((jobName.error.hasError) ? 'has-error' : 'has-success') : '')
-                        }>
+                        id="monitor-test-form"
+                    >
+                        <h1 id="monitor-test-title" className="site-add-title">
+                            Monitor Site 24/7
+                        </h1>
+                        <div
+                            className={
+                                'form-group has-feedback ' +
+                                (jobName.error.hasError !== undefined
+                                    ? jobName.error.hasError
+                                        ? 'has-error'
+                                        : 'has-success'
+                                    : '')
+                            }
+                        >
                             <input
                                 value={jobName.value}
-                                onChange={(e) => {
+                                onChange={e => {
                                     this.handleChange(e, {
                                         jobName: {
                                             value: e.target.value,
                                             error: {
-                                                hasError: UIHelper.isNameHasError(e.target.value),
-                                                name: MessageConstants.NAME_ERROR
+                                                hasError: UIHelper.isNameHasError(
+                                                    e.target.value
+                                                ),
+                                                name:
+                                                    MessageConstants.NAME_ERROR
                                             }
                                         }
                                     });
@@ -442,10 +524,11 @@ class SiteAdd extends React.Component {
                                 type="text"
                                 className="form-control"
                                 id="jobNameInput"
-                                placeholder="NAME THIS TEST" />
+                                placeholder="NAME THIS TEST"
+                            />
                         </div>
                         <div className="row without-margin">
-                            <div className="col-sm-3">
+                            {/* <div className="col-sm-3">
                                 <select className="custom-select"
                                     value={securityProtocol}
                                     onChange={(e) => this.dropDownClick({securityProtocol: e.target.value})}>
@@ -459,31 +542,45 @@ class SiteAdd extends React.Component {
                                         })
                                     }
                                 </select>
-                            </div>
-                            <div className="col-sm-9">
+                            </div> */}
+                            <div className="col-sm-12">
                                 <div className="form-group">
-                                    <div className={
-                                        'input-group has-feedback ' +
-                                        ((siteObject.error.hasError !== undefined)
-                                            ? ((siteObject.error.hasError) ? 'has-error' : 'has-success') : '')
-                                    }>
-                                    <input
-                                        value={siteObject.value}
-                                        onChange={(e) => this.handleChange(e, {
-                                            siteObject: {
-                                                value: e.target.value,
-                                                error: {
-                                                    hasError: UIHelper.isUrlHasError(e.target.value),
-                                                    name: MessageConstants.URL_ERROR
-                                                }
+                                    <div
+                                        className={
+                                            'input-group has-feedback ' +
+                                            (siteObject.error.hasError !==
+                                            undefined
+                                                ? siteObject.error.hasError
+                                                    ? 'has-error'
+                                                    : 'has-success'
+                                                : '')
+                                        }
+                                    >
+                                        <input
+                                            value={siteObject.value}
+                                            onChange={e =>
+                                                this.handleChange(e, {
+                                                    siteObject: {
+                                                        value: e.target.value,
+                                                        error: {
+                                                            hasError: UIHelper.isUrlHasError(
+                                                                e.target.value
+                                                            ),
+                                                            name:
+                                                                MessageConstants.URL_ERROR
+                                                        }
+                                                    }
+                                                })
                                             }
-                                        })}
-                                        type="text"
-                                        className="input-group-append form-control"
-                                        id="urlObjectInput"
-                                        placeholder="ENTER WEBSITE URL" />
+                                            type="text"
+                                            className="input-group-append form-control"
+                                            id="urlObjectInput"
+                                            placeholder="ENTER WEBSITE URL"
+                                        />
                                     </div>
-                                    <ErrorMessageComponent error={siteObject.error} />
+                                    <ErrorMessageComponent
+                                        error={siteObject.error}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -492,75 +589,94 @@ class SiteAdd extends React.Component {
                             <select
                                 className="form-control form-control-sm form-group"
                                 value={selectedLocationID}
-                                onChange={(e) => this.dropDownClick({selectedLocationID: e.target.value})}>
-                                {
-                                    Config.SERVER_LOCATION_ARRAY.map((location, i) => {
+                                onChange={e =>
+                                    this.dropDownClick({
+                                        selectedLocationID: e.target.value
+                                    })
+                                }
+                            >
+                                {Config.SERVER_LOCATION_ARRAY.map(
+                                    (location, i) => {
                                         return (
-                                            <option key={'location_' + i} value={location.locationid}>
+                                            <option
+                                                key={'location_' + i}
+                                                value={location.locationid}
+                                            >
                                                 {location.textValue}
                                             </option>
                                         );
-                                    })
-                                }
+                                    }
+                                )}
                             </select>
                         </div>
                         <div className="form-group radio-group">
-                            {
-                                AppConstants.TEST_TYPE_ARRAY.map((test, i) => {
-                                    return <div className="row radio radio-div-container">
-                                                <label>
-                                                    <input
-                                                        value={test.value}
-                                                        type="radio"
-                                                        name="optradio"
-                                                        checked={testType === test.value}
-                                                        onChange={
-                                                            (e) => this.dropDownClick({ testType: e.target.value })
-                                                        }/>
-                                                    {test.textValue}
-                                                </label>
-                                            </div>;
-                                })
-                            }
+                            {AppConstants.TEST_TYPE_ARRAY.map((test, i) => {
+                                return (
+                                    <div className="row radio radio-div-container">
+                                        <label>
+                                            <input
+                                                value={test.value}
+                                                type="radio"
+                                                name="optradio"
+                                                checked={
+                                                    testType === test.value
+                                                }
+                                                onChange={e =>
+                                                    this.dropDownClick({
+                                                        testType: e.target.value
+                                                    })
+                                                }
+                                            />
+                                            {test.textValue}
+                                        </label>
+                                    </div>
+                                );
+                            })}
                         </div>
-                        {
-                            (testType === AppConstants.SCRIPT_TEST_TYPE)
-                                ? <MonacoEditor
-                                        width="100%"
-                                        height="600"
-                                        languages={['javascript']}
-                                        theme="vs-dark"
-                                        value={scriptValue}
-                                        options={{
-                                            selectOnLineNumbers: true
-                                        }}
-                                        onChange={(newValue) => {
-                                            this.scriptChange(newValue);
-                                        }}/>
-                                : null
-                        }
-                        {
-                            (testType === AppConstants.PERFORMANCE_TEST_TYPE)
-                                ? <div className="form-group">
-                                    <select
-                                        className="form-control form-control-sm form-group"
-                                        value={browser}
-                                        onChange={(e) => this.dropDownClick({ browser: e.target.value })}>
-                                        {
-                                            AppConstants.BROWSER_ARRAY.map((browser, i) => {
-                                                return <option key={'browser_' + i} value={browser.value}>
+                        {testType === AppConstants.SCRIPT_TEST_TYPE ? (
+                            <MonacoEditor
+                                width="100%"
+                                height="600"
+                                languages={['javascript']}
+                                theme="vs-dark"
+                                value={scriptValue}
+                                options={{
+                                    selectOnLineNumbers: true
+                                }}
+                                onChange={newValue => {
+                                    this.scriptChange(newValue);
+                                }}
+                            />
+                        ) : null}
+                        {testType === AppConstants.PERFORMANCE_TEST_TYPE ? (
+                            <div className="form-group">
+                                <select
+                                    className="form-control form-control-sm form-group"
+                                    value={browser}
+                                    onChange={e =>
+                                        this.dropDownClick({
+                                            browser: e.target.value
+                                        })
+                                    }
+                                >
+                                    {AppConstants.BROWSER_ARRAY.map(
+                                        (browser, i) => {
+                                            return (
+                                                <option
+                                                    key={'browser_' + i}
+                                                    value={browser.value}
+                                                >
                                                     {browser.textValue}
-                                                </option>;
-                                            })
+                                                </option>
+                                            );
                                         }
-                                    </select>
-                                  </div>
-                                : null
-                        }
+                                    )}
+                                </select>
+                            </div>
+                        ) : null}
 
                         <div className="form-group form-row">
-                            {
-                                /* TODO : Uncomment for enable recursive selection
+                            {/* TODO : Uncomment for enable recursive selection
                                 <DateTimePicker
                                     className="col-sm-6 my-1 datepicker-for-scheduler"
                                     onChange={(scheduleDate) => this.onChangeDateTime(scheduleDate)}
@@ -576,39 +692,47 @@ class SiteAdd extends React.Component {
                                                 Recursive Execution
                                             </label>
                                         </div>
-                                    </div>*/
-                            }
+                                    </div>*/}
                         </div>
-                        {
-                            (isRecursiveCheck && (testType !== AppConstants.ONE_TIME_TEST_TYPE))
-                                ? <select
-                                    value={recursiveSelect.value}
-                                    className="form-control form-control-sm form-group"
-                                        onChange={(e) => this.dropDownClick(
-                                        {
-                                            recursiveSelect: {
-                                                value: e.target.value
-                                            }
-                                        })
-                                    }>
-                                    {
-                                        AppConstants.RECURSIVE_EXECUTION_ARRAY.map((execution, i) => {
-                                            return <option key={'execution_' + i} value={execution.value}>
+                        {isRecursiveCheck &&
+                        testType !== AppConstants.ONE_TIME_TEST_TYPE ? (
+                            <select
+                                value={recursiveSelect.value}
+                                className="form-control form-control-sm form-group"
+                                onChange={e =>
+                                    this.dropDownClick({
+                                        recursiveSelect: {
+                                            value: e.target.value
+                                        }
+                                    })
+                                }
+                            >
+                                {AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
+                                    (execution, i) => {
+                                        return (
+                                            <option
+                                                key={'execution_' + i}
+                                                value={execution.value}
+                                            >
                                                 {execution.textValue}
-                                            </option>;
-                                        })
+                                            </option>
+                                        );
                                     }
-                                </select>
-                                : null
-                        }
-                        <div className="form-group" id="monitor-test-button-container">
+                                )}
+                            </select>
+                        ) : null}
+                        <div
+                            className="form-group"
+                            id="monitor-test-button-container"
+                        >
                             <button
                                 className="btn btn-primary form-control button-all-caps-text monitor-test-button"
-                                onClick={(e) => this.addJobClick(e)}
-                                {
-                                    ...(selectedTenant.points && selectedTenant.points.pointsRemain <= 0) &&
-                                    { disabled: true }
-                                }>
+                                onClick={e => this.addJobClick(e)}
+                                {...selectedTenant.points &&
+                                    selectedTenant.points.pointsRemain <= 0 && {
+                                        disabled: true
+                                    }}
+                            >
                                 Save
                             </button>
                         </div>
@@ -728,7 +852,6 @@ class SiteAdd extends React.Component {
     }
 }
 
-SiteAdd.propTypes = {
-};
+SiteAdd.propTypes = {};
 
 export default SiteAdd;
