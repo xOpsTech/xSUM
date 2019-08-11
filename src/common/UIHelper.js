@@ -117,6 +117,10 @@ export function isUrlHasError(value) {
     return !RegExp(AppConstants.URL_PATTERN).test(value);
 }
 
+export function isHttpsProtocol(value) {
+    return RegExp(AppConstants.HTTPS_PROTOCOL).test(value);
+}
+
 export function isEmailHasError(value) {
     return !RegExp(AppConstants.EMAIL_PATTERN).test(value);
 }
