@@ -1,8 +1,8 @@
 import createHashHistory from 'history/lib/createHashHistory';
-import {useRouterHistory} from 'react-router';
+import { useRouterHistory } from 'react-router';
 import moment from 'moment';
-import {randomBytes} from 'crypto';
-import {browserHistory} from 'react-router';
+import { randomBytes } from 'crypto';
+import { browserHistory } from 'react-router';
 
 import userApi from '../api/userApi';
 import tenantApi from '../api/tenantApi';
@@ -34,13 +34,12 @@ export function goToPreviousPage() {
 // Cookies
 export function setCookie(cname, cvalue, exmins) {
     var d = new Date();
-    d.setTime(d.getTime() + (exmins * 60 * 1000));
+    d.setTime(d.getTime() + exmins * 60 * 1000);
     var expires = 'expires=' + d.toUTCString();
 
     if (typeof document !== 'undefined') {
         document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
     }
-
 }
 
 export function getCookie(cname) {
@@ -49,7 +48,7 @@ export function getCookie(cname) {
     if (typeof document !== 'undefined') {
         var ca = document.cookie.split(';');
 
-        for(var i = 0; i < ca.length; i++) {
+        for (var i = 0; i < ca.length; i++) {
             var c = ca[i];
             while (c.charAt(0) == ' ') {
                 c = c.substring(1);
@@ -58,7 +57,6 @@ export function getCookie(cname) {
                 return c.substring(name.length, c.length);
             }
         }
-
     }
 
     return '';
@@ -66,9 +64,9 @@ export function getCookie(cname) {
 
 export function deleteCookie(cname) {
     var d = new Date(); //Create an date object
-    d.setTime(d.getTime() - (1000*60*60*24)); //Set the time to the past. 1000 milliseonds = 1 second
-    var expires = "expires=" + d.toGMTString(); //Compose the expirartion date
-    document.cookie = cname+"="+"; "+expires;//Set the cookie with name and the expiration date
+    d.setTime(d.getTime() - 1000 * 60 * 60 * 24); //Set the time to the past. 1000 milliseonds = 1 second
+    var expires = 'expires=' + d.toGMTString(); //Compose the expirartion date
+    document.cookie = cname + '=' + '; ' + expires; //Set the cookie with name and the expiration date
 }
 
 // Set local storage value
@@ -82,7 +80,9 @@ export function getLocalStorageValue(key) {
 }
 
 export function getLeftState() {
-    var isNavCollapse = getLocalStorageValue(AppConstants.LEFTNAV_COLLAPSE_STATE);
+    var isNavCollapse = getLocalStorageValue(
+        AppConstants.LEFTNAV_COLLAPSE_STATE
+    );
 
     if (isNavCollapse == 'true') {
         return true;
@@ -91,7 +91,7 @@ export function getLeftState() {
     }
 }
 
-export function roundValueToTwoDecimals (value) {
+export function roundValueToTwoDecimals(value) {
     return Math.round(value * 100) / 100;
 }
 
@@ -100,18 +100,13 @@ export function removeLocalStorageValue(key) {
 }
 
 export function toTitleCase(str) {
-
     if (str === undefined) {
         return '';
     } else {
-        return str.replace(
-            /\w\S*/g,
-            function(txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            }
-        );
+        return str.replace(/\w\S*/g, function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
     }
-
 }
 
 export function isNameHasError(value) {
@@ -131,7 +126,7 @@ export function isPasswordHasError(value) {
 }
 
 export function isEmptyError(value) {
-  return value.length == 0;
+    return value.length == 0;
 }
 export function getRandomHexaValue() {
     return randomBytes(10).toString('hex');
@@ -145,120 +140,132 @@ export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
     var role;
 
     for (let tenant of userObject.tenants) {
-
         if (tenant.tenantID === tenantID) {
             role = tenant.role;
         }
-
     }
 
-    return (isTitle) ? toTitleCase(role) : role;
+    return isTitle ? toTitleCase(role) : role;
 }
-
 
 // isContinueLoad used for indicate continue the loading screen or not
-export function getUserData(loggedUserObj, context, callBackFunction, isContinueLoad) {
+export function getUserData(
+    loggedUserObj,
+    context,
+    callBackFunction,
+    isContinueLoad
+) {
     var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
 
-    context.setState({isLoading: true, alertData:context.state.alertData, loadingMessage: MessageConstants.FETCHING_USER});
-    userApi.getUser(urlToGetUserData, {email: loggedUserObj.email}).then((data) => {
+    context.setState({
+        isLoading: true,
+        alertData: context.state.alertData,
+        loadingMessage: MessageConstants.FETCHING_USER
+    });
+    userApi
+        .getUser(urlToGetUserData, { email: loggedUserObj.email })
+        .then(data => {
+            loggedUserObj = data.user;
 
-        loggedUserObj = data.user;
-
-        context.setState (
-            {
-                isLoading: (isContinueLoad) ? isContinueLoad : false,
-                loadingMessage: (isContinueLoad) ? context.state.loadingMessage : '',
+            context.setState({
+                isLoading: isContinueLoad ? isContinueLoad : false,
+                loadingMessage: isContinueLoad
+                    ? context.state.loadingMessage
+                    : '',
                 loggedUserObj,
                 alertData: context.state.alertData
-            }
-        );
+            });
 
-        callBackFunction && callBackFunction(data.user, context);
-    });
+            callBackFunction && callBackFunction(data.user, context);
+        });
 }
 
-export function getAllTenantsData(user, context, callBackFunction, isContinueLoad) {
-    var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+export function getAllTenantsData(
+    user,
+    context,
+    callBackFunction,
+    isContinueLoad
+) {
+    var urlToGetTenantData =
+        Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
 
     if (user.isSuperUser) {
-        urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
+        urlToGetTenantData =
+            Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
     }
 
-    context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-    tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
-        var tenantList = [];
-        var selectedTenant = context.state.selectedTenant;
-        var selectedTenantID = getLocalStorageValue(AppConstants.SELECTED_TENANT_ID);
+    context.setState({
+        isLoading: true,
+        loadingMessage: MessageConstants.FETCHING_TENANTS
+    });
+    tenantApi
+        .getAllTenantsFrom(urlToGetTenantData, { userID: user._id })
+        .then(data => {
+            var tenantList = [];
+            var selectedTenant = context.state.selectedTenant;
+            var selectedTenantID = getLocalStorageValue(
+                AppConstants.SELECTED_TENANT_ID
+            );
 
-        if (user.isSuperUser) {
+            if (user.isSuperUser) {
+                if (selectedTenantID) {
+                    for (let tenant of data) {
+                        tenant.email = { value: tenant.email, error: {} };
+                        tenant.password = { value: '', error: {} };
+                        tenantList.push(tenant);
 
-            if (selectedTenantID) {
-
+                        if (tenant._id === selectedTenantID) {
+                            selectedTenant = tenant;
+                        }
+                    }
+                } else {
+                    selectedTenant = data[0];
+                }
+            } else {
                 for (let tenant of data) {
-                    tenant.email = {value: tenant.email, error: {}};
-                    tenant.password = {value: '', error: {}};
+                    tenant.email = { value: tenant.email, error: {} };
+                    tenant.password = { value: '', error: {} };
                     tenantList.push(tenant);
 
-                    if (tenant._id === selectedTenantID) {
-                        selectedTenant = tenant;
-                    }
+                    if (context.props.location.query.userObj) {
+                        var userObj = JSON.parse(
+                            context.props.location.query.userObj
+                        );
 
+                        if (userObj.tenantID === tenant._id) {
+                            selectedTenant = tenant;
+                        }
+                    }
                 }
 
-            } else {
-                selectedTenant = data[0];
-            }
-
-        } else {
-            for (let tenant of data) {
-                tenant.email = {value: tenant.email, error: {}};
-                tenant.password = {value: '', error: {}};
-                tenantList.push(tenant);
-
-                if (context.props.location.query.userObj) {
-                    var userObj = JSON.parse(context.props.location.query.userObj);
-
-                    if (userObj.tenantID === tenant._id) {
-                        selectedTenant = tenant;
-                    }
-
+                if (selectedTenant) {
+                    selectedTenant = tenantList[0];
                 }
-
             }
 
-            if (selectedTenant) {
-                selectedTenant = tenantList[0];
-            }
+            callBackFunction && callBackFunction(user, selectedTenant, context);
 
-        }
-
-        callBackFunction && callBackFunction(user, selectedTenant, context);
-
-        context.setState (
-            {
-                isLoading: (isContinueLoad) ? isContinueLoad : false,
-                loadingMessage: (isContinueLoad) ? context.state.loadingMessage : '',
+            context.setState({
+                isLoading: isContinueLoad ? isContinueLoad : false,
+                loadingMessage: isContinueLoad
+                    ? context.state.loadingMessage
+                    : '',
                 tenantList: tenantList,
                 selectedTenant: selectedTenant,
                 alertData: context.state.alertData
-            }
-        );
-
-    });
+            });
+        });
 }
 
 export function getArrangedBarChartData(job, selectedChartIndex, context) {
     var savedDateTime, criticalThreshold, warningThreshold;
 
     for (var thresHold of context.state.alertData) {
-
         if (thresHold.jobId == job.jobId) {
             criticalThreshold = thresHold.criticalThreshold;
             warningThreshold = thresHold.warningThreshold;
             savedDateTime = thresHold.savedDateTime;
         }
-
     }
 
     var resultArray = [];
@@ -274,10 +281,10 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
     }
 
     for (let currentResult of job.result) {
-
-        if (job.testType === AppConstants.PERFORMANCE_TEST_TYPE ||
-            job.testType === AppConstants.SCRIPT_TEST_TYPE) {
-
+        if (
+            job.testType === AppConstants.PERFORMANCE_TEST_TYPE ||
+            job.testType === AppConstants.SCRIPT_TEST_TYPE
+        ) {
             // Check Result ID exists
             var isResultIdFound = resultArray.find(function(jobObj) {
                 return jobObj.resultID === currentResult.resultID;
@@ -285,44 +292,73 @@ export function getArrangedBarChartData(job, selectedChartIndex, context) {
 
             if (!isResultIdFound) {
                 resultArray.push({
-                    execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
-                    responseTime: roundValueToTwoDecimals(currentResult.response/1000),
-                    pageDownLoadTime: roundValueToTwoDecimals(currentResult.downloadTime),
-                    serverResponseTime: roundValueToTwoDecimals(currentResult.serverResponseTime/1000),
-                    backEndTime: roundValueToTwoDecimals(currentResult.backEndTime/1000),
+                    execution: moment(currentResult.time).format(
+                        AppConstants.DATE_TIME_FORMAT
+                    ),
+                    responseTime: roundValueToTwoDecimals(
+                        currentResult.response / 1000
+                    ),
+                    pageDownLoadTime: roundValueToTwoDecimals(
+                        currentResult.downloadTime
+                    ),
+                    serverResponseTime: roundValueToTwoDecimals(
+                        currentResult.serverResponseTime / 1000
+                    ),
+                    backEndTime: roundValueToTwoDecimals(
+                        currentResult.backEndTime / 1000
+                    ),
                     color: '#eb00ff',
                     resultID: currentResult.resultID
                 });
                 job.pieChartColor = '#eb00ff';
             }
-
-        } else if (job.testType === AppConstants.PING_TEST_TYPE ||
-        job.testType === AppConstants.ONE_TIME_TEST_TYPE) {
+        } else if (
+            job.testType === AppConstants.PING_TEST_TYPE ||
+            job.testType === AppConstants.ONE_TIME_TEST_TYPE
+        ) {
             var barColor = '#eb00ff';
-            var responseTime = roundValueToTwoDecimals(currentResult.response / 1000);
-            var dnsLookUpTime = roundValueToTwoDecimals(currentResult.lookup / 1000);
-            var tcpConnectTime = roundValueToTwoDecimals(currentResult.connect / 1000);
-            var lastByteRecieveTime = roundValueToTwoDecimals(currentResult.end / 1000);
-            var socketTime = roundValueToTwoDecimals(currentResult.socket / 1000);
+            var responseTime = roundValueToTwoDecimals(
+                currentResult.response / 1000
+            );
+            var dnsLookUpTime = roundValueToTwoDecimals(
+                currentResult.lookup / 1000
+            );
+            var tcpConnectTime = roundValueToTwoDecimals(
+                currentResult.connect / 1000
+            );
+            var lastByteRecieveTime = roundValueToTwoDecimals(
+                currentResult.end / 1000
+            );
+            var socketTime = roundValueToTwoDecimals(
+                currentResult.socket / 1000
+            );
 
-            var dateCompare = moment(currentResult.executedTime).isAfter(savedDateTime);
+            var dateCompare = moment(currentResult.executedTime).isAfter(
+                savedDateTime
+            );
 
-            if (criticalThreshold === undefined && warningThreshold === undefined){
+            if (
+                criticalThreshold === undefined &&
+                warningThreshold === undefined
+            ) {
                 barColor = '#eb00ff';
             } else if (savedDateTime === undefined || dateCompare) {
-
                 if (responseTime >= criticalThreshold) {
                     barColor = '#b22222';
-                } else if (responseTime >= warningThreshold && responseTime < criticalThreshold) {
+                } else if (
+                    responseTime >= warningThreshold &&
+                    responseTime < criticalThreshold
+                ) {
                     barColor = '#ffff00';
                 }
-
             } else {
                 barColor = '#eb00ff';
             }
 
             resultArray.push({
-                execution: moment(currentResult.time).format(AppConstants.DATE_TIME_FORMAT),
+                execution: moment(currentResult.time).format(
+                    AppConstants.DATE_TIME_FORMAT
+                ),
                 responseTime: responseTime,
                 dnsLookUpTime: dnsLookUpTime,
                 tcpConnectTime: tcpConnectTime,
@@ -343,11 +379,16 @@ export function saveJobsVisibility(jobList, selectedTenant, context) {
         let jobsToUpdate = [];
 
         for (let job of jobList) {
-
             // Check for undefined of isShow in job object
-            jobsToUpdate.push({jobId: job.jobId, isShow: (job.isShow) ? job.isShow : false});
+            jobsToUpdate.push({
+                jobId: job.jobId,
+                isShow: job.isShow ? job.isShow : false
+            });
         }
-        context.setState({isLoading: true, loadingMessage: MessageConstants.UPDATING_JOBS});
+        context.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.UPDATING_JOBS
+        });
 
         var updateObject = {
             jobList: jobsToUpdate,
@@ -355,17 +396,30 @@ export function saveJobsVisibility(jobList, selectedTenant, context) {
         };
 
         var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
-        jobApi.updateJob(urlToUpdateJobs, updateObject).then((response) => {
-            context.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: ''
-                }
-            );
+        jobApi.updateJob(urlToUpdateJobs, updateObject).then(response => {
+            context.setState({
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
-    } else if (selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)) {
-        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT});
+    } else if (
+        selectedTenant.userList.length > parseInt(selectedTenant.userCountLimit)
+    ) {
+        context.setState({
+            isModalVisible: true,
+            modalTitle: MessageConstants.CANT_UPDATE_USER_COUNT
+        });
     } else {
-        context.setState({isModalVisible: true, modalTitle: MessageConstants.CANT_UPDATE_POINTS});
+        context.setState({
+            isModalVisible: true,
+            modalTitle: MessageConstants.CANT_UPDATE_POINTS
+        });
     }
+}
+
+export function configRetensionTime(selectedTenant, retension) {
+    var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
+    jobApi.updateJob(urlToUpdateJobs, retension).then(response => {
+        console.log(response);
+    });
 }

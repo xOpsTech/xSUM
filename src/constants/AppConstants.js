@@ -5,27 +5,38 @@ export const LOGIN_COOKIE_EXPIRES = 30;
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
+export const CONFIG_RETENSION_API = '/urlData?action=retensionPolicy';
+export const GET_RETENSION_API = '/urlData?action=retensionDuration';
 export const URL_GET_API = '/urlData?action=getUrlData';
-export const URL_INSERT_LOGGED_USER_API = '/urlData?action=insertLoggedUserUrlData';
-export const URL_GET_LOGGED_USER_URL_API = '/urlData?action=getLoggedUserUrlData';
+export const URL_INSERT_LOGGED_USER_API =
+    '/urlData?action=insertLoggedUserUrlData';
+export const URL_GET_LOGGED_USER_URL_API =
+    '/urlData?action=getLoggedUserUrlData';
 
 export const JOB_INSERT_API = '/handleJobs?action=insertJob';
 export const JOBS_GET_API = '/handleJobs?action=getAllJobs';
-export const JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getAllJobsWithResults';
-export const JOBS_GET_WITH_A_RESULT_API = '/handleJobs?action=getAllJobsWithLastResult';
-export const AVAILABLE_JOBS_GET_WITH_RESULTS_API = '/handleJobs?action=getVisibleJobsWithResults';
-export const GET_SCRIPT_JOBS_WITH_RESULTS_API = '/handleJobs?action=getAllScriptJobsWithResults';
+export const JOBS_GET_WITH_RESULTS_API =
+    '/handleJobs?action=getAllJobsWithResults';
+export const JOBS_GET_WITH_A_RESULT_API =
+    '/handleJobs?action=getAllJobsWithLastResult';
+export const AVAILABLE_JOBS_GET_WITH_RESULTS_API =
+    '/handleJobs?action=getVisibleJobsWithResults';
+export const GET_SCRIPT_JOBS_WITH_RESULTS_API =
+    '/handleJobs?action=getAllScriptJobsWithResults';
 export const GET_JOB_WITH_RESULTS_API = '/handleJobs?action=getAJobWithResults';
 export const GET_SUMMARY_RESULTS_API = '/handleJobs?action=getSummaryResults';
-export const GET_ONE_TIME_RESULTS_API = '/handleJobs?action=getOneTimeJobWithResults';
-export const SEND_ONE_TIME_JOB_EMAIL_API = '/handleJobs?action=sendOneTimeEmail';
+export const GET_ONE_TIME_RESULTS_API =
+    '/handleJobs?action=getOneTimeJobWithResults';
+export const SEND_ONE_TIME_JOB_EMAIL_API =
+    '/handleJobs?action=sendOneTimeEmail';
 
 export const JOB_REMOVE_API = '/handleJobs?action=removeJob';
 export const JOB_START_API = '/handleJobs?action=startorStopJob';
 export const JOB_UPDATE_API = '/handleJobs?action=updateJob';
 export const JOBS_UPDATE_API = '/handleJobs?action=updateJobs';
 export const GET_RESULT_API = '/handleResults?action=getResult';
-export const GET_ALL_RESULTS_JOB_API = '/handleResults?action=getAllResultsForJob';
+export const GET_ALL_RESULTS_JOB_API =
+    '/handleResults?action=getAllResultsForJob';
 
 export const USER_ADD_API = '/userAuth?action=registerUserData';
 export const USER_REMOVE_API = '/userAuth?action=removeUserData';
@@ -35,7 +46,8 @@ export const GET_USER_ROLES_API = '/userAuth?action=getUserRolesList';
 export const ADD_USER_API = '/userAuth?action=addInActiveUserData';
 export const UPDATE_USER_API = '/userAuth?action=updateUserData';
 export const GET_USER_DATA_API = '/userAuth?action=getUserData';
-export const ADD_EMAIL_SETTING_DATA_API = '/userAuth?action=addEmailSettingsUserData';
+export const ADD_EMAIL_SETTING_DATA_API =
+    '/userAuth?action=addEmailSettingsUserData';
 export const SET_EMAIL_PASSWORD_API = '/userAuth?action=setEmailPasswordData';
 export const UPDATE_PROFILE_API = '/userAuth?action=updateProfile';
 export const UPLOAD_PICTURE = '/userAuth?action=uploadPicture';
@@ -45,12 +57,15 @@ export const ALERTS_GET_API = '/alert?action=getAllAlerts';
 export const REMOVE_ALERT_API = '/alert?action=removeAlert';
 
 export const GET_TENANT_DATA_API = '/tenant?action=getAllTenantsData';
-export const ADD_TENANT_EMAIL_SETTING_DATA_API = '/tenant?action=addTenantEmailData';
-export const GET_TENANTS_WITH_USERS_API = '/tenant?action=getAllTenantsWithUsers';
-export const GET_ALL_USERS_WITH_TENANTS_API = '/tenant?action=getAllUsersWithTenants';
+export const ADD_TENANT_EMAIL_SETTING_DATA_API =
+    '/tenant?action=addTenantEmailData';
+export const GET_TENANTS_WITH_USERS_API =
+    '/tenant?action=getAllTenantsWithUsers';
+export const GET_ALL_USERS_WITH_TENANTS_API =
+    '/tenant?action=getAllUsersWithTenants';
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
-export const GET_COMPANY_NAME = '/tenant?action=getCompanyName'
+export const GET_COMPANY_NAME = '/tenant?action=getCompanyName';
 
 export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
 
@@ -67,16 +82,16 @@ export const ALERT_MODAL = 'ALERT_MODAL';
 export const UPDATE_JOB_RESULTS = 'UpdateJobResults';
 
 // Constants for patterns
-export const NAME_PATTERN       = /[A-Za-z\s]+$/;
-export const URL_PATTERN        = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
-export const EMAIL_PATTERN      = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-export const PASSWORD_PATTERN   = /.{6,}/;
+export const NAME_PATTERN = /[A-Za-z\s]+$/;
+export const URL_PATTERN = /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/;
+export const EMAIL_PATTERN = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const PASSWORD_PATTERN = /.{6,}/;
 export const EMPTY_TEXT_PATTERN = /^\s*$/;
 
-export const URL_ID_COOKIE          = 'urlId';
-export const STORAGE_ID             = 'STORAGE_ID';
+export const URL_ID_COOKIE = 'urlId';
+export const STORAGE_ID = 'STORAGE_ID';
 export const LEFTNAV_COLLAPSE_STATE = 'LEFTNAV_COLLAPSE';
-export const SELECTED_TENANT_ID     = 'SELECTED_TENANT_ID';
+export const SELECTED_TENANT_ID = 'SELECTED_TENANT_ID';
 
 // Routes
 export const SITEADD_ROUTE = '/siteAdd';
@@ -210,7 +225,7 @@ export const LEFT_NAV_TABS = [
 
 // URL status
 export const URL_DONE_STATE = 'Done';
-export const URL_NEW_STATE  = 'New';
+export const URL_NEW_STATE = 'New';
 
 export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
 export const DATE_ONLY_FORMAT = 'MM/DD/YYYY';
@@ -218,13 +233,20 @@ export const TIME_ONLY_FORMAT = 'h:mm a';
 export const DATE_TIME_FORMAT = 'MM/DD h:mm a';
 
 export const BROWSER_ARRAY = [
-    {value: 'chrome', textValue: 'CHROME'},
-    {value: 'firefox', textValue: 'FIREFOX'}
+    { value: 'chrome', textValue: 'CHROME' },
+    { value: 'firefox', textValue: 'FIREFOX' }
 ];
 
 export const SECURITY_ARRAY = [
-    {value: 'https://', textValue: 'https'},
-    {value: 'http://', textValue: 'http'}
+    { value: 'https://', textValue: 'https' },
+    { value: 'http://', textValue: 'http' }
+];
+
+export const RETENSION_ARRAY = [
+    { value: '7d', textValue: '7 DAYS' },
+    { value: '14d', textValue: '14 DAYS' },
+    { value: '21d', textValue: '21 DAYS' },
+    { value: '28d', textValue: '28 DAYS' }
 ];
 
 export const PERFORMANCE_TEST_TYPE = 'performace';
@@ -232,41 +254,52 @@ export const PING_TEST_TYPE = 'ping';
 export const SCRIPT_TEST_TYPE = 'script';
 export const ONE_TIME_TEST_TYPE = 'one-time';
 export const TEST_TYPE_ARRAY = [
-    {value: PING_TEST_TYPE, textValue: 'PING TEST'},
-    {value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST'},
-    {value: ONE_TIME_TEST_TYPE, textValue: 'ONE TIME TEST'}
+    { value: PING_TEST_TYPE, textValue: 'PING TEST' },
+    { value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST' },
+    { value: ONE_TIME_TEST_TYPE, textValue: 'ONE TIME TEST' }
 ];
 
 export const RECURSIVE_EXECUTION_ARRAY = [
-    {value: 1000*60, textValue: 'TEST FREQUENCY - 1 Minute Interval'},
-    {value: 1000*60*5, textValue: 'TEST FREQUENCY - 5 Minutes Intervals'},
-    {value: 1000*60*10, textValue: 'TEST FREQUENCY - 10 Minutes Intervals'},
-    {value: 1000*60*30, textValue: 'TEST FREQUENCY - 30 Minutes Intervals'},
-    {value: 1000*60*60, textValue: 'TEST FREQUENCY - 60 Minutes Intervals'}
+    { value: 1000 * 60, textValue: 'TEST FREQUENCY - 1 Minute Interval' },
+    { value: 1000 * 60 * 5, textValue: 'TEST FREQUENCY - 5 Minutes Intervals' },
+    {
+        value: 1000 * 60 * 10,
+        textValue: 'TEST FREQUENCY - 10 Minutes Intervals'
+    },
+    {
+        value: 1000 * 60 * 30,
+        textValue: 'TEST FREQUENCY - 30 Minutes Intervals'
+    },
+    {
+        value: 1000 * 60 * 60,
+        textValue: 'TEST FREQUENCY - 60 Minutes Intervals'
+    }
 ];
 
 export const CHART_TYPES_ARRAY = [
-    {value: 'min', textValue: 'Min Value Chart'},
-    {value: 'max', textValue: 'Max Value Chart'},
-    {value: 'mean', textValue: 'Mean Value Chart'},
-    {value: 'median', textValue: 'Median Value Chart'}
+    { value: 'min', textValue: 'Min Value Chart' },
+    { value: 'max', textValue: 'Max Value Chart' },
+    { value: 'mean', textValue: 'Mean Value Chart' },
+    { value: 'median', textValue: 'Median Value Chart' }
 ];
 
 export const NO_OF_JOBS_ARRAY = [
-    {value: '5', textValue: '5 Jobs'},
-    {value: '10', textValue: '10 Jobs'},
-    {value: '15', textValue: '15 Jobs'}
+    { value: '5', textValue: '5 Jobs' },
+    { value: '10', textValue: '10 Jobs' },
+    { value: '15', textValue: '15 Jobs' }
 ];
 
 export const GOOGLE_MAP_KEY = 'AIzaSyDhPAHLPNL3g8OwxNfcByP61j82ZWUwHkk';
-export const GOOGLE_SIGN_IN_CLIENT_ID = '213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com';
+export const GOOGLE_SIGN_IN_CLIENT_ID =
+    '213770133867-g6ag2dqhv8ir52qoqsmgnuubc7ciq86h.apps.googleusercontent.com';
 
 var worldDataProvider = {
     map: 'worldLow',
     getAreasFromMap: true
 };
 
-export const TARGET_SVG = 'M9,0C4.029,0,0,4.029,0,9s4.029,9,9,9s9-4.029,9-9S13.971,0,9,0z M9,15.93 c-3.83,0-6.93-3.1-6.93-6.93S5.17,2.07,9,2.07s6.93,3.1,6.93,6.93S12.83,15.93,9,15.93 M12.5,9c0,1.933-1.567,3.5-3.5,3.5S5.5,10.933,5.5,9S7.067,5.5,9,5.5 S12.5,7.067,12.5,9z';
+export const TARGET_SVG =
+    'M9,0C4.029,0,0,4.029,0,9s4.029,9,9,9s9-4.029,9-9S13.971,0,9,0z M9,15.93 c-3.83,0-6.93-3.1-6.93-6.93S5.17,2.07,9,2.07s6.93,3.1,6.93,6.93S12.83,15.93,9,15.93 M12.5,9c0,1.933-1.567,3.5-3.5,3.5S5.5,10.933,5.5,9S7.067,5.5,9,5.5 S12.5,7.067,12.5,9z';
 
 export const MAP_CONTENT_DATA = {
     map: 'continentsLow',
@@ -313,36 +346,36 @@ export const MAP_CONTENT_DATA = {
 export const SUPER_USER = 'super-user';
 
 export const TIMEZONE_LIST = [
-   '',
-   '(GMT -12:00) Eniwetok, Kwajalein',
-   '(GMT -11:00) Midway Island, Samoa',
-   '(GMT -10:00) Hawaii',
-   '(GMT -9:00) Alaska',
-   '(GMT -8:00) Pacific Time (US & Canada)',
-   '(GMT -7:00) Mountain Time (US & Canada)',
-   '(GMT -6:00) Central Time (US & Canada), Mexico City',
-   '(GMT -5:00) Eastern Time (US & Canada), Bogota, Lima',
-   '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz',
-   '(GMT -3:30) Newfoundland',
-   '(GMT -3:00) Brazil, Buenos Aires, Georgetown',
-   '(GMT -2:00) Mid-Atlantic',
-   '(GMT -1:00) Azores, Cape Verde Islands',
-   '(GMT) Western Europe Time, London, Lisbon, Casablanca',
-   '(GMT +1:00) Brussels, Copenhagen, Madrid, Paris',
-   '(GMT +2:00) Kaliningrad, South Africa',
-   '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg',
-   '(GMT +3:30) Tehran',
-   '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi',
-   '(GMT +4:30) Kabul',
-   '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent',
-   '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi',
-   '(GMT +5:45) Kathmandu',
-   '(GMT +6:00) Almaty, Dhaka, Colombo',
-   '(GMT +7:00) Bangkok, Hanoi, Jakarta',
-   '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong',
-   '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk',
-   '(GMT +9:30) Adelaide, Darwin',
-   '(GMT +10:00) Eastern Australia, Guam, Vladivostok',
-   '(GMT +11:00) Magadan, Solomon Islands, New Caledonia',
-   '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
-]
+    '',
+    '(GMT -12:00) Eniwetok, Kwajalein',
+    '(GMT -11:00) Midway Island, Samoa',
+    '(GMT -10:00) Hawaii',
+    '(GMT -9:00) Alaska',
+    '(GMT -8:00) Pacific Time (US & Canada)',
+    '(GMT -7:00) Mountain Time (US & Canada)',
+    '(GMT -6:00) Central Time (US & Canada), Mexico City',
+    '(GMT -5:00) Eastern Time (US & Canada), Bogota, Lima',
+    '(GMT -4:00) Atlantic Time (Canada), Caracas, La Paz',
+    '(GMT -3:30) Newfoundland',
+    '(GMT -3:00) Brazil, Buenos Aires, Georgetown',
+    '(GMT -2:00) Mid-Atlantic',
+    '(GMT -1:00) Azores, Cape Verde Islands',
+    '(GMT) Western Europe Time, London, Lisbon, Casablanca',
+    '(GMT +1:00) Brussels, Copenhagen, Madrid, Paris',
+    '(GMT +2:00) Kaliningrad, South Africa',
+    '(GMT +3:00) Baghdad, Riyadh, Moscow, St. Petersburg',
+    '(GMT +3:30) Tehran',
+    '(GMT +4:00) Abu Dhabi, Muscat, Baku, Tbilisi',
+    '(GMT +4:30) Kabul',
+    '(GMT +5:00) Ekaterinburg, Islamabad, Karachi, Tashkent',
+    '(GMT +5:30) Bombay, Calcutta, Madras, New Delhi',
+    '(GMT +5:45) Kathmandu',
+    '(GMT +6:00) Almaty, Dhaka, Colombo',
+    '(GMT +7:00) Bangkok, Hanoi, Jakarta',
+    '(GMT +8:00) Beijing, Perth, Singapore, Hong Kong',
+    '(GMT +9:00) Tokyo, Seoul, Osaka, Sapporo, Yakutsk',
+    '(GMT +9:30) Adelaide, Darwin',
+    '(GMT +10:00) Eastern Australia, Guam, Vladivostok',
+    '(GMT +11:00) Magadan, Solomon Islands, New Caledonia',
+    '(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka'
+];
