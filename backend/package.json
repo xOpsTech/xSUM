@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "prestart": "echo xops-backend started",
-        "service": "node app.js",
+        "service": "nodemon app.js",
         "scheduler": "node scheduler.js",
         "execute": "node executables.js"
     },
