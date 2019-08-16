@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, IndexRoute} from 'react-router';
+import { Route, IndexRoute } from 'react-router';
 
 import * as AppConstants from './constants/AppConstants';
 import Page from './component/Page';
@@ -26,32 +26,69 @@ import Billing from './component/management/billing/Billing';
 import DashboardConfig from './component/management/dashboard-config/DashboardConfig';
 import AddFeedbackView from './component/common/feedback/AddFeedbackView';
 import AuthJobResult from './component/auth-job-result/AuthJobResult';
+import BraintreeView from './component/payment/BraintreeView';
+import SubscriptionList from './component/payment/SubscriptionList';
 
 export default (
     <Route path={'/'} component={Page}>
-        <IndexRoute component={Login}/>
-        <Route path={AppConstants.LOGIN_ROUTE} component={Login}/>
-        <Route path={AppConstants.SIGN_UP_ROUTE} component={SignUp}/>
-        <Route path={AppConstants.SITEADD_ROUTE} component={SiteAdd}/>
-        <Route path={AppConstants.SITELOAD_ROUTE} component={SiteLoad}/>
-        <Route path={AppConstants.SITE_RESULT_ROUTE} component={ResultView}/>
-        <Route path={AppConstants.SITE_CHART_RESULT_ROUTE} component={ResultChartView}/>
-        <Route path={AppConstants.ALL_RESULT_CHART_VIEW_ROUTE} component={AllResultPieChartView}/>
-        <Route path={AppConstants.SINGLE_JOB_RESULT_VIEW_ROUTE} component={SingleJobResultView}/>
-        <Route path={AppConstants.ALL_RESULT_VIEW_ROUTE} component={AllResultView}/>
-        <Route path={AppConstants.TESTS_ROUTE} component={Tests}/>
-        <Route path={AppConstants.ALERT_VIEW_ROUTE} component={AlertView}/>
-        <Route path={AppConstants.ALERT_LIST_VIEW_ROUTE} component={AlertListView}/>
-        <Route path={AppConstants.USER_MANAGMENT_ROUTE} component={UserManagementView}/>
-        <Route path={AppConstants.GRANT_ACCESS_ROUTE} component={GrantAccessView}/>
-        <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView}/>
-        <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView}/>
-        <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView}/>
-        <Route path={AppConstants.USER_PROFILE_ROUTE} component={ProfileView}/>
-        <Route path={AppConstants.TENANT_SETTINGS_ROUTE} component={TenantSettings}/>
-        <Route path={AppConstants.BILLING_ROUTE} component={Billing}/>
-        <Route path={AppConstants.DASHBOARD_CONFIG_ROUTE} component={DashboardConfig}/>
-        <Route path={AppConstants.ADD_FEEDBACK_ROUTE} component={AddFeedbackView}/>
-        <Route path={AppConstants.AUTH_JOB_RESULT} component={AuthJobResult}/>
+        <IndexRoute component={Login} />
+        <Route path={AppConstants.LOGIN_ROUTE} component={Login} />
+        <Route path={AppConstants.SIGN_UP_ROUTE} component={SignUp} />
+        <Route path={AppConstants.SITEADD_ROUTE} component={SiteAdd} />
+        <Route path={AppConstants.SITELOAD_ROUTE} component={SiteLoad} />
+        <Route path={AppConstants.SITE_RESULT_ROUTE} component={ResultView} />
+        <Route
+            path={AppConstants.SITE_CHART_RESULT_ROUTE}
+            component={ResultChartView}
+        />
+        <Route
+            path={AppConstants.ALL_RESULT_CHART_VIEW_ROUTE}
+            component={AllResultPieChartView}
+        />
+        <Route
+            path={AppConstants.SINGLE_JOB_RESULT_VIEW_ROUTE}
+            component={SingleJobResultView}
+        />
+        <Route
+            path={AppConstants.ALL_RESULT_VIEW_ROUTE}
+            component={AllResultView}
+        />
+        <Route
+            path={AppConstants.SUBSCRIPTION_API_ROUTE}
+            component={SubscriptionList}
+        />
+        <Route path={AppConstants.TESTS_ROUTE} component={Tests} />
+        <Route path={AppConstants.PAYMENT_ROUTE} component={BraintreeView} />
+        <Route path={AppConstants.ALERT_VIEW_ROUTE} component={AlertView} />
+        <Route
+            path={AppConstants.ALERT_LIST_VIEW_ROUTE}
+            component={AlertListView}
+        />
+        <Route
+            path={AppConstants.USER_MANAGMENT_ROUTE}
+            component={UserManagementView}
+        />
+        <Route
+            path={AppConstants.GRANT_ACCESS_ROUTE}
+            component={GrantAccessView}
+        />
+        <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView} />
+        <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView} />
+        <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView} />
+        <Route path={AppConstants.USER_PROFILE_ROUTE} component={ProfileView} />
+        <Route
+            path={AppConstants.TENANT_SETTINGS_ROUTE}
+            component={TenantSettings}
+        />
+        <Route path={AppConstants.BILLING_ROUTE} component={Billing} />
+        <Route
+            path={AppConstants.DASHBOARD_CONFIG_ROUTE}
+            component={DashboardConfig}
+        />
+        <Route
+            path={AppConstants.ADD_FEEDBACK_ROUTE}
+            component={AddFeedbackView}
+        />
+        <Route path={AppConstants.AUTH_JOB_RESULT} component={AuthJobResult} />
     </Route>
 );

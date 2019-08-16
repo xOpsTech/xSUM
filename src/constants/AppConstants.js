@@ -69,6 +69,9 @@ export const GET_COMPANY_NAME = '/tenant?action=getCompanyName';
 
 export const SAVE_FEEDBACK_API = '/feedback?action=saveFeedback';
 
+export const GET_CLIENT_TOKEN_DATA_API = '/payment?action=getClientToken';
+export const NONCE_DATA_API = '/payment?action=paymentCheckout';
+
 export const RESPONSE_SUCCESS = 'Success';
 export const RESPONSE_ERROR = 'Error';
 
@@ -105,6 +108,9 @@ export const ALL_RESULT_CHART_VIEW_ROUTE = '/allResultChartView';
 export const SINGLE_JOB_RESULT_VIEW_ROUTE = '/singleJobResultView';
 export const ALERT_VIEW_ROUTE = '/alertView';
 export const TESTS_ROUTE = '/tests';
+export const PAYMENT_ROUTE = '/payment';
+export const SUBSCRIPTION_API_ROUTE = '/subscriptions';
+export const SUBSCRIPTION_ROUTE = '/payment?action=getSubcriptionsList';
 export const ALERT_LIST_VIEW_ROUTE = '/alertListView';
 export const USER_MANAGMENT_ROUTE = '/userManagement';
 export const GRANT_ACCESS_ROUTE = '/grantAccess';
@@ -117,6 +123,8 @@ export const BILLING_ROUTE = '/billing';
 export const DASHBOARD_CONFIG_ROUTE = '/dashboard-config';
 export const ADD_FEEDBACK_ROUTE = '/add-feedback';
 export const AUTH_JOB_RESULT = '/auth-job-result';
+export const PAYMENT_VIEW_ROUTE = '/payment';
+export const PAYMENT_HISTORY_VIEW_ROUTE = '/subscriptions';
 
 export const ALL_RESULT_VIEW_INDEX = 0;
 export const TESTS_INDEX = 1;
@@ -131,10 +139,13 @@ export const BILLING_INDEX = 9;
 export const ALL_RESULT_CHART_VIEW_INDEX = 10;
 export const DASHBOARD_CONFIG_INDEX = 11;
 export const FEEDBACK_INDEX = 12;
+export const PAYMENT_INDEX = 13;
+export const PAYMENT_HISTORY_INDEX = 14;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
 export const MANAGEMENT_INDEX = 1;
+export const SUBSCRIPTION_INDEX = 2;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
@@ -220,6 +231,24 @@ export const LEFT_NAV_TABS = [
         index: FEEDBACK_INDEX,
         text: 'FEEDBACK',
         route: ADD_FEEDBACK_ROUTE
+    },
+    {
+        index: -1,
+        text: 'Subscription',
+        route: '',
+        subSectionIndex: SUBSCRIPTION_INDEX, // Use for store collapse state
+        subSections: [
+            {
+                index: PAYMENT_INDEX,
+                text: 'Payment',
+                route: PAYMENT_VIEW_ROUTE
+            },
+            {
+                index: PAYMENT_HISTORY_INDEX,
+                text: 'Payment History',
+                route: PAYMENT_HISTORY_VIEW_ROUTE
+            }
+        ]
     }
 ];
 

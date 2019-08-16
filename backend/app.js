@@ -11,10 +11,10 @@ var port = config.PORT;
 var app = express();
 
 RealtimeDataSync.startDataSync(app);
-
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', '*');
+
 
     if (req.method === 'OPTIONS') {
         res.header(
