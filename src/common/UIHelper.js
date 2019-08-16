@@ -12,6 +12,8 @@ import * as Config from '../config/config';
 import * as AppConstants from '../constants/AppConstants';
 import * as MessageConstants from '../constants/MessageConstants';
 
+import paymentApi from '../api/paymentApi';
+
 // Redirect to any route
 export function redirectTo(route, data, isRefresh) {
     useRouterHistory(createHashHistory)().push({
