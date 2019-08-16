@@ -1,7 +1,7 @@
 var express = require('express'),
     bodyParser = require('body-parser'),
     apiRouter = require('./routes/router'),
-    config = require('./config/config')
+    config = require('./config/config');
 
 var Helpers = require('./common/Helpers');
 var AppConstants = require('./constants/AppConstants');
@@ -15,6 +15,7 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', '*');
 
+
     if (req.method === 'OPTIONS') {
         res.header(
             'Access-Control-Allow-Methods',
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+
 app.use('/assets', express.static('../assets'));
 app.use('/scripts', express.static('./scripts'));
 app.use('/one-time-results', express.static('./one-time-results'));

@@ -5,6 +5,8 @@ export const LOGIN_COOKIE_EXPIRES = 30;
 
 // Constants for Backend APIs
 export const URL_INSERT_API = '/urlData?action=insertUrlData';
+export const CONFIG_RETENSION_API = '/urlData?action=retensionPolicy';
+export const GET_RETENSION_API = '/urlData?action=retensionDuration';
 export const URL_GET_API = '/urlData?action=getUrlData';
 export const URL_INSERT_LOGGED_USER_API =
     '/urlData?action=insertLoggedUserUrlData';
@@ -265,8 +267,15 @@ export const BROWSER_ARRAY = [
 ];
 
 export const SECURITY_ARRAY = [
-    { value: 'http://', textValue: 'http' },
-    { value: 'https://', textValue: 'https' }
+    { value: 'https://', textValue: 'https' },
+    { value: 'http://', textValue: 'http' }
+];
+
+export const RETENSION_ARRAY = [
+    { value: '7d', textValue: '7 DAYS' },
+    { value: '14d', textValue: '14 DAYS' },
+    { value: '21d', textValue: '21 DAYS' },
+    { value: '28d', textValue: '28 DAYS' }
 ];
 
 export const PERFORMANCE_TEST_TYPE = 'performace';

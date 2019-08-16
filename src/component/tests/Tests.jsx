@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 
 import LoadingScreen from '../common/loading-screen/LoadingScreen';
 import NavContainer from '../common/nav-container/NavContainer';
@@ -27,26 +27,32 @@ class Tests extends React.Component {
         this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
-        this.state  = this.getInitialState();
+        this.state = this.getInitialState();
     }
 
     componentDidMount() {
         document.title = 'Tests - ' + AppConstants.PRODUCT_NAME;
-        document.getElementById("background-video").style.display = 'none';
+        document.getElementById('background-video').style.display = 'none';
     }
 
     componentWillMount() {
-        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+        var siteLoginCookie = UIHelper.getCookie(
+            AppConstants.SITE_LOGIN_COOKIE
+        );
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({loggedUserObj: loggedUserObject});
-            UIHelper.getUserData(loggedUserObject, this, this.getAllTenantsData);
+            this.setState({ loggedUserObj: loggedUserObject });
+            UIHelper.getUserData(
+                loggedUserObject,
+                this,
+                this.getAllTenantsData
+            );
         } else {
             UIHelper.redirectLogin();
         }
 
-        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
+        this.setState({ isLeftNavCollapse: UIHelper.getLeftState() });
     }
 
     // Returns initial props
@@ -54,10 +60,10 @@ class Tests extends React.Component {
         var initialState = {
             isLoading: false,
             loadingMessage: '',
-            siteList : [],
+            siteList: [],
             loggedUserObj: null,
             isLeftNavCollapse: false,
-            selectedTenant: {userList: []}
+            selectedTenant: { userList: [] }
         };
 
         return initialState;
@@ -78,12 +84,19 @@ class Tests extends React.Component {
 
     getAllJobs(loggedUserObj, selectedTenant, context) {
         var url = Config.API_URL + AppConstants.JOBS_GET_API;
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        context.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.FETCHING_JOBS
+        });
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
-        jobApi.getAllJobsFrom(url, objectToRetrieve).then((data) => {
-            context.setState({siteList: data, isLoading: false, loadingMessage: ''});
+        jobApi.getAllJobsFrom(url, objectToRetrieve).then(data => {
+            context.setState({
+                siteList: data,
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
     }
 
@@ -91,16 +104,19 @@ class Tests extends React.Component {
         e.preventDefault();
 
         UIHelper.redirectTo(AppConstants.SITEADD_ROUTE, {
-            jobObj: JSON.stringify({jobID: jobToUpdate.jobId})
+            jobObj: JSON.stringify({ jobID: jobToUpdate.jobId })
         });
     }
 
     removeJobClick(e, job) {
         e.preventDefault();
 
-        const {selectedTenant} = this.state;
+        const { selectedTenant } = this.state;
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_A_JOB});
+        this.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.REMOVING_A_JOB
+        });
         var url = Config.API_URL + AppConstants.JOB_REMOVE_API;
         var objectToRemove = {
             jobId: job.jobId,
@@ -109,12 +125,15 @@ class Tests extends React.Component {
             testType: job.testType
         };
         jobApi.removeJob(url, objectToRemove).then(() => {
-            let arrayAfterRemove = this.state.siteList.filter((siteObject) => {
+            let arrayAfterRemove = this.state.siteList.filter(siteObject => {
                 return siteObject.jobId !== job.jobId;
             });
-            this.setState({siteList: arrayAfterRemove, isLoading: false, loadingMessage: ''});
+            this.setState({
+                siteList: arrayAfterRemove,
+                isLoading: false,
+                loadingMessage: ''
+            });
         });
-
     }
 
     redirectToAddJob() {
@@ -122,15 +141,22 @@ class Tests extends React.Component {
     }
 
     leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+        this.setState({ isLeftNavCollapse: !this.state.isLeftNavCollapse });
     }
 
     tenantDropDown(stateObject) {
         this.state.loggedUserObj.isSuperUser &&
-            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+            UIHelper.setLocalStorageValue(
+                AppConstants.SELECTED_TENANT_ID,
+                stateObject.selectedTenant._id
+            );
         this.setState(stateObject);
 
-        this.getAllJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+        this.getAllJobs(
+            this.state.loggedUserObj,
+            stateObject.selectedTenant,
+            this
+        );
     }
 
     render() {
@@ -144,140 +170,172 @@ class Tests extends React.Component {
 
         return (
             <Fragment>
-                <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
+                <LoadingScreen isDisplay={isLoading} message={loadingMessage} />
                 <LeftNav
                     selectedIndex={AppConstants.TESTS_INDEX}
                     isFixedLeftNav={true}
-                    leftNavStateUpdate={this.leftNavStateUpdate}/>
-                {
-                    (loggedUserObj)
-                        ? <NavContainer
-                              loggedUserObj={loggedUserObj}
-                              isFixedNav={true}
-                              tenantDropDown={this.tenantDropDown}/>
-                        : <div className="sign-in-button">
-                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
-                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                  Sign in
-                              </button>
-                          </div>
-                }
+                    leftNavStateUpdate={this.leftNavStateUpdate}
+                />
+                {loggedUserObj ? (
+                    <NavContainer
+                        loggedUserObj={loggedUserObj}
+                        isFixedNav={true}
+                        tenantDropDown={this.tenantDropDown}
+                    />
+                ) : (
+                    <div className="sign-in-button">
+                        <button
+                            onClick={() => {
+                                UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+                            }}
+                            className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                )}
                 <div>
-                    <div className={
-                        'table-container-div ' +
-                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                    <div
+                        className={
+                            'table-container-div ' +
+                            (isLeftNavCollapse
+                                ? 'collapse-left-navigation'
+                                : 'expand-left-navigation')
+                        }
+                    >
                         <div className="row alert-list-wrap-div table-responsive">
-                            {
-                                (siteList.length > 0)
-                                    ? <table className="table table-striped table-dark">
-                                        <thead>
-                                            <tr>
-                                                <th>Job Name</th>
-                                                <th>Website URL</th>
-                                                <th>Browser</th>
-                                                <th>Test Frequency</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                siteList.map((site, i) => {
-                                                    return (
-                                                        <tr className="table-row" key={'siteDetail' + i}>
-                                                            <td className="table-cell">
-                                                                <div className="form-group has-feedback">
-                                                                    <label>
-                                                                        {site.jobName}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                            <td className="table-cell">
-                                                                <div className="form-group has-feedback">
-                                                                    <label>
-                                                                        {site.securityProtocol + site.siteObject.value}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                            <td className="table-cell">
-                                                                <div className="form-group has-feedback">
-                                                                    <label>
-                                                                        {site.browser}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                            <td className="table-cell">
-                                                                <div className="form-group has-feedback">
-                                                                    <label>
-                                                                        {site.recursiveSelect.textValue}
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                            <td>
+                            {siteList.length > 0 ? (
+                                <table className="table table-striped table-dark">
+                                    <thead>
+                                        <tr>
+                                            <th>Job Name</th>
+                                            <th>Website URL</th>
+                                            <th>Browser</th>
+                                            <th>Test Frequency</th>
+                                            <th />
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {siteList.map((site, i) => {
+                                            return (
+                                                <tr
+                                                    className="table-row"
+                                                    key={'siteDetail' + i}
+                                                >
+                                                    <td className="table-cell">
+                                                        <div className="form-group has-feedback">
+                                                            <label>
+                                                                {site.jobName}
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td className="table-cell">
+                                                        <div className="form-group has-feedback">
+                                                            <label>
+                                                                {site.securityProtocol +
+                                                                    site
+                                                                        .siteObject
+                                                                        .value}
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td className="table-cell">
+                                                        <div className="form-group has-feedback">
+                                                            <label>
+                                                                {site.browser}
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td className="table-cell">
+                                                        <div className="form-group has-feedback">
+                                                            <label>
                                                                 {
-                                                                    (loggedUserObj.permissions
-                                                                        && loggedUserObj.permissions.canCreate)
-                                                                        ? <button
-                                                                            className="btn-primary
-                                                                                form-control"
-                                                                            onClick={
-                                                                                (e) =>
-                                                                                    this.updateJobClick(e, site)
-                                                                            }
-                                                                            title={
-                                                                                'Update job of ' + site.siteObject.value
-                                                                            }>
-                                                                            <span
-                                                                                className="glyphicon
-                                                                                    glyphicon-edit button-icon">
-                                                                            </span>
-                                                                          </button>
-                                                                        : null
+                                                                    site
+                                                                        .recursiveSelect
+                                                                        .textValue
                                                                 }
-
-                                                                {
-                                                                    (loggedUserObj.permissions
-                                                                        && loggedUserObj.permissions.canUpdate)
-                                                                        ? <button
-                                                                            className="btn-danger
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {loggedUserObj.permissions &&
+                                                        loggedUserObj
+                                                            .permissions
+                                                            .canCreate ? (
+                                                            <button
+                                                                className="btn-primary
                                                                                 form-control"
-                                                                            onClick={
-                                                                                (e) =>
-                                                                                    this.removeJobClick(e, site)
-                                                                            }
-                                                                            title={
-                                                                                'Remove job of ' + site.siteObject.value
-                                                                            }>
-                                                                            <span
-                                                                                className="glyphicon glyphicon-remove
-                                                                                    button-icon">
-                                                                            </span>
-                                                                          </button>
-                                                                        : null
+                                                                onClick={e =>
+                                                                    this.updateJobClick(
+                                                                        e,
+                                                                        site
+                                                                    )
                                                                 }
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            }
-                                        </tbody>
-                                    </table>
-                                : <div className="empty-list-style">{MessageConstants.NO_TESTS_AVAILABLE}</div>
-                            }
-                            {
-                                (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                                    ? <div className="row add-test-section">
-                                        <div className="col-sm-2 table-button">
-                                            <button
-                                                className="btn btn-primary form-control button-all-caps-text add-button"
-                                                onClick={this.redirectToAddJob}>
-                                                Add Test
-                                            </button>
-                                        </div>
-                                        <div className="col-sm-11"></div>
-                                      </div>
-                                    : null
-                            }
+                                                                title={
+                                                                    'Update job of ' +
+                                                                    site
+                                                                        .siteObject
+                                                                        .value
+                                                                }
+                                                            >
+                                                                <span
+                                                                    className="glyphicon
+                                                                                    glyphicon-edit button-icon"
+                                                                />
+                                                            </button>
+                                                        ) : null}
 
+                                                        {loggedUserObj.permissions &&
+                                                        loggedUserObj
+                                                            .permissions
+                                                            .canUpdate ? (
+                                                            <button
+                                                                className="btn-danger
+                                                                                form-control"
+                                                                onClick={e =>
+                                                                    this.removeJobClick(
+                                                                        e,
+                                                                        site
+                                                                    )
+                                                                }
+                                                                title={
+                                                                    'Remove job of ' +
+                                                                    site
+                                                                        .siteObject
+                                                                        .value
+                                                                }
+                                                            >
+                                                                <span
+                                                                    className="glyphicon glyphicon-remove
+                                                                                    button-icon"
+                                                                />
+                                                            </button>
+                                                        ) : null}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="empty-list-style">
+                                    {MessageConstants.NO_TESTS_AVAILABLE}
+                                </div>
+                            )}
+                            {loggedUserObj.permissions &&
+                            loggedUserObj.permissions.canCreate ? (
+                                <div className="row add-test-section">
+                                    <div className="col-sm-2 table-button">
+                                        <button
+                                            className="btn btn-primary form-control button-all-caps-text add-button"
+                                            onClick={this.redirectToAddJob}
+                                        >
+                                            Add Testxxx
+                                        </button>
+                                    </div>
+                                    <div className="col-sm-11" />
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 </div>
@@ -286,7 +344,6 @@ class Tests extends React.Component {
     }
 }
 
-Tests.propTypes = {
-};
+Tests.propTypes = {};
 
 export default Tests;

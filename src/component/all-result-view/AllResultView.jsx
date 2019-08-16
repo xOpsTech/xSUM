@@ -1,9 +1,9 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import moment from 'moment';
 import AmCharts from '@amcharts/amcharts3-react';
 import LazyLoad from 'react-lazy-load';
-import socketIOClient from "socket.io-client";
-import {OverlayTrigger, Popover} from 'react-bootstrap';
+import socketIOClient from 'socket.io-client';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import LeftNav from '../common/left-nav/LeftNav';
 import ListSelector from '../common/list-selector/ListSelector';
@@ -12,6 +12,7 @@ import NavContainer from '../common/nav-container/NavContainer';
 import MapContainer from '../common/map-container/MapContainer';
 import jobApi from '../../api/jobApi';
 import alertApi from '../../api/alertApi';
+import urlApi from '../../api/urlApi';
 
 import * as AppConstants from '../../constants/AppConstants';
 import * as Config from '../../config/config';
@@ -28,41 +29,46 @@ class AllResultView extends React.Component {
     constructor(props) {
         super(props);
 
-        this.getAllAvailableJobs        = this.getAllAvailableJobs.bind(this);
-        this.getAllJobs                 = this.getAllJobs.bind(this);
-        this.redirectToSiteLoad         = this.redirectToSiteLoad.bind(this);
-        this.getAllAlerts               = this.getAllAlerts.bind(this);
-        this.chartDropDownClick         = this.chartDropDownClick.bind(this);
-        this.redirectToAddJob           = this.redirectToAddJob.bind(this);
-        this.leftNavStateUpdate         = this.leftNavStateUpdate.bind(this);
-        this.tenantDropDown             = this.tenantDropDown.bind(this);
-        this.arrangeDashboardData       = this.arrangeDashboardData.bind(this);
-        this.arrangeSocketData          = this.arrangeSocketData.bind(this);
-        this.barChartBarClick           = this.barChartBarClick.bind(this);
-        this.updateDataList             = this.updateDataList.bind(this);
-        this.saveJobListVisibilityClick = this.saveJobListVisibilityClick.bind(this);
+        this.getAllAvailableJobs = this.getAllAvailableJobs.bind(this);
+        this.getAllJobs = this.getAllJobs.bind(this);
+        this.redirectToSiteLoad = this.redirectToSiteLoad.bind(this);
+        this.getAllAlerts = this.getAllAlerts.bind(this);
+        this.chartDropDownClick = this.chartDropDownClick.bind(this);
+        this.redirectToAddJob = this.redirectToAddJob.bind(this);
+        this.leftNavStateUpdate = this.leftNavStateUpdate.bind(this);
+        this.tenantDropDown = this.tenantDropDown.bind(this);
+        this.arrangeDashboardData = this.arrangeDashboardData.bind(this);
+        this.arrangeSocketData = this.arrangeSocketData.bind(this);
+        this.barChartBarClick = this.barChartBarClick.bind(this);
+        this.updateDataList = this.updateDataList.bind(this);
+        this.saveJobListVisibilityClick = this.saveJobListVisibilityClick.bind(
+            this
+        );
+        this.changeRetensionPolicy = this.changeRetensionPolicy.bind(this);
 
         // Setting initial state objects
-        this.state  = this.getInitialState();
+        this.state = this.getInitialState();
     }
 
     componentDidMount() {
         document.title = 'Results View - ' + AppConstants.PRODUCT_NAME;
-        document.getElementById("background-video").style.display = 'none';
+        document.getElementById('background-video').style.display = 'none';
     }
 
     componentWillMount() {
-        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+        var siteLoginCookie = UIHelper.getCookie(
+            AppConstants.SITE_LOGIN_COOKIE
+        );
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({loggedUserObj: loggedUserObject});
+            this.setState({ loggedUserObj: loggedUserObject });
             this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectLogin();
         }
 
-        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
+        this.setState({ isLeftNavCollapse: UIHelper.getLeftState() });
     }
 
     // Returns initial props
@@ -76,7 +82,8 @@ class AllResultView extends React.Component {
             locationMarker: [],
             alertData: [],
             isLeftNavCollapse: false,
-            selectedTenant: {userList: []}
+            selectedTenant: { userList: [] },
+            retension: null
         };
 
         return initialState;
@@ -90,6 +97,21 @@ class AllResultView extends React.Component {
         UIHelper.getAllTenantsData(user, context, context.getAllAlerts, true);
     }
 
+    getRetensionPolicyDuration(database) {
+        var url = Config.API_URL + AppConstants.GET_RETENSION_API;
+        urlApi
+            .getRetensionPolicyValue(url, { database: database })
+            .then(response => {
+                var index = response[0].duration.indexOf('h');
+                var sub = response[0].duration.substring(0, index);
+
+                var hours = parseInt(sub);
+                var days = hours / 24;
+
+                this.setState({ retension: days + 'd' });
+            });
+    }
+
     getAllAlerts(loggedUserObj, selectedTenant, context) {
         var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
@@ -97,11 +119,10 @@ class AllResultView extends React.Component {
             userEmail: loggedUserObj.email,
             tenantID: selectedTenant._id
         };
-        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
+        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then(data => {
             var alertThresholdsByJob = [];
 
             for (var alert of data.alertsData) {
-
                 if (alert._id) {
                     alertThresholdsByJob.push({
                         jobId: alert.job.jobId,
@@ -110,27 +131,40 @@ class AllResultView extends React.Component {
                         savedDateTime: alert.savedDateTime
                     });
                 }
-
             }
 
             this.setState({ alertData: alertThresholdsByJob });
         });
-        UIHelper.getAllTenantsData(loggedUserObj, this, this.getAllAvailableJobs, true);
+        UIHelper.getAllTenantsData(
+            loggedUserObj,
+            this,
+            this.getAllAvailableJobs,
+            true
+        );
         this.getAllJobs(loggedUserObj, selectedTenant, this);
     }
 
     getAllAvailableJobs(loggedUserObj, selectedTenant, context) {
-        socketClient = socketIOClient(Config.API_URL, { query: 'selectedTenantID=' +  selectedTenant._id});
-        socketClient.on(AppConstants.UPDATE_JOB_RESULTS + selectedTenant._id, (data) => {
-            this.arrangeSocketData(data);
+        socketClient = socketIOClient(Config.API_URL, {
+            query: 'selectedTenantID=' + selectedTenant._id
         });
-        var urlToGetJobs = Config.API_URL + AppConstants.AVAILABLE_JOBS_GET_WITH_RESULTS_API;
+        socketClient.on(
+            AppConstants.UPDATE_JOB_RESULTS + selectedTenant._id,
+            data => {
+                this.arrangeSocketData(data);
+            }
+        );
+        var urlToGetJobs =
+            Config.API_URL + AppConstants.AVAILABLE_JOBS_GET_WITH_RESULTS_API;
 
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_JOBS});
+        context.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.FETCHING_JOBS
+        });
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
-        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
+        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then(data => {
             this.arrangeDashboardData(data, context);
         });
     }
@@ -141,11 +175,13 @@ class AllResultView extends React.Component {
         var objectToRetrieve = {
             tenantID: selectedTenant._id
         };
-        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then((data) => {
+        jobApi.getAllJobsFrom(urlToGetJobs, objectToRetrieve).then(data => {
             context.setState({
                 jobList: data
             });
         });
+
+        this.getRetensionPolicyDuration(selectedTenant._id);
     }
 
     arrangeDashboardData(data, context) {
@@ -158,7 +194,7 @@ class AllResultView extends React.Component {
                 selectedChart: AppConstants.CHART_TYPES_ARRAY[0],
                 selectedChartIndex: '0',
                 barChartData: UIHelper.getArrangedBarChartData(job, 0, this)
-            })
+            });
         }
 
         var locationsArr = [];
@@ -171,35 +207,37 @@ class AllResultView extends React.Component {
                 title: location.textValue,
                 latitude: location.latitude,
                 longitude: location.longitude
-            })
+            });
         }
 
-        context.setState(
-            {
-                isLoading: false,
-                loadingMessage: '',
-                alertData: context.state.alertData,
-                jobsWithResults: jobsList,
-                locationMarker: locationsArr
-            }
-        );
+        context.setState({
+            isLoading: false,
+            loadingMessage: '',
+            alertData: context.state.alertData,
+            jobsWithResults: jobsList,
+            locationMarker: locationsArr
+        });
     }
 
     chartDropDownClick(jobIndex, jobWithResult, selectedChartIndex) {
         var jobsList = this.state.jobsWithResults;
         jobWithResult.selectedChartIndex = selectedChartIndex;
-        jobWithResult.selectedChart = AppConstants.CHART_TYPES_ARRAY[selectedChartIndex];
-        jobWithResult.barChartData = UIHelper.getArrangedBarChartData(jobWithResult, selectedChartIndex, this);
+        jobWithResult.selectedChart =
+            AppConstants.CHART_TYPES_ARRAY[selectedChartIndex];
+        jobWithResult.barChartData = UIHelper.getArrangedBarChartData(
+            jobWithResult,
+            selectedChartIndex,
+            this
+        );
         // Remove old job and add updated job
         jobsList.splice(jobIndex, 1, jobWithResult);
-        this.setState({jobsWithResults: jobsList});
+        this.setState({ jobsWithResults: jobsList });
     }
 
     redirectToSiteLoad() {
-        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE,
-            {
-                userObj: JSON.stringify(this.state.loggedUserObj)
-            });
+        UIHelper.redirectTo(AppConstants.SITELOAD_ROUTE, {
+            userObj: JSON.stringify(this.state.loggedUserObj)
+        });
     }
 
     redirectToAddJob() {
@@ -207,19 +245,25 @@ class AllResultView extends React.Component {
     }
 
     leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+        this.setState({ isLeftNavCollapse: !this.state.isLeftNavCollapse });
     }
 
     tenantDropDown(stateObject) {
-
         // Socket off
         socketClient.disconnect();
 
         this.state.loggedUserObj.isSuperUser &&
-            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+            UIHelper.setLocalStorageValue(
+                AppConstants.SELECTED_TENANT_ID,
+                stateObject.selectedTenant._id
+            );
         this.setState(stateObject);
 
-        this.getAllAvailableJobs(this.state.loggedUserObj, stateObject.selectedTenant, this);
+        this.getAllAvailableJobs(
+            this.state.loggedUserObj,
+            stateObject.selectedTenant,
+            this
+        );
     }
 
     arrangeSocketData(data) {
@@ -227,56 +271,65 @@ class AllResultView extends React.Component {
         var updatedJobResultsLength = data.jobsList[0].result.length;
 
         // Check final result executed time
-        if (this.state.jobsWithResults.length > 0
-            && this.state.jobsWithResults[0].result[jobResultsLength-1].executedTime
-                !== data.jobsList[0].result[updatedJobResultsLength-1].executedTime) {
+        if (
+            this.state.jobsWithResults.length > 0 &&
+            this.state.jobsWithResults[0].result[jobResultsLength - 1]
+                .executedTime !==
+                data.jobsList[0].result[updatedJobResultsLength - 1]
+                    .executedTime
+        ) {
             this.arrangeDashboardData(data, this);
         }
     }
 
     barChartBarClick(selectedResultIndex) {
-        var {jobsWithResults} = this.state;
+        var { jobsWithResults } = this.state;
         var resultToSend = {
-            results: JSON.stringify(jobsWithResults[0].job.result[selectedResultIndex])
+            results: JSON.stringify(
+                jobsWithResults[0].job.result[selectedResultIndex]
+            )
         };
         resultToSend.securityProtocol = jobsWithResults[0].job.securityProtocol;
         resultToSend.urlValue = jobsWithResults[0].job.siteObject.value;
-        resultToSend.locations = JSON.stringify([{
-            svgPath: AppConstants.TARGET_SVG,
-            zoomLevel: 5,
-            scale: 2,
-            title: jobsWithResults[0].job.serverLocation.textValue,
-            latitude: jobsWithResults[0].job.serverLocation.latitude,
-            longitude: jobsWithResults[0].job.serverLocation.longitude
-        }]);
+        resultToSend.locations = JSON.stringify([
+            {
+                svgPath: AppConstants.TARGET_SVG,
+                zoomLevel: 5,
+                scale: 2,
+                title: jobsWithResults[0].job.serverLocation.textValue,
+                latitude: jobsWithResults[0].job.serverLocation.latitude,
+                longitude: jobsWithResults[0].job.serverLocation.longitude
+            }
+        ]);
         UIHelper.redirectTo(AppConstants.SITE_RESULT_ROUTE, resultToSend);
     }
 
     updateDataList(isAll, isShow, selectedIndex) {
-        const {jobList} = this.state;
+        const { jobList } = this.state;
 
         if (isAll) {
-
             for (let job of jobList) {
                 job.isShow = isShow;
             }
-            this.setState({jobList: jobList});
-
+            this.setState({ jobList: jobList });
         } else {
-
             if (selectedIndex !== undefined) {
                 jobList[selectedIndex].isShow = isShow;
-                this.setState({jobList: jobList});
+                this.setState({ jobList: jobList });
             }
-
         }
-
     }
 
     saveJobListVisibilityClick(e) {
-        e.preventDefault();
-        var {selectedTenant, loggedUserObj, jobList} = this.state;
+        //e.preventDefault();
+        var { selectedTenant, loggedUserObj, jobList } = this.state;
         UIHelper.saveJobsVisibility(jobList, selectedTenant, this);
+    }
+
+    changeRetensionPolicy(e) {
+        e.preventDefault();
+
+        this.setState({ retension: e.target.value });
     }
 
     render() {
@@ -291,8 +344,8 @@ class AllResultView extends React.Component {
             jobList
         } = this.state;
 
-        const ResultViewContainer = (props) => {
-            const {barChartData} = props.jobWithResult;
+        const ResultViewContainer = props => {
+            const { barChartData } = props.jobWithResult;
             const barChartConfig = {
                 color: '#fff',
                 type: 'serial',
@@ -336,7 +389,7 @@ class AllResultView extends React.Component {
                     color: '#AAAAAA'
                 },
                 chartCursor: {
-                    limitToGraph:'g1',
+                    limitToGraph: 'g1',
                     fullWidth: true,
                     categoryBalloonEnabled: false,
                     cursorAlpha: 0,
@@ -366,7 +419,9 @@ class AllResultView extends React.Component {
                 ]
             };
 
-            var lastTestAvg = barChartData[barChartData.length-1] && barChartData[barChartData.length-1].responseTime;
+            var lastTestAvg =
+                barChartData[barChartData.length - 1] &&
+                barChartData[barChartData.length - 1].responseTime;
 
             const pieChartConfig = {
                 type: 'pie',
@@ -384,9 +439,7 @@ class AllResultView extends React.Component {
                         value: lastTestAvg
                     }
                 ],
-                colors: [
-                    '#222029', props.jobWithResult.job.pieChartColor
-                ],
+                colors: ['#222029', props.jobWithResult.job.pieChartColor],
                 titleField: 'title',
                 valueField: 'value',
                 labelRadius: 5,
@@ -402,53 +455,68 @@ class AllResultView extends React.Component {
                 <div className="row single-chart">
                     <div className="row">
                         <div className="col-sm-4">
-                            {
-                                (props.jobWithResult.result.length > 0 && props.jobWithResult.testType === AppConstants.PERFORMANCE_TEST_TYPE)
-                                    ? <select className="form-control form-control-sm form-group chart-drop-down"
-                                        value={props.jobWithResult.selectedChartIndex}
-                                        onChange={(e) => this.chartDropDownClick(
+                            {props.jobWithResult.result.length > 0 &&
+                            props.jobWithResult.testType ===
+                                AppConstants.PERFORMANCE_TEST_TYPE ? (
+                                <select
+                                    className="form-control form-control-sm form-group chart-drop-down"
+                                    value={
+                                        props.jobWithResult.selectedChartIndex
+                                    }
+                                    onChange={e =>
+                                        this.chartDropDownClick(
                                             props.keyID,
                                             props.jobWithResult,
-                                            e.target.value)
-                                        }>
-                                        {
-                                            AppConstants.CHART_TYPES_ARRAY.map((chartType, i) => {
-                                                return (
-                                                    <option key={'chartType_' + i} value={i}>
-                                                        {chartType.textValue}
-                                                    </option>
-                                                );
-                                            })
+                                            e.target.value
+                                        )
+                                    }
+                                >
+                                    {AppConstants.CHART_TYPES_ARRAY.map(
+                                        (chartType, i) => {
+                                            return (
+                                                <option
+                                                    key={'chartType_' + i}
+                                                    value={i}
+                                                >
+                                                    {chartType.textValue}
+                                                </option>
+                                            );
                                         }
-                                      </select>
-                                    : null
-                            }
+                                    )}
+                                </select>
+                            ) : null}
                         </div>
                         <div className="col-sm-3">
                             <h4 className="job-name-div">
-                            Job Name : {props.jobWithResult.job.jobName}
+                                Job Name : {props.jobWithResult.job.jobName}
                             </h4>
                         </div>
                     </div>
                     <div className="row">
                         <div className="col-sm-4">
                             <div className="row">
-                                <AmCharts.React style={{width: '100%', height: '270px'}} options={pieChartConfig}/>
+                                <AmCharts.React
+                                    style={{ width: '100%', height: '270px' }}
+                                    options={pieChartConfig}
+                                />
                             </div>
                             {/* <div className="row pie-chart-heading">
                                 Last Test Average
                             </div> */}
                         </div>
                         <div className="col-sm-8">
-                            <AmCharts.React style={{width: '100%', height: '300px'}} options={barChartConfig}/>
+                            <AmCharts.React
+                                style={{ width: '100%', height: '300px' }}
+                                options={barChartConfig}
+                            />
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const DropDownPopOver = (props) => {
-            return(
+        const DropDownPopOver = props => {
+            return (
                 <Popover {...props} className="drop-down list-drop-down">
                     {props.children}
                 </Popover>
@@ -461,95 +529,164 @@ class AllResultView extends React.Component {
                     updateDataList={this.updateDataList}
                     loggedUserObj={loggedUserObj}
                     isSaveButtonVisible={true}
-                    saveButtonClick={this.saveJobListVisibilityClick}/>
+                    saveButtonClick={this.saveJobListVisibilityClick}
+                />
             </DropDownPopOver>
         );
 
         return (
             <Fragment>
-                <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
-                {
-                    (loggedUserObj)
-                        ? <NavContainer
-                                  loggedUserObj={loggedUserObj}
-                                  isFixedNav={true}
-                                  leftNavStateUpdate={this.leftNavStateUpdate}
-                                  tenantDropDown={this.tenantDropDown}/>
-                        : <div className="sign-in-button">
-                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
-                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                  Sign in
-                              </button>
-                          </div>
-                }
+                <LoadingScreen isDisplay={isLoading} message={loadingMessage} />
+                {loggedUserObj ? (
+                    <NavContainer
+                        loggedUserObj={loggedUserObj}
+                        isFixedNav={true}
+                        leftNavStateUpdate={this.leftNavStateUpdate}
+                        tenantDropDown={this.tenantDropDown}
+                    />
+                ) : (
+                    <div className="sign-in-button">
+                        <button
+                            onClick={() => {
+                                UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+                            }}
+                            className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                )}
+
                 <LeftNav
                     selectedIndex={AppConstants.ALL_RESULT_VIEW_INDEX}
                     leftNavStateUpdate={this.leftNavStateUpdate}
                     isSubSectionExpand={true}
-                    subSectionIndex={AppConstants.DASHBOARDS_INDEX}/>
-                <div className={
+                    subSectionIndex={AppConstants.DASHBOARDS_INDEX}
+                />
+                <div
+                    className={
                         'all-result-view ' +
-                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
-                    {
-                        (locationMarker.length > 0)
-                            ? <div className="row map-container">
-                                <div className="col-sm-11">
-                                    <MapContainer height="100%" width="100%" locationMarker={locationMarker}/>
-                                </div>
-                                <div className="col-sm-1">
-                                    <OverlayTrigger
-                                        trigger="click" rootClose
-                                        placement="bottom"
-                                        overlay={ListPopOver}>
-                                        <button
-                                            className="btn btn-primary btn-sm settings-button">
-                                            <i className="settings-icon glyphicon glyphicon-cog"></i>
-                                        </button>
-                                    </OverlayTrigger>
-                                </div>
-                              </div>
-                            : <MapContainer height="100%" width="100%" locationMarker={[]}/>
+                        (isLeftNavCollapse
+                            ? 'collapse-left-navigation'
+                            : 'expand-left-navigation')
                     }
-                    <div className="row chart-view">
-                        {
-                            (jobsWithResults.length > 0)
-                                ? jobsWithResults.map((jobWithResult, i) => {
-                                    return (
-                                        <LazyLoad height={345} offsetVertical={300}>
-                                            <ResultViewContainer
-                                                jobWithResult={jobWithResult}
-                                                keyID={i}
-                                                barChartBarClick={this.barChartBarClick}/>
-                                        </LazyLoad>
-                                    );
-                                  })
-                                : null
-                        }
-                    </div>
-                    {
-                        (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                            ? <div className="row" id="add-test-section">
-                                <div className="col-sm-4"></div>
-                                <div className="col-sm-4 add-test-text" onClick={this.redirectToAddJob}>
-                                    <div className="row">
-                                        Add a test
-                                    </div>
-                                    <div className="row">
-                                        <i className="plus-icon glyphicon glyphicon-plus"></i>
-                                    </div>
-                                </div>
-                                <div className="col-sm-4"></div>
-                              </div>
-                            : null
-                    }
+                >
+                    <div className="row">
+                        <div className="col-sm-3">
+                            <select
+                                className="custom-select"
+                                value={this.state.retension}
+                                onChange={this.changeRetensionPolicy}
+                            >
+                                {AppConstants.RETENSION_ARRAY.map(
+                                    (duration, i) => {
+                                        return (
+                                            <option
+                                                key={'retension_' + i}
+                                                value={duration.value}
+                                            >
+                                                {duration.textValue}
+                                            </option>
+                                        );
+                                    }
+                                )}
+                            </select>
+                        </div>
+                        <div className="col-sm-3">
+                            <button
+                                onClick={() => {
+                                    var url =
+                                        Config.API_URL +
+                                        AppConstants.CONFIG_RETENSION_API;
 
+                                    urlApi
+                                        .configRetensionPolicy(url, {
+                                            database: this.state.selectedTenant
+                                                ._id,
+                                            retension: this.state.retension
+                                        })
+                                        .then(data => {
+                                            alert('successfully changed');
+                                        });
+                                }}
+                                className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                            >
+                                Configure
+                            </button>
+                        </div>
+                    </div>
+                    {locationMarker.length > 0 ? (
+                        <div className="row map-container">
+                            <div className="col-sm-11">
+                                <MapContainer
+                                    height="100%"
+                                    width="100%"
+                                    locationMarker={locationMarker}
+                                />
+                            </div>
+                            <div className="col-sm-1">
+                                <OverlayTrigger
+                                    trigger="click"
+                                    rootClose
+                                    placement="bottom"
+                                    overlay={ListPopOver}
+                                >
+                                    <button className="btn btn-primary btn-sm settings-button">
+                                        <i className="settings-icon glyphicon glyphicon-cog" />
+                                    </button>
+                                </OverlayTrigger>
+                            </div>
+                        </div>
+                    ) : (
+                        <MapContainer
+                            height="100%"
+                            width="100%"
+                            locationMarker={[]}
+                        />
+                    )}
+
+                    <div className="row chart-view">
+                        {jobsWithResults.length > 0
+                            ? jobsWithResults.map((jobWithResult, i) => {
+                                return (
+                                      <LazyLoad
+                                          height={345}
+                                          offsetVertical={300}
+                                      >
+                                          <ResultViewContainer
+                                              jobWithResult={jobWithResult}
+                                              keyID={i}
+                                              barChartBarClick={
+                                                  this.barChartBarClick
+                                              }
+                                          />
+                                      </LazyLoad>
+                                  );
+                            })
+                            : null}
+                    </div>
+                    {loggedUserObj.permissions &&
+                    loggedUserObj.permissions.canCreate ? (
+                        <div className="row" id="add-test-section">
+                            <div className="col-sm-4" />
+                            <div
+                                className="col-sm-4 add-test-text"
+                                onClick={this.redirectToAddJob}
+                            >
+                                <div className="row">Add a test</div>
+                                <div className="row">
+                                    <i className="plus-icon glyphicon glyphicon-plus" />
+                                </div>
+                            </div>
+                            <div className="col-sm-4" />
+                        </div>
+                    ) : null}
                 </div>
             </Fragment>
         );
     }
 }
 
-AllResultView.propTypes = {
-};
+AllResultView.propTypes = {};
 
 export default AllResultView;

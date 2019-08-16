@@ -422,3 +422,10 @@ export function saveJobsVisibility(jobList, selectedTenant, context) {
         });
     }
 }
+
+export function configRetensionTime(selectedTenant, retension) {
+    var urlToUpdateJobs = Config.API_URL + AppConstants.JOBS_UPDATE_API;
+    jobApi.updateJob(urlToUpdateJobs, retension).then(response => {
+        console.log(response);
+    });
+}
