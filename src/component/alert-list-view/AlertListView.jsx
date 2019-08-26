@@ -1,17 +1,17 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from "react";
 
-import LoadingScreen from '../common/loading-screen/LoadingScreen';
-import NavContainer from '../common/nav-container/NavContainer';
-import LeftNav from '../common/left-nav/LeftNav';
-import alertApi from '../../api/alertApi';
+import LoadingScreen from "../common/loading-screen/LoadingScreen";
+import NavContainer from "../common/nav-container/NavContainer";
+import LeftNav from "../common/left-nav/LeftNav";
+import alertApi from "../../api/alertApi";
 
-import * as AppConstants from '../../constants/AppConstants';
-import * as Config from '../../config/config';
-import * as UIHelper from '../../common/UIHelper';
-import * as MessageConstants from '../../constants/MessageConstants';
+import * as AppConstants from "../../constants/AppConstants";
+import * as Config from "../../config/config";
+import * as UIHelper from "../../common/UIHelper";
+import * as MessageConstants from "../../constants/MessageConstants";
 
 /* eslint-disable no-unused-vars */
-import Styles from './AlertListViewStyles.less';
+import Styles from "./AlertListViewStyles.less";
 /* eslint-enable no-unused-vars */
 
 class AlertListView extends React.Component {
@@ -28,37 +28,39 @@ class AlertListView extends React.Component {
         this.tenantDropDown = this.tenantDropDown.bind(this);
 
         // Setting initial state objects
-        this.state  = this.getInitialState();
+        this.state = this.getInitialState();
     }
 
     componentDidMount() {
-        document.title = 'Alerts - ' + AppConstants.PRODUCT_NAME;
-        document.getElementById("background-video").style.display = 'none';
+        document.title = "Alerts - " + AppConstants.PRODUCT_NAME;
+        document.getElementById("background-video").style.display = "none";
     }
 
     componentWillMount() {
-        var siteLoginCookie = UIHelper.getCookie(AppConstants.SITE_LOGIN_COOKIE);
+        var siteLoginCookie = UIHelper.getCookie(
+            AppConstants.SITE_LOGIN_COOKIE
+        );
 
         if (siteLoginCookie) {
             var loggedUserObject = JSON.parse(siteLoginCookie);
-            this.setState({loggedUserObj: loggedUserObject});
+            this.setState({ loggedUserObj: loggedUserObject });
             this.getLoggedUserData(loggedUserObject);
         } else {
             UIHelper.redirectLogin();
         }
 
-        this.setState({isLeftNavCollapse: UIHelper.getLeftState()});
+        this.setState({ isLeftNavCollapse: UIHelper.getLeftState() });
     }
 
     // Returns initial props
     getInitialState() {
         var initialState = {
             isLoading: false,
-            loadingMessage: '',
+            loadingMessage: "",
             loggedUserObj: null,
             isLeftNavCollapse: false,
             alertsData: [],
-            selectedTenant: {userList: []}
+            selectedTenant: { userList: [] }
         };
 
         return initialState;
@@ -84,19 +86,20 @@ class AlertListView extends React.Component {
     getAllAlerts(loggedUserObj, selectedTenant, context) {
         var urlToGetAlerts = Config.API_URL + AppConstants.ALERTS_GET_API;
 
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_ALERT});
+        context.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.FETCHING_ALERT
+        });
         var objToGetAlerts = {
             userEmail: loggedUserObj.email,
             tenantID: selectedTenant._id
         };
-        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then((data) => {
-            context.setState(
-                {
-                    isLoading: false,
-                    loadingMessage: '',
-                    alertsData: data.alertsData
-                }
-            );
+        alertApi.getAllAlertsFrom(urlToGetAlerts, objToGetAlerts).then(data => {
+            context.setState({
+                isLoading: false,
+                loadingMessage: "",
+                alertsData: data.alertsData
+            });
         });
     }
 
@@ -104,27 +107,33 @@ class AlertListView extends React.Component {
         e.preventDefault();
 
         UIHelper.redirectTo(AppConstants.ALERT_VIEW_ROUTE, {
-            alertObj: JSON.stringify({alertID: alertToUpdate._id})
+            alertObj: JSON.stringify({ alertID: alertToUpdate._id })
         });
     }
 
     removeAlertClick(e, alertToRemove) {
         e.preventDefault();
 
-        this.setState({isLoading: true, loadingMessage: MessageConstants.REMOVING_ALERT});
-        const {selectedTenant} = this.state;
+        this.setState({
+            isLoading: true,
+            loadingMessage: MessageConstants.REMOVING_ALERT
+        });
+        const { selectedTenant } = this.state;
         var url = Config.API_URL + AppConstants.REMOVE_ALERT_API;
         var alertToRemove = {
             alertId: alertToRemove._id,
             tenantID: selectedTenant._id
         };
         alertApi.removeAlert(url, alertToRemove).then(() => {
-            let arrayAfterRemove = this.state.alertsData.filter((alertObj) => {
+            let arrayAfterRemove = this.state.alertsData.filter(alertObj => {
                 return alertObj._id !== alertToRemove.alertId;
             });
-            this.setState({isLoading: false, loadingMessage: '', alertsData: arrayAfterRemove});
+            this.setState({
+                isLoading: false,
+                loadingMessage: "",
+                alertsData: arrayAfterRemove
+            });
         });
-
     }
 
     redirectToAddAlert() {
@@ -132,15 +141,22 @@ class AlertListView extends React.Component {
     }
 
     leftNavStateUpdate() {
-        this.setState({isLeftNavCollapse: !this.state.isLeftNavCollapse});
+        this.setState({ isLeftNavCollapse: !this.state.isLeftNavCollapse });
     }
 
     tenantDropDown(stateObject) {
         this.state.loggedUserObj.isSuperUser &&
-            UIHelper.setLocalStorageValue(AppConstants.SELECTED_TENANT_ID, stateObject.selectedTenant._id);
+            UIHelper.setLocalStorageValue(
+                AppConstants.SELECTED_TENANT_ID,
+                stateObject.selectedTenant._id
+            );
         this.setState(stateObject);
 
-        this.getAllAlerts(this.state.loggedUserObj, stateObject.selectedTenant, this);
+        this.getAllAlerts(
+            this.state.loggedUserObj,
+            stateObject.selectedTenant,
+            this
+        );
     }
 
     render() {
@@ -154,32 +170,44 @@ class AlertListView extends React.Component {
 
         const AlertList = () => {
             var activeAlertCount = 0;
-            alertsData.map((alert) => {
-
+            alertsData.map(alert => {
                 if (alert._id) {
                     activeAlertCount++;
+                    console.log('====================================');
+                    console.log("Warning Threshold: ", alert.warningThreshold);
+                    console.log("Critical Threshold: ", alert.criticalThreshold);
+                    console.log('====================================');
                 }
-
             });
 
             if (activeAlertCount > 0) {
                 return (
-                    <table className="table table-striped table-dark" id="alert-list">
-                        <thead>
-                            <tr>
-                                <th>Alert Name</th>
-                                <th>Warning Threshold</th>
-                                <th>Critical Threshold</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                alertsData.map((alert, i) => {
-
+                        <table
+                            className="table table-striped table-dark"
+                            id="alert-list"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Alert Name</th>
+                                    <th>Job Name</th>
+                                    <th>Warning Threshold</th>
+                                    <th>Critical Threshold</th>
+                                    <th />
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {alertsData.map((alert, i) => {
                                     if (alert._id) {
                                         return (
-                                            <tr className="table-row" key={'siteDetail' + i}>
+                                            <tr
+                                                className="table-row"
+                                                key={"siteDetail" + i}
+                                            >
+                                                <td className="table-cell">
+                                                    <div className="form-group has-feedback">
+                                                        <label>{alert.alertName}</label>
+                                                    </div>
+                                                </td>
                                                 <td className="table-cell">
                                                     <div className="form-group has-feedback">
                                                         <label>
@@ -189,123 +217,160 @@ class AlertListView extends React.Component {
                                                 </td>
                                                 <td className="table-cell">
                                                     <div className="form-group has-feedback">
-                                                        <label>
-                                                            {alert.warningThreshold} seconds
-                                                        </label>
+                                                        {alert.warningThreshold == 0 ? (
+                                                            <label>--</label>
+                                                            
+                                                        ) : (
+                                                            <label>
+                                                                {alert.warningThreshold}{" "} seconds
+                                                            </label>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="table-cell">
                                                     <div className="form-group has-feedback">
-                                                        <label>
-                                                            {alert.criticalThreshold} seconds
-                                                        </label>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    {
-                                                        (loggedUserObj.permissions
-                                                            && loggedUserObj.permissions.canCreate)
-                                                            ? <button
-                                                                className={
-                                                                    'btn-primary form-control ' +
-                                                                    (alert._id ? 'button-inline' : ' add-button')
-                                                                }
-                                                                onClick={(e) => this.updateAlertClick(e, alert, i)}
-                                                                title={
-                                                                    (alert._id ? 'Update' : 'Add')
-                                                                    + ' alert of ' + alert.job.siteObject.value
-                                                                }>
-                                                                <span
-                                                                    className={
-                                                                        'glyphicon button-icon' +
-                                                                        (
-                                                                            alert._id
-                                                                                ? ' glyphicon-edit'
-                                                                                : ' glyphicon-plus'
-                                                                        )
-                                                                    }>
-                                                                </span>
-                                                              </button>
-                                                            : null
-                                                    }
+                                                        {alert.criticalThreshold == 0 ? (
+                                                            <label>--</label>
+                                                            
+                                                        ) : (
+                                                            <label>
+                                                                {alert.criticalThreshold}{" "} seconds
+                                                            </label>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {loggedUserObj.permissions &&
+                                                loggedUserObj.permissions
+                                                    .canCreate ? (
+                                                    <button
+                                                        className={
+                                                            "btn-primary form-control " +
+                                                            (alert._id
+                                                                ? "button-inline"
+                                                                : " add-button")
+                                                        }
+                                                        onClick={e =>
+                                                            this.updateAlertClick(
+                                                                e,
+                                                                alert,
+                                                                i
+                                                            )
+                                                        }
+                                                        title={
+                                                            (alert._id
+                                                                ? "Update"
+                                                                : "Add") +
+                                                            " alert of " +
+                                                            alert.job.siteObject
+                                                                .value
+                                                        }
+                                                    >
+                                                        <span
+                                                            className={
+                                                                "glyphicon button-icon" +
+                                                                (alert._id
+                                                                    ? " glyphicon-edit"
+                                                                    : " glyphicon-plus")
+                                                            }
+                                                        />
+                                                    </button>
+                                                ) : null}
 
-                                                    {
-                                                        (alert._id && (loggedUserObj.permissions
-                                                            && loggedUserObj.permissions.canCreate))
-                                                            ? <button
-                                                                className="btn-danger
+                                                {alert._id &&
+                                                (loggedUserObj.permissions &&
+                                                    loggedUserObj.permissions
+                                                        .canCreate) ? (
+                                                    <button
+                                                        className="btn-danger
                                                                     form-control button-inline"
-                                                                onClick={(e) => this.removeAlertClick(e, alert)}
-                                                                title={
-                                                                    'Remove alert of '
-                                                                    + alert.job.siteObject.value
-                                                                }>
-                                                                <span
-                                                                    className="glyphicon
-                                                                        glyphicon-remove button-icon">
-                                                                </span>
-                                                              </button>
-                                                            : null
-                                                    }
-                                                </td>
-                                            </tr>
-                                        );
-                                    } else {
-                                        return null;
-                                    }
-
-                                })
-                            }
+                                                        onClick={e =>
+                                                            this.removeAlertClick(
+                                                                e,
+                                                                alert
+                                                            )
+                                                        }
+                                                        title={
+                                                            "Remove alert of " +
+                                                            alert.job.siteObject
+                                                                .value
+                                                        }
+                                                    >
+                                                        <span
+                                                            className="glyphicon
+                                                                        glyphicon-remove button-icon"
+                                                        />
+                                                    </button>
+                                                ) : null}
+                                            </td>
+                                        </tr>
+                                    );
+                                } else {
+                                    return null;
+                                }
+                            })}
                         </tbody>
                     </table>
                 );
             } else {
-                return <div className="empty-list-style">No Alerts available</div>;
+                return (
+                    <div className="empty-list-style">No Alerts available</div>
+                );
             }
-
         };
 
         return (
             <Fragment>
-                <LoadingScreen isDisplay={isLoading} message={loadingMessage}/>
+                <LoadingScreen isDisplay={isLoading} message={loadingMessage} />
                 <LeftNav
                     selectedIndex={AppConstants.ALERT_LIST_VIEW_INDEX}
                     isFixedLeftNav={true}
-                    leftNavStateUpdate={this.leftNavStateUpdate}/>
-                {
-                    (loggedUserObj)
-                        ? <NavContainer
-                              loggedUserObj={loggedUserObj}
-                              isFixedNav={true}
-                              tenantDropDown={this.tenantDropDown}/>
-                        : <div className="sign-in-button">
-                              <button onClick={() => {UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);}}
-                                  className="btn btn-primary btn-sm log-out-drop-down--li--button">
-                                  Sign in
-                              </button>
-                          </div>
-                }
+                    leftNavStateUpdate={this.leftNavStateUpdate}
+                />
+                {loggedUserObj ? (
+                    <NavContainer
+                        loggedUserObj={loggedUserObj}
+                        isFixedNav={true}
+                        tenantDropDown={this.tenantDropDown}
+                    />
+                ) : (
+                    <div className="sign-in-button">
+                        <button
+                            onClick={() => {
+                                UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+                            }}
+                            className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                        >
+                            Sign in
+                        </button>
+                    </div>
+                )}
                 <div className="site-edit-container">
-                    <div className = {
-                        'table-container-div ' +
-                        ((isLeftNavCollapse) ? 'collapse-left-navigation' : 'expand-left-navigation')}>
+                    <div
+                        className={
+                            "table-container-div " +
+                            (isLeftNavCollapse
+                                ? "collapse-left-navigation"
+                                : "expand-left-navigation")
+                        }
+                    >
                         <div className="row alert-list-wrap-div">
-                            <AlertList/>
-                                {
-                                    (loggedUserObj.permissions && loggedUserObj.permissions.canCreate)
-                                        ? <div className="row add-test-section">
-                                            <div className="col-sm-2 table-button">
-                                                <button
-                                                    className="btn btn-primary
+                            <AlertList />
+                            {loggedUserObj.permissions &&
+                            loggedUserObj.permissions.canCreate ? (
+                                <div className="row add-test-section">
+                                    <div className="col-sm-2 table-button">
+                                        <button
+                                            className="btn btn-primary
                                                     form-control button-all-caps-text add-button"
-                                                    onClick={this.redirectToAddAlert}>
-                                                    Add Alert
-                                                </button>
-                                            </div>
-                                            <div className="col-sm-11"></div>
-                                          </div>
-                                        : null
-                                }
+                                            onClick={this.redirectToAddAlert}
+                                        >
+                                            Add Alert
+                                        </button>
+                                    </div>
+                                    <div className="col-sm-11" />
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 </div>
@@ -314,7 +379,6 @@ class AlertListView extends React.Component {
     }
 }
 
-AlertListView.propTypes = {
-};
+AlertListView.propTypes = {};
 
 export default AlertListView;

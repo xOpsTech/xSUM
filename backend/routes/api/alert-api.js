@@ -27,11 +27,12 @@ AlertApi.prototype.handleAlertData = function(req, res) {
 
 AlertApi.prototype.saveAlert = async function(req, res) {
     var alertObj = req.body;
+    console.log(10, alertObj);
     var currentDateTime = moment().format(AppConstants.INFLUXDB_DATETIME_FORMAT);
 
     if (alertObj._id) {
         var objectToUpdate = {
-            warningThreshold: alertObj.warningThreshold,
+        warningThreshold: alertObj.warningThreshold,
             criticalThreshold: alertObj.criticalThreshold,
 
             failureAlertEmailLimit: parseInt(alertObj.failureAlertEmailLimit),
@@ -57,7 +58,6 @@ AlertApi.prototype.saveAlert = async function(req, res) {
         alertObj.warningAlertEmailLimit = AppConstants.DEF_EMAIL_WARNING_ALERT_COUNT;
 
         alertObj.savedDateTime = currentDateTime;
-
         delete alertObj.job;
 
         await MongoDB.insertData(alertObj.tenantID, AppConstants.ALERT_LIST, alertObj);
@@ -79,7 +79,6 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
         };
 
         var alertObjData = await MongoDB.getAllData(userObj.tenantID, AppConstants.ALERT_LIST, queryToGetJobAlert);
-
         var jobResults = [];
 
         if (jobObj.testType === AppConstants.PING_TEST_TYPE) {
@@ -99,7 +98,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
 
         if (alertObjData.length > 0) {
 
-            for (let alertObject of alertObjData) {
+            for (let
+                of alertObjData) {
                 alertsData.push({
                     job: jobObj,
                     meanAvg: Helpers.roundValue(meanAvg/1000, 3),
@@ -117,7 +117,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
                     criticalAlertEmailLimit: alertObject.criticalAlertEmailLimit,
                     warningAlertEmailLimit: alertObject.warningAlertEmailLimit,
 
-                    savedDateTime: alertObject.savedDateTime
+                    savedDateTime: alertObject.savedDateTime,
+                    alertName: alertObject.alertName
                 });
             }
 
@@ -131,7 +132,8 @@ AlertApi.prototype.getAllAlerts = async function(req, res) {
 
             failureAlertEmailLimit: AppConstants.DEF_EMAIL_FAILURE_ALERT_COUNT,
             criticalAlertEmailLimit: AppConstants.DEF_EMAIL_CRITICAL_ALERT_COUNT,
-            warningAlertEmailLimit: AppConstants.DEF_EMAIL_WARNING_ALERT_COUNT
+            warningAlertEmailLimit: AppConstants.DEF_EMAIL_WARNING_ALERT_COUNT,
+            alertName: ''
         });
 
     }
