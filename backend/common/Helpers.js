@@ -266,7 +266,7 @@ exports.executeOneTimeJob = async function(databaseName, jobToExecute) {
     return create;
 }
 
-exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToSend, timeZone) {
+exports.sendEmailRegardingOneTimeJob = async function(user,tenantID, jobObj, emailToSend, timeZone) {
     var oneTimeTestResultURL = config.API_URL + '/#/auth-job-result?tag=' + jobObj.authKey;
 
     let objectToRetrieveResults = {jobId: jobObj.jobId, tenantID: tenantID};
@@ -360,13 +360,26 @@ exports.sendEmailRegardingOneTimeJob = async function(tenantID, jobObj, emailToS
     });
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
-    var emailBodyToSend = '<div><h3>Test Results - ' + jobObj.jobName + '</h3>' +
-                          '<img width="100%" src="' + config.API_URL + '/' + renderedImgPath + '"/>';
 
-    for (let result of results.summaryResults) {
+var emailStart = "Hey "+String(user.name)+"!<br> <p>Here at <b>xOps</b> we’re teaming up with Lenovo to help customers improve their website performance. We're using our new open source monitoring tool, xSUM to see how you stack up against the competition.Here are some demo results of One time test jobs that we have added.</p>"
+
+var emailMiddle = "<p>Please find the results for each One Time Tests Below.</p><br><h3>Test Results - " + jobObj.jobName+ '<br><img width="100%" src="' + config.API_URL + '/' + renderedImgPath + '"/>';
+
+var emailShow = "<br><div>We don't just stop there. We are able to run further tests on a regular basis at no cost to ensure your continuing to perform for your customers.</div>."
+
+
+  var emailInvite =  'Administrator has invited you to join the ' + user.email + ' account on xSUM.<br>' +
+                                'You can login to xSUM by using <b>your email as username</b> and following password. <br>' +
+                                'Your password is: <b>' + user.passTocken + '<b> <br>' +
+                                'Use following URL to login to xSUM<br>' +
+                                '<a href="' + config.API_URL + '/#/login' + '">Navigate to xSUM Login</a> <br>' +
+                                'Thank you';
+
+    var emailBodyToSend = emailStart + emailMiddle + emailShow+ emailInvite;
+  /*  for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
     }
-
+*/
     emailBodyToSend += '</div>';
     this.sendEmailAs (
         emailToSend,
@@ -893,16 +906,16 @@ exports.sendEmailToScriptedUsers = async function (context) {
                                 'Use following URL to login to xSUM<br>' +
                                 '<a href="' + config.API_URL + '/#/login' + '">Navigate to xSUM Login</a> <br>' +
                                 'Thank you';
-        context.sendEmailAs (
+/*        context.sendEmailAs (
             user.email,
             'xSUM - Login Details',
             emailBodyToSend,
             AppConstants.ADMIN_EMAIL_TYPE
         );
-
+*/
         // Get the job list for current tenant
         var jobList = await MongoDB.getAllData(String(user.tenants[0].tenantID), AppConstants.DB_JOB_LIST, {isScriptedJob: true});
-        await context.sendEmailRegardingOneTimeJob(String(user.tenants[0].tenantID), jobList[0], user.email)
+        await context.sendEmailRegardingOneTimeJob(user, String(user.tenants[0].tenantID), jobList[0], user.email)
         console.log("Send emails Successfully for " + user.email);
     }
 
