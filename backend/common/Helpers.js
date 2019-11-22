@@ -361,21 +361,19 @@ exports.sendEmailRegardingOneTimeJob = async function(user,tenantID, jobObj, ema
 
     let results = await this.getSummaryResults(objectToRetrieveResults, false);
 
-var emailStart = "Hey "+String(user.name)+"!<br> <p>Here at <b>xOps</b> we’re teaming up with Lenovo to help customers improve their website performance. We're using our new open source monitoring tool, xSUM to see how you stack up against the competition.Here are some demo results of One time test jobs that we have added.</p>"
+var emailStart = "Hey "+String(user.name)+"!<br> <p>At <b>xOps</b> we've teamed up with Lenovo to help customers improve their application performance.  Our new open source monitoring tool, xSUM helps you see how an application is doing.  You can even compare yourself against the competition with it.  Here are some demo results that we got using one of your public websites.</p>"
 
-var emailMiddle = "<p>Please find the results for each One Time Tests Below.</p><br><h3>Test Results - " + jobObj.jobName+ '<br><img width="100%" src="' + config.API_URL + '/' + renderedImgPath + '"/>';
-
-var emailShow = "<br><div>We don't just stop there. We are able to run further tests on a regular basis at no cost to ensure your continuing to perform for your customers.</div>."
+var emailMiddle = "<p>Please find the results below for your property"+ '<br><img width="100%" src="' + config.API_URL + '/' + renderedImgPath + '"/>';
 
 
-  var emailInvite =  'Administrator has invited you to join the ' + user.email + ' account on xSUM.<br>' +
-                                'You can login to xSUM by using <b>your email as username</b> and following password. <br>' +
+  var emailInvite =  '<div>To use xSum for no cost the xOps administrator has invited you to join the ' + user.email + ' account on xSUM.</div><br>' +
+                                '<div>You can login to xSUM by using your email as username and following password</div>. <br>' +
                                 'Your password is: <b>' + user.passTocken + '<b> <br>' +
                                 'Use following URL to login to xSUM<br>' +
-                                '<a href="' + config.API_URL + '/#/login' + '">Navigate to xSUM Login</a> <br>' +
-                                'Thank you';
+                                '<a href="' + config.API_URL + '/#/login' + '">Navigate to xSUM Login</a> <br><br>' +
+                                'Thank you'+"<br><p>Larry Gordon<br>xOps<br>lgordon@xops.it<br>@xOps</p>";
 
-    var emailBodyToSend = emailStart + emailMiddle + emailShow+ emailInvite;
+    var emailBodyToSend = emailStart + emailMiddle + emailInvite;
   /*  for (let result of results.summaryResults) {
         emailBodyToSend += this.getTileTagString(result);
     }
