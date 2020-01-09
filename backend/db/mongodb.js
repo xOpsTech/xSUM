@@ -42,6 +42,91 @@ MongoDB.prototype.removeDatabase = async function(databaseName) {
     });
 };
 
+
+
+
+//getAccountResult
+function getAccountResult(db, databaseName, collectionName) {
+ return new Promise(
+     resolve => {
+        var dbo = db.db(databaseName);
+        dbo.collection(collectionName).find({})
+        .toArray((error , result)=>{
+            if(error){
+                resolve(error);
+            }
+            resolve(result);
+            console.log('mongodb.js')
+            console.log(result)
+            db.close();
+        })
+     }
+ )
+}
+function updateResultFor (db , databaseName  , collectionName , query){
+    return new Promise(resolve => {
+       console.log('updateResultFor');
+      
+       var dbo = db.db(databaseName);
+    var userList = dbo.collection(collectionName).find({_id:query._id})
+     // console.log(userList);
+     let data = {
+         _id:query._id,
+         mailStatus:false
+     }
+     if(userList){
+         dbo.collection(collectionName).updateOne(
+            {
+                _id: query._id
+            },
+            {
+                $set: data
+            }, function (err, responses) {
+                if (err) {
+                    console.log(err);
+                }
+            }
+         )
+     }
+     else{
+         console.log('sdsd')
+     }
+
+    });
+}
+
+function updateResult (db , databaseName  , collectionName , query){
+    return new Promise(resolve => {
+       console.log('Hello Mongodb');
+      
+       var dbo = db.db(databaseName);
+    var userList = dbo.collection(collectionName).find({_id:query._id})
+     // console.log(userList);
+     let data = {
+         _id:query._id,
+         mailStatus:true
+     }
+     if(userList){
+         dbo.collection(collectionName).updateOne(
+            {
+                _id: query._id
+            },
+            {
+                $set: data
+            }, function (err, responses) {
+                if (err) {
+                    console.log(err);
+                }
+            }
+         )
+     }
+     else{
+         console.log('sdsd')
+     }
+
+    });
+}
+
 function getResult(db, databaseName, collectionName, query) {
     return new Promise(resolve => {
         var dbo = db.db(databaseName);
@@ -108,6 +193,55 @@ MongoDB.prototype.deleteOneData = function(
         db.close();
     });
 };
+MongoDB.prototype.getAccountData = async function (databaseName,
+    collectionName){
+        var dbObject = await connectDB(databaseName);
+        var allresults = await getAccountResult(
+            dbObject,
+            databaseName,
+            collectionName,
+        
+        );
+        return new Promise(resolve => {
+            resolve(allresults);
+            console.log('Resolve')
+            console.log(allresults);
+        });
+}
+MongoDB.prototype.updateUserListfor = async function(
+    databaseName,
+    collectionName,
+    query
+){
+    var dbObject = await connectDB(databaseName);
+    var updateresults = await updateResultFor(
+        dbObject,
+        databaseName,
+        collectionName,
+        query
+    );
+    return new Promise(resolve => {
+        resolve(updateresults);
+    });
+}
+
+MongoDB.prototype.updateUserList = async function(
+    databaseName,
+    collectionName,
+    query
+){
+    var dbObject = await connectDB(databaseName);
+    var updateresults = await updateResult(
+        dbObject,
+        databaseName,
+        collectionName,
+        query
+    );
+    return new Promise(resolve => {
+        resolve(updateresults);
+    });
+}
+
 
 MongoDB.prototype.getAllData = async function(
     databaseName,
@@ -121,6 +255,8 @@ MongoDB.prototype.getAllData = async function(
         collectionName,
         query
     );
+    //console.log("TENANTSUSER");
+    //console.log(allresults);
 
     return new Promise(resolve => {
         resolve(allresults);

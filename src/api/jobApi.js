@@ -13,7 +13,8 @@ class jobApi {
     }
 
     static addJob(webserviceUrl, jobObj) {
-        return fetchRequests.postRequest(webserviceUrl, jobObj).then((response) => {
+        return fetchRequests.postRequest(webserviceUrl, jobObj)
+        .then((response) => {
 
             if (response.ok) {
                 return response.json();

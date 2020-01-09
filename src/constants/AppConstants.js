@@ -46,6 +46,11 @@ export const GET_USER_ROLES_API = '/userAuth?action=getUserRolesList';
 export const ADD_USER_API = '/userAuth?action=addInActiveUserData';
 export const UPDATE_USER_API = '/userAuth?action=updateUserData';
 export const GET_USER_DATA_API = '/userAuth?action=getUserData';
+
+
+export const GET_ALL_USER_ACCOUNT_API = '/userAuth?action=getAccountData'
+
+
 export const ADD_EMAIL_SETTING_DATA_API =
     '/userAuth?action=addEmailSettingsUserData';
 export const SET_EMAIL_PASSWORD_API = '/userAuth?action=setEmailPasswordData';
@@ -63,6 +68,13 @@ export const GET_TENANTS_WITH_USERS_API =
     '/tenant?action=getAllTenantsWithUsers';
 export const GET_ALL_USERS_WITH_TENANTS_API =
     '/tenant?action=getAllUsersWithTenants';
+export const GET_ALL_USER_EXAMPLE_ACCOUNT=
+    '/tenant?action=example';
+
+
+
+
+
 export const UPDATE_TENANT_DATA_API = '/tenant?action=updateTenantData';
 export const REMOVING_TENANT_DATA_API = '/tenant?action=removeTenantData';
 export const GET_COMPANY_NAME = '/tenant?action=getCompanyName';
@@ -115,6 +127,7 @@ export const ALERT_LIST_VIEW_ROUTE = '/alertListView';
 export const USER_MANAGMENT_ROUTE = '/userManagement';
 export const GRANT_ACCESS_ROUTE = '/grantAccess';
 export const TENANTS_ROUTE = '/tenants';
+export const ACCOUNT_ROUTE = '/all-account';
 export const SETTINGS_ROUTE = '/user-settings';
 export const ADD_USER_ROUTE = '/add-user';
 export const USER_PROFILE_ROUTE = '/user-profile';
@@ -141,6 +154,7 @@ export const DASHBOARD_CONFIG_INDEX = 11;
 export const FEEDBACK_INDEX = 12;
 export const PAYMENT_INDEX = 13;
 export const PAYMENT_HISTORY_INDEX = 14;
+export const ACCOUNT_INDEX = 15;
 
 // Subsection index array
 export const DASHBOARDS_INDEX = 0;
@@ -149,6 +163,7 @@ export const SUBSCRIPTION_INDEX = 2;
 
 export const NOT_AVAILABLE_TENANT_NAME = 'N/A';
 export const NOT_AVAILABLE_EMAIL = 'N/A';
+export const NOT_AVAILABLE_LOCATION ='N/A'
 
 export const LEFT_NAV_TABS = [
     {
@@ -211,6 +226,11 @@ export const LEFT_NAV_TABS = [
                 route: TENANTS_ROUTE
             },
             {
+                index: ACCOUNT_INDEX,
+                text: 'All Accounts',
+                route: ACCOUNT_ROUTE
+            },
+            {
                 index: TENANT_SETTINGS_INDEX,
                 text: 'Account Management',
                 route: TENANT_SETTINGS_ROUTE
@@ -253,13 +273,13 @@ export const LEFT_NAV_TABS = [
 ];
 
 // URL status
-export const URL_DONE_STATE = 'Done';
-export const URL_NEW_STATE = 'New';
+    export const URL_DONE_STATE = 'Done';
+    export const URL_NEW_STATE = 'New';
 
-export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
-export const DATE_ONLY_FORMAT = 'MM/DD/YYYY';
-export const TIME_ONLY_FORMAT = 'h:mm a';
-export const DATE_TIME_FORMAT = 'MM/DD h:mm a';
+    export const DATE_FORMAT = 'MMMM Do YYYY, h:mm:ss a';
+    export const DATE_ONLY_FORMAT = 'MM/DD/YYYY';
+    export const TIME_ONLY_FORMAT = 'h:mm a';
+     export const DATE_TIME_FORMAT = 'MM/DD h:mm a';
 
 export const BROWSER_ARRAY = [
     { value: 'chrome', textValue: 'CHROME' },
@@ -278,11 +298,11 @@ export const RETENSION_ARRAY = [
     { value: '28d', textValue: '28 DAYS' }
 ];
 
-export const PERFORMANCE_TEST_TYPE = 'performace';
-export const PING_TEST_TYPE = 'ping';
-export const SCRIPT_TEST_TYPE = 'script';
-export const ONE_TIME_TEST_TYPE = 'one-time';
-export const TEST_TYPE_ARRAY = [
+    export const PERFORMANCE_TEST_TYPE = 'performace';
+    export const PING_TEST_TYPE = 'ping';
+    export const SCRIPT_TEST_TYPE = 'script';
+    export const ONE_TIME_TEST_TYPE = 'one-time';
+    export const TEST_TYPE_ARRAY = [
     { value: PING_TEST_TYPE, textValue: 'PING TEST' },
     { value: SCRIPT_TEST_TYPE, textValue: 'SCRIPT TEST' },
     { value: ONE_TIME_TEST_TYPE, textValue: 'ONE TIME TEST' }

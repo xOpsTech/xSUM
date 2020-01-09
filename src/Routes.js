@@ -28,6 +28,7 @@ import AddFeedbackView from './component/common/feedback/AddFeedbackView';
 import AuthJobResult from './component/auth-job-result/AuthJobResult';
 import BraintreeView from './component/payment/BraintreeView';
 import SubscriptionList from './component/payment/SubscriptionList';
+import AllAccountView from './component/management/all-account/AllAccountView'
 
 export default (
     <Route path={'/'} component={Page}>
@@ -73,6 +74,9 @@ export default (
             component={GrantAccessView}
         />
         <Route path={AppConstants.TENANTS_ROUTE} component={TenantsView} />
+
+        <Route path={AppConstants.ACCOUNT_ROUTE} component={AllAccountView} />
+
         <Route path={AppConstants.SETTINGS_ROUTE} component={SettingsView} />
         <Route path={AppConstants.ADD_USER_ROUTE} component={AddUserView} />
         <Route path={AppConstants.USER_PROFILE_ROUTE} component={ProfileView} />

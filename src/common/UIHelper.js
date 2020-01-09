@@ -153,7 +153,27 @@ export function getRoleForUserFromTenant(tenantID, userObject, isTitle) {
 
     return isTitle ? toTitleCase(role) : role;
 }
-
+export function getALLAccountData(loggedUserObj,context) {
+console.log('HI')
+var urlToGetUserAllAccount = Config.API_URL + AppConstants.GET_ALL_USER_ACCOUNT_API;
+context.setState({
+    isLoading: true,
+    alertData: context.state.alertData,
+    loadingMessage: MessageConstants.FETCHING_USER
+});
+console.log('GETACCOUNT');
+        userApi.getAccount(urlToGetUserAllAccount)
+        .then(
+            response => {
+                console.log("RESPONSE")
+                console.log(response)
+            context.setState({
+                isLoading: false,
+                loadingMessage: ''
+            });
+        });
+        
+}
 // isContinueLoad used for indicate continue the loading screen or not
 export function getUserData(
     loggedUserObj,
@@ -161,6 +181,8 @@ export function getUserData(
     callBackFunction,
     isContinueLoad
 ) {
+ 
+
     var urlToGetUserData = Config.API_URL + AppConstants.GET_USER_DATA_API;
 
     context.setState({
@@ -168,11 +190,9 @@ export function getUserData(
         alertData: context.state.alertData,
         loadingMessage: MessageConstants.FETCHING_USER
     });
-    userApi
-        .getUser(urlToGetUserData, { email: loggedUserObj.email })
+    userApi.getUser(urlToGetUserData, { email: loggedUserObj.email })
         .then(data => {
             loggedUserObj = data.user;
-
             context.setState({
                 isLoading: isContinueLoad ? isContinueLoad : false,
                 loadingMessage: isContinueLoad

@@ -74,13 +74,20 @@ class TenantsView extends React.Component {
     }
 
     getAllTenantsData(user, context) {
+        console.log(user)
+        console.log(context)
         var urlToGetTenantData = Config.API_URL + AppConstants.GET_TENANTS_WITH_USERS_API;
+        //  var urlToGetTenantData = Config.API_URL+ '/tenant?action=getAllTenantsWithUsers';
 
         if (user.isSuperUser) {
             urlToGetTenantData = Config.API_URL + AppConstants.GET_ALL_USERS_WITH_TENANTS_API;
         }
-        context.setState({isLoading: true, loadingMessage: MessageConstants.FETCHING_TENANTS});
-        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id}).then((data) => {
+        context.setState({
+            isLoading: true, 
+            loadingMessage: MessageConstants.FETCHING_TENANTS
+        });
+        tenantApi.getAllTenantsFrom(urlToGetTenantData, {userID: user._id})
+        .then((data) => {
 
             context.setState (
                 {

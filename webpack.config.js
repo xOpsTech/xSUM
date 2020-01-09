@@ -14,13 +14,13 @@ module.exports = {
     devServer: {
         inline: true,
         port: 8080,
-        proxy: {
-            '/*/*': {
-                target: 'http://localhost:5000',
-                secure: false,
-                changeOrigin: true
-            }
-        }
+        // proxy: {
+        //     '/*/*': {
+        //         target: 'http://localhost:5000',
+        //         secure: false,
+        //         changeOrigin: true
+        //     }
+        // }
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),

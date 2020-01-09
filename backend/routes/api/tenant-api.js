@@ -36,6 +36,9 @@ TenantApi.prototype.handleTenantData = function(req, res) {
         case "getCompanyName":
             new TenantApi().getCompanyName(req, res);
             break;
+        case "example":
+            new TenantApi().getAllAccount(req ,res);
+            break;
         default:
             res.send("no data");
     }
@@ -160,6 +163,7 @@ TenantApi.prototype.insertTenantData = async function(userID, tenantName) {
     var tenantInsertObj = {
         name: tenantName,
         ownerId: userID,
+        mailStatus:false ,
         email: '',
         password: '',
         users: [
@@ -271,4 +275,17 @@ TenantApi.prototype.getCompanyName = async function (req, res) {
     var data = await MongoDB.getAllData(AppConstants.DB_NAME, AppConstants.TENANT_LIST, queryObj);
     res.send({message: AppConstants.RESPONSE_SUCCESS, name: data[0].name});
 }
+
+TenantApi.prototype.getAllAccount = async function(req ,res){
+    var id = 'hello world';
+    console.log(id)
+    var data = await MongoDB.getAccountData(AppConstants.DB_NAME,AppConstants.USER_LIST)
+    res.send(
+        {
+        message:AppConstants.RESPONSE_SUCCESS,
+        accountData:data
+    }
+    )
+}
+
 module.exports = new TenantApi();

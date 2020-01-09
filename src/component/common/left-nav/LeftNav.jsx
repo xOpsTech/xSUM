@@ -65,8 +65,9 @@ class LeftNav extends React.Component {
     }
 
     tabOnClick(e, selectedTab) {
+        console.log('TABONCLICK');
         e.preventDefault();
-
+        console.log(this.props.selectedIndex);
         if (this.props.selectedIndex !== selectedTab.index) {
             UIHelper.redirectTo(selectedTab.route, {});
         }
@@ -83,6 +84,7 @@ class LeftNav extends React.Component {
     }
 
     showHideSubSection(e, tab) {
+        console.log("HIDDEN ")
         e.preventDefault();
         var {colSubSecStateArray} = this.state;
         colSubSecStateArray[tab.subSectionIndex].isSubSectionExpand

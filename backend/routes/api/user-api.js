@@ -482,17 +482,45 @@ function hashPassword(password) {
         });
     });
 }
-
+//getAccountData
 UserApi.prototype.handleUserGetData = function(req, res) {
     var action = req.query.action;
+   
+    console.log('SWITCH')
+    console.log(req.body)
+   //wada  console.log(res)
     switch (action) {
         case 'activateUser':
             new UserApi().activateUser(req, res);
+            console.log('BREAK STATEMENT')
+            console.log(res.userAccountData);
+            break;
+        case 'getAccountData':
+            new UserApi().getAccountData(req , res);
             break;
         default:
             res.send('no data');
     }
 };
+
+UserApi.prototype.getAccountData = async function(req , res) {
+    console.log("Backend user-api.js");
+    var paramObj = req.query;
+    
+    console.log(paramObj)
+  
+    var userAccountData = await MongoDB.getAccountData(
+            AppConstants.DB_NAME,
+            AppConstants.TENANT_LIST,
+            
+    );  
+        console.log('Getting Data')
+        console.log(userAccountData)
+   // console.log(userAccountData);
+   //res.sent('This Works');
+
+   res.send(userAccountData);
+}
 
 UserApi.prototype.activateUser = async function(req, res) {
     var paramObj = req.query;
@@ -506,6 +534,7 @@ UserApi.prototype.activateUser = async function(req, res) {
             AppConstants.USER_LIST,
             queryObj
         );
+        
 
         if (userDataToActivate.length > 0) {
             if (

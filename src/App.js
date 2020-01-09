@@ -14,7 +14,7 @@ class App extends React.Component {
 
         return (
             <div>
-                <Router history={customHistory} routes={routes}/>
+                <Router history={customHistory} routes={routes}/> 
             </div>
         );
     }

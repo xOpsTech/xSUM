@@ -47,6 +47,10 @@ Api.prototype.handleUrlData = function(req, res) {
     }
 };
 
+// Api.prototype.getAccountData =function(req ,res){
+//  console.log("Backend");
+// }
+
 Api.prototype.handleTestData = function(req, res) {
     var action = req.query.action;
     switch (action) {
@@ -191,6 +195,9 @@ function executeResultGenerator(collectionName, objectToInsert) {
         );
     });
 }
+
+
+
 
 Api.prototype.handleResults = function(req, res) {
     var action = req.query.action;

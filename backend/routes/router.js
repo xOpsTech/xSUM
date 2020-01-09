@@ -13,9 +13,11 @@ router.route('/urlData').post(Api.handleUrlData);
 router.route('/urlData').get(Api.handleTestData);
 router.route('/handleJobs').post(JobApi.handleJobs);
 router.route('/handleResults').post(Api.handleResults);
+// router.route('/getAccountData').get(Api.getAccountData)
 
 router.route('/userAuth').post(UserApi.handleUserData);
 router.route('/userAuth').get(UserApi.handleUserGetData);
+
 router.route('/superUserAuth').post(SuperUserApi.handleSuperUserData);
 router.route('/alert').post(AlertApi.handleAlertData);
 router.route('/tenant').post(TenantApi.handleTenantData);

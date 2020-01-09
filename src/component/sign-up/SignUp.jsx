@@ -107,7 +107,8 @@ class SignUp extends React.Component {
                 title     : title.value,
                 location  : location.value,
                 timeZone  : timeZone.value,
-                password  : password.value
+                password  : password.value,
+                mailStatus : false
             };
 
             userApi.registerUser(url, userData).then((response) => {

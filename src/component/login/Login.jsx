@@ -15,6 +15,8 @@ import * as AppConstants from '../../constants/AppConstants';
 import * as Config from '../../config/config';
 import * as UIHelper from '../../common/UIHelper';
 
+
+
 /* eslint-disable no-unused-vars */
 import Styles from './LoginStyles.less';
 /* eslint-enable no-unused-vars */
@@ -118,7 +120,7 @@ class Login extends React.Component {
 
     }
 
-    signUpClick(e) {
+    signUpClick(e)  {
         e.preventDefault();
         UIHelper.redirectTo(AppConstants.SIGN_UP_ROUTE, {});
     }
@@ -199,7 +201,7 @@ class Login extends React.Component {
                             <ErrorMessageComponent error={email.error}/>
                         </div>
                         <div className="form-group">
-                            <input
+                            <input 
                                 value={password.value}
                                 onChange={(e) => this.handleChange(e, {
                                     password: {

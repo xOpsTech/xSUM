@@ -204,6 +204,7 @@ class SiteAdd extends React.Component {
     }
 
     addJobClick(e) {
+        console.log(e)
         e.preventDefault();
 
         var {
@@ -224,8 +225,9 @@ class SiteAdd extends React.Component {
         } = this.state;
 
         // Get recursive object
+        //drop down time interval
         var recursiveSelect = AppConstants.RECURSIVE_EXECUTION_ARRAY.find(
-            function(execution) {
+            function (execution) {
                 return (
                     parseInt(execution.value) ===
                     parseInt(recursiveSelect.value)
@@ -245,6 +247,7 @@ class SiteAdd extends React.Component {
                     isLoading: true,
                     loadingMessage: MessageConstants.UPDATING_A_JOB
                 });
+                //backend Url 
                 var url = Config.API_URL + AppConstants.JOB_UPDATE_API;
 
                 let jobToUpdate = {
@@ -266,7 +269,8 @@ class SiteAdd extends React.Component {
                     scriptValue: scriptValue,
                     scriptPath: scriptPath
                 };
-
+                console.log("jpy")
+                console.log(jobToUpdate)
                 jobApi.updateJob(url, { job: jobToUpdate }).then(data => {
                     if (data.error) {
                         this.setState({
@@ -467,17 +471,17 @@ class SiteAdd extends React.Component {
                         tenantDropDown={this.tenantDropDown}
                     />
                 ) : (
-                    <div className="sign-in-button">
-                        <button
-                            onClick={() => {
-                                UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
-                            }}
-                            className="btn btn-primary btn-sm log-out-drop-down--li--button"
-                        >
-                            Sign in
+                        <div className="sign-in-button">
+                            <button
+                                onClick={() => {
+                                    UIHelper.redirectTo(AppConstants.LOGIN_ROUTE);
+                                }}
+                                className="btn btn-primary btn-sm log-out-drop-down--li--button"
+                            >
+                                Sign in
                         </button>
-                    </div>
-                )}
+                        </div>
+                    )}
                 {
                     // <div className="logo-div-container">
                     //     <img className="logo-img" src="./assets/img/logo.png"/>
@@ -549,7 +553,7 @@ class SiteAdd extends React.Component {
                                         className={
                                             'input-group has-feedback ' +
                                             (siteObject.error.hasError !==
-                                            undefined
+                                                undefined
                                                 ? siteObject.error.hasError
                                                     ? 'has-error'
                                                     : 'has-success'
@@ -695,32 +699,32 @@ class SiteAdd extends React.Component {
                                     </div>*/}
                         </div>
                         {isRecursiveCheck &&
-                        testType !== AppConstants.ONE_TIME_TEST_TYPE ? (
-                            <select
-                                value={recursiveSelect.value}
-                                className="form-control form-control-sm form-group"
-                                onChange={e =>
-                                    this.dropDownClick({
-                                        recursiveSelect: {
-                                            value: e.target.value
-                                        }
-                                    })
-                                }
-                            >
-                                {AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
-                                    (execution, i) => {
-                                        return (
-                                            <option
-                                                key={'execution_' + i}
-                                                value={execution.value}
-                                            >
-                                                {execution.textValue}
-                                            </option>
-                                        );
+                            testType !== AppConstants.ONE_TIME_TEST_TYPE ? (
+                                <select
+                                    value={recursiveSelect.value}
+                                    className="form-control form-control-sm form-group"
+                                    onChange={e =>
+                                        this.dropDownClick({
+                                            recursiveSelect: {
+                                                value: e.target.value
+                                            }
+                                        })
                                     }
-                                )}
-                            </select>
-                        ) : null}
+                                >
+                                    {AppConstants.RECURSIVE_EXECUTION_ARRAY.map(
+                                        (execution, i) => {
+                                            return (
+                                                <option
+                                                    key={'execution_' + i}
+                                                    value={execution.value}
+                                                >
+                                                    {execution.textValue}
+                                                </option>
+                                            );
+                                        }
+                                    )}
+                                </select>
+                            ) : null}
                         <div
                             className="form-group"
                             id="monitor-test-button-container"
@@ -729,9 +733,9 @@ class SiteAdd extends React.Component {
                                 className="btn btn-primary form-control button-all-caps-text monitor-test-button"
                                 onClick={e => this.addJobClick(e)}
                                 {...selectedTenant.points &&
-                                    selectedTenant.points.pointsRemain <= 0 && {
-                                        disabled: true
-                                    }}
+                                selectedTenant.points.pointsRemain <= 0 && {
+                                    disabled: true
+                                }}
                             >
                                 Save
                             </button>
