@@ -18,7 +18,7 @@
     "express": "4.14.0",
     "influx": "5.0.7",
     "moment": "^2.22.2",
-    "mongodb": "3.0.10",
+    "mongodb": "3.1.13",
     "node-cmd": "3.0.0",
     "nodemailer": "^4.6.8",
     "path": "0.12.7",
