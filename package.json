@@ -30,7 +30,7 @@
         "isomorphic-fetch": "^2.2.1",
         "less": "~2.7.1",
         "less-loader": "4.1.0",
-        "moment": "^2.22.2",
+        "moment": "^2.29.4",
         "path-to-regexp": "^1.7.0",
         "prop-types": "^15.6.0",
         "prop-types-extra": "^1.0.1",
